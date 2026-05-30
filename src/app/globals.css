@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --green:#3D6B52;--green-d:#254030;--green-m:#C2DACA;--green-p:#EAF2EC;
+  --lime:#B8D96A;--lime-d:#8FAF3F;
+  --ink:#0A0F0D;--ink2:#556B5E;
+  --cream:#F7F5EF;--white:#ffffff;
+  --border:rgba(61,107,82,0.16);
+  --red-bg:#FDECEA;--red-text:#C0392B;
+  --amber-bg:#FEF6E4;--amber-text:#B7770D;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+button{font-family:'DM Sans',sans-serif;cursor:pointer}
+input,textarea,select{font-family:'DM Sans',sans-serif}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:13px 26px;border-radius:10px;font-size:14px;font-weight:500;border:none;cursor:pointer;transition:all 0.18s;text-decoration:none;white-space:nowrap}
+.btn-primary{background:var(--green);color:#fff}
+.btn-primary:hover{background:var(--ink);transform:translateY(-1px)}
+.btn-secondary{background:transparent;color:var(--ink);border:1.5px solid var(--border)}
+.btn-secondary:hover{border-color:var(--green);color:var(--green)}
+.btn-lime{background:var(--lime);color:var(--ink)}
+.btn-lime:hover{background:var(--lime-d)}
+.btn-white{background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.2)}
+.btn-white:hover{background:rgba(255,255,255,0.28)}
+.btn-sm{padding:9px 17px;font-size:12px;border-radius:8px}
+.btn-lg{padding:15px 36px;font-size:15px}
+.btn-full{width:100%}
+.btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+
+.wrap{max-width:1100px;margin:0 auto;padding:0 48px}
+.section{padding:88px 0}
+.section-white{padding:88px 0;background:var(--white)}
+
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:10px;display:block}
+.display{font-family:'Syne',sans-serif;font-weight:800;letter-spacing:-2px;line-height:1.0;color:var(--ink)}
+.heading{font-family:'Syne',sans-serif;font-weight:700;letter-spacing:-1px;line-height:1.1;color:var(--ink)}
+.subtext{font-size:16px;color:var(--ink2);font-weight:300;line-height:1.75}
+
+.card{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:28px;transition:box-shadow .2s,transform .2s}
+.card-hover:hover{box-shadow:0 10px 36px rgba(10,15,13,.08);transform:translateY(-2px)}
+
+.field-wrap{margin-bottom:15px}
+.field-label{display:block;font-size:12px;font-weight:500;color:var(--ink2);margin-bottom:5px}
+.field-input{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:11px 14px;font-size:14px;color:var(--ink);background:var(--white);outline:none;transition:border-color .2s}
+.field-input:focus{border-color:var(--green)}
+.field-input::placeholder{color:#aab5af}
+
+.nav{position:fixed;inset:0 0 auto;z-index:999;display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;background:rgba(247,245,239,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--green);display:flex;align-items:center;gap:8px}
+.nav-menu{display:flex;align-items:center;gap:4px;list-style:none}
+.nav-link{font-size:14px;color:var(--ink2);padding:6px 12px;border-radius:7px;transition:color .2s,background .2s}
+.nav-link:hover,.nav-link.active{color:var(--green);background:var(--green-p)}
+
+.chip{font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.chip-high{background:var(--red-bg);color:var(--red-text)}
+.chip-medium{background:var(--amber-bg);color:var(--amber-text)}
+.chip-low{background:var(--green-p);color:var(--green)}
+
+.tab{padding:0 20px;height:48px;border:none;background:none;font-size:14px;color:var(--ink2);border-bottom:2px solid transparent;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.tab.on{color:var(--green);border-bottom-color:var(--green);font-weight:500}
+
+.footer-link{font-size:13px;color:rgba(247,245,239,0.4);transition:color .2s}
+.footer-link:hover{color:rgba(247,245,239,0.85)}
