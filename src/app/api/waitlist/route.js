@@ -1,27 +1,36 @@
 export async function POST(request) {
-  const { email, source } = await request.json()
+  const { email, source, name, website } = await request.json()
   if (!email || !email.includes('@')) {
     return Response.json({ error: 'Valid email required' }, { status: 400 })
   }
 
-  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL
+  const notionKey = process.env.NOTION_API_KEY
+  const notionDb = process.env.NOTION_DATABASE_ID
 
-  if (webhookUrl) {
+  if (notionKey && notionDb) {
     try {
-      await fetch(webhookUrl, {
+      await fetch('https://api.notion.com/v1/pages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${notionKey}`,
+          'Content-Type': 'application/json',
+          'Notion-Version': '2022-06-28',
+        },
         body: JSON.stringify({
-          email,
-          source: source || 'homepage',
-          signedUpAt: new Date().toISOString(),
-          userAgent: request.headers.get('user-agent') || '',
+          parent: { database_id: notionDb },
+          properties: {
+            Email:    { title: [{ text: { content: email } }] },
+            Source:   { rich_text: [{ text: { content: source || 'homepage' } }] },
+            Name:     { rich_text: [{ text: { content: name || '' } }] },
+            Website:  { rich_text: [{ text: { content: website || '' } }] },
+            'Signed Up': { date: { start: new Date().toISOString() } },
+          },
         }),
       })
     } catch (err) {
-      console.error('Sheets webhook failed:', err.message)
+      console.error('Notion error:', err.message)
     }
   }
 
-  return Response.json({ success: true, message: 'You are on the list!' })
+  return Response.json({ success: true })
 }
