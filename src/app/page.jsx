@@ -17,13 +17,13 @@ function Hero() {
         <div>
           <div style={{display:'inline-flex',alignItems:'center',gap:7,background:'var(--green-p)',border:'1px solid var(--green-m)',padding:'5px 13px',borderRadius:100,marginBottom:28,fontSize:11,fontWeight:600,color:'var(--green)',letterSpacing:'.06em',textTransform:'uppercase'}}>
             <span style={{width:6,height:6,background:'var(--lime-d)',borderRadius:'50%'}}/>
-            AI compliance tools for UK & EU SMEs
+            AI compliance tools for UK & EU SMEs — Live now
           </div>
           <h1 className="display" style={{fontSize:'clamp(42px, 5.5vw, 74px)',marginBottom:22}}>
             GDPR compliance<br/>made simple for<br/><span style={{color:'var(--green)'}}>small businesses</span>
           </h1>
           <p className="subtext" style={{maxWidth:500,marginBottom:34}}>
-            AlgoGrass scans your website, identifies GDPR risks, and helps you generate privacy documents automatically — in minutes, not months.
+            AlgoGrass scans your website, identifies GDPR risks, and generates privacy documents automatically — in minutes, not months.
           </p>
           <form onSubmit={e=>{e.preventDefault();router.push('/scan')}} style={{display:'flex',background:'var(--white)',border:'1.5px solid var(--green-m)',borderRadius:12,padding:'5px 5px 5px 16px',maxWidth:470,marginBottom:14,gap:8}}>
             <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="yourwebsite.co.uk" style={{flex:1,border:'none',outline:'none',background:'transparent',fontSize:14,color:'var(--ink)'}}/>
@@ -115,7 +115,7 @@ function HowItWorks() {
         <h2 className="heading" style={{fontSize:'clamp(26px,3vw,42px)',marginBottom:10}}>From scan to documented in 3 steps</h2>
         <p className="subtext" style={{maxWidth:480,marginBottom:44}}>Built for founders and business owners — not compliance specialists.</p>
         <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:3,marginBottom:44}}>
-          {[{n:'01',title:'Scan your website',desc:'Paste your URL. AlgoGrass fetches your live website and checks for cookies, trackers, data forms, and consent mechanisms against GDPR and UK DPA 2018.'},{n:'02',title:'Review your risk report',desc:'Get a plain-English compliance report with your score, every issue ranked by severity, the specific regulation it relates to, and clear guidance.'},{n:'03',title:'Generate your documents',desc:'One click generates a tailored privacy policy, cookie policy, and DPA. AI-generated — always review with a qualified solicitor before publishing.'}].map(({n,title,desc},i)=>(
+          {[{n:'01',title:'Scan your website',desc:'Paste your URL. AlgoGrass fetches your live website and checks for cookies, trackers, data forms, and consent mechanisms against GDPR and UK DPA 2018.'},{n:'02',title:'Review your risk report',desc:'Get a plain-English compliance report with your score, every issue ranked by severity, the specific regulation it relates to, and clear guidance.'},{n:'03',title:'Generate your documents',desc:'One click generates a tailored privacy policy, cookie policy, and DPA — powered by AI and based on your actual scan results. Download instantly.'}].map(({n,title,desc},i)=>(
             <div key={n} style={{background:'var(--cream)',padding:'32px 28px',borderRadius:i===0?'18px 0 0 18px':i===2?'0 18px 18px 0':0}}>
               <div style={{fontFamily:'Syne,sans-serif',fontSize:46,fontWeight:800,color:'var(--green-m)',lineHeight:1,marginBottom:14,letterSpacing:'-2px'}}>{n}</div>
               <h3 style={{fontFamily:'Syne,sans-serif',fontSize:17,fontWeight:600,color:'var(--ink)',marginBottom:9}}>{title}</h3>
@@ -134,12 +134,22 @@ function Features() {
     <section className="section">
       <div className="wrap">
         <span className="eyebrow">Features</span>
-        <h2 className="heading" style={{fontSize:'clamp(26px,3vw,42px)',marginBottom:10}}>Practical compliance tools for small businesses</h2>
-        <p className="subtext" style={{maxWidth:520,marginBottom:44}}>AlgoGrass helps you identify what needs attention and build the right documentation.</p>
+        <h2 className="heading" style={{fontSize:'clamp(26px,3vw,42px)',marginBottom:10}}>Everything you need to stay compliant</h2>
+        <p className="subtext" style={{maxWidth:520,marginBottom:44}}>All features are live and available today.</p>
         <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:20,marginBottom:22}}>
-          {[{icon:'🔍',title:'Live website scanner',desc:'Fetches your actual website and checks for cookies, trackers, data forms, HTTPS, and consent mechanisms. Real analysis of your real site — not a questionnaire.'},{icon:'📄',title:'AI document generator',desc:'Generates privacy policies, cookie notices, and data processing agreements based on your scan. Every document includes a clear reminder to review with a qualified solicitor.'},{icon:'📊',title:'Compliance dashboard',desc:'Track your score, view open issues by severity and regulation, and get a prioritised remediation list. Re-scan any time to measure progress.'},{icon:'🤖',title:'AI compliance assistant',desc:'Ask questions about GDPR, UK DPA 2018, cookie law, and data subject rights in plain English. All responses include a note that this is guidance — not legal advice.'}].map(({icon,title,desc})=>(
+          {[
+            {icon:'🔍',title:'Live website scanner',desc:'Fetches your actual website and checks for cookies, trackers, data forms, HTTPS, and consent mechanisms. Real analysis of your real site — not a questionnaire.',badge:'Live'},
+            {icon:'📄',title:'AI document generator',desc:'Generates privacy policies, cookie notices, and data processing agreements based on your scan. Powered by Claude AI. Download instantly as text files.',badge:'Live'},
+            {icon:'📊',title:'Compliance dashboard',desc:'Track your score, view open issues by severity and regulation, get a prioritised remediation list, and re-scan any time to measure progress.',badge:'Live'},
+            {icon:'🤖',title:'AI compliance assistant',desc:'Ask questions about GDPR, UK DPA 2018, cookie law, and data subject rights in plain English. Context-aware and powered by Claude AI.',badge:'Live'},
+            {icon:'📋',title:'Scan history',desc:'Your last 10 scans are saved locally so you can track compliance improvement over time and re-scan with one click.',badge:'Live'},
+            {icon:'⬇️',title:'Download compliance reports',desc:'Export your full compliance report as a text file — useful for internal audits, investor due diligence, or sharing with your legal team.',badge:'Live'},
+          ].map(({icon,title,desc,badge})=>(
             <div key={title} className="card card-hover">
-              <div style={{width:42,height:42,borderRadius:10,background:'var(--green-p)',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:18,fontSize:19}}>{icon}</div>
+              <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:18}}>
+                <div style={{width:42,height:42,borderRadius:10,background:'var(--green-p)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:19}}>{icon}</div>
+                {badge&&<span style={{fontSize:10,fontWeight:700,background:'#F0FDF4',color:'var(--green)',padding:'2px 8px',borderRadius:100,letterSpacing:'.05em',textTransform:'uppercase'}}>{badge}</span>}
+              </div>
               <h3 style={{fontFamily:'Syne,sans-serif',fontSize:16,fontWeight:600,color:'var(--ink)',marginBottom:8}}>{title}</h3>
               <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.65}}>{desc}</p>
             </div>
@@ -160,33 +170,63 @@ function Features() {
 function EarlyAccess() {
   const [email,setEmail]=useState('')
   const [done,setDone]=useState(false)
+  const [loading,setLoading]=useState(false)
+  const [error,setError]=useState('')
+
+  async function join() {
+    if (!email) return
+    setLoading(true); setError('')
+    try {
+      const res = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ email, source: 'homepage-early-access' })
+      })
+      const data = await res.json()
+      if (data.error) { setError(data.error); setLoading(false); return }
+      setDone(true)
+    } catch {
+      setError('Something went wrong. Please try again.')
+    }
+    setLoading(false)
+  }
+
   return (
     <section style={{padding:'88px 0',background:'var(--green)'}}>
       <div className="wrap">
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:64,alignItems:'center'}}>
           <div>
             <span style={{fontSize:11,fontWeight:600,letterSpacing:'.12em',textTransform:'uppercase',color:'var(--lime)',marginBottom:12,display:'block'}}>Early access</span>
-            <h2 style={{fontFamily:'Syne,sans-serif',fontSize:'clamp(24px,3vw,38px)',fontWeight:700,color:'#fff',marginBottom:16,lineHeight:1.15}}>We are building AlgoGrass in the open</h2>
-            <p style={{fontSize:15,color:'rgba(255,255,255,.75)',lineHeight:1.75,fontWeight:300,marginBottom:24}}>Our free compliance scanner is live today. The full platform — dashboard, document generation, AI assistant — is launching soon. Join our early access list to be first to know.</p>
-            {['✓  Free compliance scanner available right now','✓  AI document generation launching soon','✓  Compliance dashboard in development','✓  Early access members get 3 months free on launch'].map(t=>(
+            <h2 style={{fontFamily:'Syne,sans-serif',fontSize:'clamp(24px,3vw,38px)',fontWeight:700,color:'#fff',marginBottom:16,lineHeight:1.15}}>AlgoGrass is live — start for free today</h2>
+            <p style={{fontSize:15,color:'rgba(255,255,255,.75)',lineHeight:1.75,fontWeight:300,marginBottom:24}}>Our full compliance platform is available now. Scan your website, generate documents, and track your compliance score — all in one place.</p>
+            {[
+              '✓  Free compliance scanner — available right now',
+              '✓  AI document generation — live now',
+              '✓  Compliance dashboard — live now',
+              '✓  Early access members get 3 months free on annual plan',
+            ].map(t=>(
               <div key={t} style={{fontSize:14,color:'rgba(255,255,255,.85)',marginBottom:8}}>{t}</div>
             ))}
           </div>
           <div style={{background:'rgba(255,255,255,.1)',border:'1px solid rgba(255,255,255,.2)',borderRadius:18,padding:'36px 32px'}}>
-            {done?(
+            {done ? (
               <div style={{textAlign:'center',padding:'24px 0'}}>
                 <div style={{fontSize:48,marginBottom:16}}>🎉</div>
                 <h3 style={{fontFamily:'Syne,sans-serif',fontSize:20,fontWeight:700,color:'#fff',marginBottom:10}}>You are on the list!</h3>
-                <p style={{fontSize:14,color:'rgba(255,255,255,.75)',marginBottom:20}}>We will email you when we launch.</p>
+                <p style={{fontSize:14,color:'rgba(255,255,255,.75)',marginBottom:20}}>We have saved your spot. Try the free scanner now.</p>
                 <a href="/scan" className="btn btn-lime">Try the free scanner →</a>
               </div>
-            ):(
+            ) : (
               <>
                 <h3 style={{fontFamily:'Syne,sans-serif',fontSize:20,fontWeight:700,color:'#fff',marginBottom:8}}>Join the early access list</h3>
-                <p style={{fontSize:13,color:'rgba(255,255,255,.65)',marginBottom:22,lineHeight:1.6}}>No spam. One email when we launch. Unsubscribe any time.</p>
+                <p style={{fontSize:13,color:'rgba(255,255,255,.65)',marginBottom:22,lineHeight:1.6}}>Get 3 months free on any annual plan. No spam. Unsubscribe any time.</p>
                 <input type="email" placeholder="your@email.com" value={email} onChange={e=>setEmail(e.target.value)}
-                  style={{width:'100%',border:'1.5px solid rgba(255,255,255,.25)',borderRadius:9,padding:'12px 14px',fontSize:14,background:'rgba(255,255,255,.1)',color:'#fff',outline:'none',marginBottom:12}}/>
-                <button onClick={()=>{if(email)setDone(true)}} className="btn btn-lime btn-full">Join early access →</button>
+                  onKeyDown={e=>e.key==='Enter'&&join()}
+                  style={{width:'100%',border:'1.5px solid rgba(255,255,255,.25)',borderRadius:9,padding:'12px 14px',fontSize:14,background:'rgba(255,255,255,.1)',color:'#fff',outline:'none',marginBottom:12,boxSizing:'border-box'}}/>
+                {error&&<p style={{fontSize:12,color:'#fca5a5',marginBottom:8}}>{error}</p>}
+                <button onClick={join} disabled={loading} className="btn btn-lime btn-full">
+                  {loading ? 'Saving...' : 'Join early access →'}
+                </button>
                 <p style={{fontSize:11,color:'rgba(255,255,255,.4)',marginTop:10,textAlign:'center'}}>Your email will only be used for AlgoGrass updates.</p>
               </>
             )}
