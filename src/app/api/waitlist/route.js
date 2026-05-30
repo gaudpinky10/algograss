@@ -4,31 +4,16 @@ export async function POST(request) {
     return Response.json({ error: 'Valid email required' }, { status: 400 })
   }
 
-  const notionKey = process.env.NOTION_API_KEY
-  const notionDb = process.env.NOTION_DATABASE_ID
-
-  if (notionKey && notionDb) {
+  const formspreeId = process.env.FORMSPREE_ID
+  if (formspreeId) {
     try {
-      await fetch('https://api.notion.com/v1/pages', {
+      await fetch(`https://formspree.io/f/${formspreeId}`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${notionKey}`,
-          'Content-Type': 'application/json',
-          'Notion-Version': '2022-06-28',
-        },
-        body: JSON.stringify({
-          parent: { database_id: notionDb },
-          properties: {
-            Email:    { title: [{ text: { content: email } }] },
-            Source:   { rich_text: [{ text: { content: source || 'homepage' } }] },
-            Name:     { rich_text: [{ text: { content: name || '' } }] },
-            Website:  { rich_text: [{ text: { content: website || '' } }] },
-            'Signed Up': { date: { start: new Date().toISOString() } },
-          },
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: source || 'homepage', name: name || '', website: website || '' }),
       })
     } catch (err) {
-      console.error('Notion error:', err.message)
+      console.error('Formspree error:', err.message)
     }
   }
 
