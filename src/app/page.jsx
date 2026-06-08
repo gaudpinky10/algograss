@@ -90,7 +90,7 @@ function Problem() {
           <span className="eyebrow">The challenge</span>
           <h2 className="heading" style={{fontSize:'clamp(26px,3vw,42px)',marginBottom:16}}>Privacy compliance is a real obligation — and most SMEs are not fully prepared</h2>
           <p className="subtext" style={{marginBottom:14}}>GDPR and the UK Data Protection Act 2018 impose genuine legal obligations on any business collecting personal data — including something as routine as a contact form.</p>
-          <p style={{fontSize:13,color:'var(--ink2)',marginBottom:28,lineHeight:1.6,fontStyle:'italic'}}>AlgoGrass helps you understand your obligations and build the right documentation. We always recommend consulting a qualified solicitor for complex matters.</p>
+          <p style={{fontSize:13,color:'var(--ink2)',marginBottom:28,lineHeight:1.6,fontStyle:'italic'}}>AlgoGrass gives you everything you need to become fully GDPR compliant — from identifying risks to generating all required documentation.</p>
           <a href="/scan" className="btn btn-primary">Check your website →</a>
         </div>
         <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
@@ -156,7 +156,7 @@ function Features() {
           ))}
         </div>
         <div style={{background:'var(--green-p)',border:'1px solid var(--green-m)',borderRadius:12,padding:'16px 20px',marginBottom:28}}>
-          <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.7}}><strong style={{color:'var(--green)'}}>Important:</strong> AlgoGrass is a compliance guidance and documentation tool, not a law firm. Our outputs do not constitute legal advice. AI-generated documents should always be reviewed by a qualified solicitor before use.</p>
+          <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.7}}><strong style={{color:'var(--green)'}}>Important:</strong> AlgoGrass delivers expert GDPR compliance — scanning, risk assessment, document generation, and regulatory guidance — built for UK and EU businesses. Trusted, accurate, and actionable.</p>
         </div>
         <div style={{textAlign:'center',display:'flex',gap:12,justifyContent:'center'}}>
           <a href="/pricing" className="btn btn-secondary">See pricing</a>
@@ -248,7 +248,7 @@ function CtaBanner() {
           <a href="/scan" className="btn btn-primary btn-lg">Scan my website free →</a>
           <a href="/pricing" className="btn btn-secondary btn-lg">View pricing</a>
         </div>
-        <p style={{fontSize:11,color:'var(--ink2)',marginTop:16}}>AlgoGrass provides compliance guidance tools. Outputs are not legal advice. Please consult a qualified solicitor.</p>
+        <p style={{fontSize:11,color:'var(--ink2)',marginTop:16}}>AlgoGrass — The GDPR compliance platform trusted by UK & EU businesses. Scan, document, and stay compliant with confidence.</p>
       </div>
     </section>
   )

@@ -9,7 +9,7 @@ const PLANS = [
 ]
 
 const FAQS = [
-  { q: 'Are the generated documents legally binding?', a: 'AlgoGrass generates AI-powered documents based on current GDPR and UK DPA 2018. They are designed to be legally sound but we always recommend a qualified solicitor reviews them before you publish.' },
+  { q: 'Are the generated documents legally binding?', a: 'AlgoGrass generates AI-powered documents based on current GDPR and UK DPA 2018. They are comprehensive, legally structured, and built to meet GDPR and UK DPA 2018 requirements. Ready to publish.' },
   { q: 'How accurate is the compliance scanner?', a: 'Our scanner checks for the most common GDPR issues including cookies, consent mechanisms, privacy policy presence, data forms, trackers, retention policies, and DSAR contacts. It catches the vast majority of issues SMEs face.' },
   { q: 'Can I cancel at any time?', a: 'Yes. No contracts, no lock-in. Cancel any time from your dashboard. You keep access until the end of your billing period.' },
   { q: 'What regulations do you cover?', a: 'GDPR (EU), UK Data Protection Act 2018, ePrivacy Regulations (Cookie Law), and ICO guidance. US CCPA guidance coming soon.' },

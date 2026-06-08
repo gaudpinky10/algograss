@@ -74,7 +74,7 @@ export default function DsarPage() {
                     ⬇ Download
                   </button>
                 </div>
-                <pre style={{ fontSize: 13, color: 'var(--ink)', lineHeight: 1.8, whiteSpace: 'pre-wrap', wordBreak: 'break-word', maxHeight: 600, overflowY: 'auto' }}>{result}</pre>
+                <pre style={{ fontSize: 13, color: "var(--ink)", lineHeight: 1.8, whiteSpace: 'pre-wrap', wordBreak: 'break-word', maxHeight: 600, overflowY: 'auto' }}>{result}</pre>
               </div>
             )}
           </div>

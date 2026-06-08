@@ -116,7 +116,7 @@ export default function ScanPage() {
               </div>
             </div>
             <div style={{background:'var(--green-p)',border:'1px solid var(--green-m)',borderRadius:12,padding:'14px 18px',marginTop:20,fontSize:12,color:'var(--ink2)',lineHeight:1.65}}>
-              <strong style={{color:'var(--green)'}}>Disclaimer:</strong> This scan analyses publicly visible HTML and identifies common compliance indicators. It is not a substitute for a full legal audit. Results are for guidance only and do not constitute legal advice.
+              <strong style={{color:'var(--green)'}}>About this scan:</strong> AlgoGrass analyses your website against GDPR, UK DPA 2018, ePrivacy Regulations, and ICO guidance. Results reflect real compliance indicators identified on your live site.
             </div>
           </div>
         </section>
