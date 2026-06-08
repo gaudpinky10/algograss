@@ -16,13 +16,18 @@ export async function POST(request) {
     path: '/'
   })
 
-  // Save to waitlist/Formspree
-  if (process.env.FORMSPREE_ID) {
+  // Notify owner via Formspree
+  const formspreeId = process.env.FORMSPREE_ID
+  if (formspreeId) {
     try {
-      await fetch(`https://formspree.io/f/${process.env.FORMSPREE_ID}`, {
+      await fetch(`https://formspree.io/f/${formspreeId}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name, plan, website, source: 'signup' }),
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          _replyto: email,
+          _subject: `New AlgoGrass account: ${name} (${plan || 'growth'} plan)`,
+          message: `New account created!\n\nName: ${name}\nEmail: ${email}\nPlan: ${plan || 'growth'}\nWebsite: ${website || 'Not provided'}\nTime: ${new Date().toLocaleString('en-GB')}`,
+        }),
       })
     } catch {}
   }
