@@ -3,11 +3,13 @@ import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
 const TOOLS = [
-  { href: '/scan', label: '🔍 Website Scanner', desc: 'Check your site for GDPR issues' },
-  { href: '/complaint', label: '📨 Complaint Classifier', desc: 'AI classifies any GDPR complaint' },
+  { href: '/scan', label: '🔍 Website Scanner', desc: 'GDPR compliance scan of any website' },
+  { href: '/data-audit', label: '🗂️ Data Audit', desc: 'CRM, HR, email & vendor compliance' },
+  { href: '/complaint', label: '📨 Complaint Classifier', desc: 'Email, WhatsApp, social — any channel' },
   { href: '/dsar', label: '📋 DSAR Handler', desc: 'Respond to Subject Access Requests' },
-  { href: '/ai-governance', label: '🤖 AI Governance', desc: 'Check if your AI usage is GDPR compliant' },
-  { href: '/grc', label: '🏛️ GRC Platform', desc: 'Governance, Risk & Compliance hub' },
+  { href: '/ai-governance', label: '🤖 AI Governance', desc: 'AI use case approval & register' },
+  { href: '/grc', label: '🏛️ GRC Platform', desc: 'Risk, policies & incident management' },
+  { href: '/reminders', label: '🔔 Review Reminders', desc: 'Never miss a compliance deadline' },
 ]
 
 export default function Nav() {
@@ -27,15 +29,20 @@ export default function Nav() {
       </a>
       <ul className="nav-menu">
         <li style={{ position: 'relative' }}>
-          <button onMouseEnter={() => setToolsOpen(true)} onMouseLeave={() => setToolsOpen(false)}
+          <button
+            onMouseEnter={() => setToolsOpen(true)}
+            onMouseLeave={() => setToolsOpen(false)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--ink2)', fontWeight: 500, padding: '4px 0', display: 'flex', alignItems: 'center', gap: 4 }}>
             Tools ▾
           </button>
           {toolsOpen && (
-            <div onMouseEnter={() => setToolsOpen(true)} onMouseLeave={() => setToolsOpen(false)}
-              style={{ position: 'absolute', top: '100%', left: 0, background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 12, padding: '8px', boxShadow: '0 8px 32px rgba(0,0,0,.12)', width: 280, marginTop: 8 }}>
+            <div
+              onMouseEnter={() => setToolsOpen(true)}
+              onMouseLeave={() => setToolsOpen(false)}
+              style={{ position: 'absolute', top: '100%', left: 0, background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 14, padding: '8px', boxShadow: '0 8px 32px rgba(0,0,0,.12)', width: 300, marginTop: 8, zIndex: 200 }}>
               {TOOLS.map(t => (
-                <a key={t.href} href={t.href} style={{ display: 'block', padding: '10px 12px', borderRadius: 8, textDecoration: 'none', background: path === t.href ? 'var(--green-p)' : 'transparent' }}
+                <a key={t.href} href={t.href}
+                  style={{ display: 'block', padding: '10px 12px', borderRadius: 8, textDecoration: 'none', background: path === t.href ? 'var(--green-p)' : 'transparent', transition: 'background .15s' }}
                   onMouseEnter={e => e.currentTarget.style.background = 'var(--green-p)'}
                   onMouseLeave={e => e.currentTarget.style.background = path === t.href ? 'var(--green-p)' : 'transparent'}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 2 }}>{t.label}</div>
