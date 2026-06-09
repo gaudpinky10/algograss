@@ -1,3 +1,7 @@
+import { cookies } from 'next/headers';
+import connectDB from '@/lib/mongodb';
+import ScanHistory from '@/models/ScanHistory';
+
 export async function POST(request) {
   const { url } = await request.json()
   if (!url) return Response.json({ error: 'URL is required' }, { status: 400 })
@@ -68,7 +72,7 @@ export async function POST(request) {
     ]
     const score = Math.round((checks.filter(Boolean).length / checks.length) * 100)
 
-    return Response.json({
+    const scanResult = {
       url: finalUrl, score, isHttps, trackers, issues,
       checks: {
         https: isHttps,
@@ -87,8 +91,33 @@ export async function POST(request) {
         securityMention: hasSecurityMention,
       },
       scannedAt: new Date().toISOString()
-    })
-  } catch (err) {
+    };
+
+    // Save to DB if user is logged in
+    try {
+      const cookieStore = cookies();
+      const userCookie = cookieStore.get('algograss_user');
+      if (userCookie) {
+        const user = JSON.parse(Buffer.from(userCookie.value, 'base64').toString());
+        if (user?.id) {
+          await connectDB();
+          await ScanHistory.create({
+            userId: user.id,
+            userEmail: user.email,
+            url: finalUrl,
+            score,
+            issues,
+            checks: scanResult.checks,
+            trackers,
+          });
+        }
+      }
+    } catch (dbErr) {
+      console.error('DB save error (non-fatal):', dbErr);
+    }
+
+    return Response.json({
+      url: finalUrl, score, isHttps, trackers, issues,
     const msg = err.message || ''
     if (msg.includes('timeout') || msg.includes('abort')) return Response.json({ error: 'The website took too long to respond. Please check the URL and try again.' }, { status: 408 })
     if (msg.includes('ENOTFOUND') || msg.includes('fetch failed')) return Response.json({ error: 'Could not reach that website. Please check the URL is correct and the site is live.' }, { status: 400 })

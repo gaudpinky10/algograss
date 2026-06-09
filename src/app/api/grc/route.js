@@ -1,3 +1,9 @@
+import { cookies } from 'next/headers';
+import connectDB from '@/lib/mongodb';
+import GrcRisk from '@/models/GrcRisk';
+import GrcIncident from '@/models/GrcIncident';
+import GrcPolicy from '@/models/GrcPolicy';
+
 export async function POST(request) {
   const { type, data } = await request.json()
   const apiKey = process.env.ANTHROPIC_API_KEY
@@ -60,7 +66,57 @@ Provide:
     })
     const result = await res.json()
     if (result.error) return Response.json({ error: result.error.message }, { status: 500 })
-    return Response.json({ result: result.content[0].text, generatedAt: new Date().toISOString() })
+    const aiText = result.content[0].text
+
+    // Save to DB
+    try {
+      const cookieStore = cookies();
+      const userCookie = cookieStore.get('algograss_user');
+      if (userCookie) {
+        const user = JSON.parse(Buffer.from(userCookie.value, 'base64').toString());
+        if (user?.id) {
+          await connectDB();
+          if (type === 'riskAssessment') {
+            await GrcRisk.create({
+              userId: user.id,
+              userEmail: user.email,
+              title: data.riskTitle || 'Untitled Risk',
+              category: data.category,
+              likelihood: data.likelihood,
+              impact: data.impact,
+              owner: data.owner,
+              aiAssessment: { text: aiText },
+            });
+          } else if (type === 'incidentAssessment') {
+            await GrcIncident.create({
+              userId: user.id,
+              userEmail: user.email,
+              title: data.incidentTitle || 'Untitled Incident',
+              description: data.description,
+              severity: data.severity,
+              dataTypes: data.dataTypes,
+              affectedCount: data.affectedCount,
+              discoveredDate: data.discoveredDate,
+              aiAssessment: { text: aiText },
+            });
+          } else if (type === 'policyReview') {
+            await GrcPolicy.create({
+              userId: user.id,
+              userEmail: user.email,
+              name: data.policyName || 'Untitled Policy',
+              owner: data.owner,
+              lastReviewed: data.lastReviewed,
+              nextReview: data.nextReview,
+              aiReview: { text: aiText },
+            });
+          }
+        }
+      }
+    } catch (dbErr) {
+      console.error('DB save error (non-fatal):', dbErr);
+    }
+
+    return Response.json({ result: aiText, generatedAt: new Date().toISOString() })
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 })
   }

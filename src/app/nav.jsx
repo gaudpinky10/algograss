@@ -1,6 +1,6 @@
 'use client'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 const TOOLS = [
   { href: '/scan', label: '🔍 Website Scanner', desc: 'GDPR compliance scan of any website' },
@@ -15,6 +15,21 @@ const TOOLS = [
 export default function Nav() {
   const path = usePathname()
   const [toolsOpen, setToolsOpen] = useState(false)
+  const menuRef = useRef(null)
+
+  // Close dropdown when clicking anywhere outside
+  useEffect(() => {
+    function handleClick(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setToolsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  // Close dropdown on route change
+  useEffect(() => { setToolsOpen(false) }, [path])
 
   return (
     <nav className="nav" style={{ position: 'relative', zIndex: 100 }}>
@@ -28,21 +43,37 @@ export default function Nav() {
         </span>
       </a>
       <ul className="nav-menu">
-        <li style={{ position: 'relative' }}>
+        <li ref={menuRef} style={{ position: 'relative' }}>
           <button
-            onMouseEnter={() => setToolsOpen(true)}
-            onMouseLeave={() => setToolsOpen(false)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--ink2)', fontWeight: 500, padding: '4px 0', display: 'flex', alignItems: 'center', gap: 4 }}>
-            Tools ▾
+            onClick={() => setToolsOpen(o => !o)}
+            style={{
+              background: toolsOpen ? 'var(--green-p)' : 'none',
+              border: 'none', cursor: 'pointer', fontSize: 14,
+              color: toolsOpen ? 'var(--green)' : 'var(--ink2)',
+              fontWeight: 500, padding: '6px 12px', borderRadius: 7,
+              display: 'flex', alignItems: 'center', gap: 5, transition: 'all .15s'
+            }}>
+            Tools
+            <span style={{ fontSize: 10, transition: 'transform .2s', display: 'inline-block', transform: toolsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▾</span>
           </button>
+
           {toolsOpen && (
-            <div
-              onMouseEnter={() => setToolsOpen(true)}
-              onMouseLeave={() => setToolsOpen(false)}
-              style={{ position: 'absolute', top: '100%', left: 0, background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 14, padding: '8px', boxShadow: '0 8px 32px rgba(0,0,0,.12)', width: 300, marginTop: 8, zIndex: 200 }}>
+            <div style={{
+              position: 'absolute', top: 'calc(100% + 6px)', left: 0,
+              background: 'var(--white)', border: '1px solid var(--border)',
+              borderRadius: 14, padding: '8px',
+              boxShadow: '0 8px 32px rgba(0,0,0,.12)',
+              width: 310, zIndex: 200
+            }}>
               {TOOLS.map(t => (
                 <a key={t.href} href={t.href}
-                  style={{ display: 'block', padding: '10px 12px', borderRadius: 8, textDecoration: 'none', background: path === t.href ? 'var(--green-p)' : 'transparent', transition: 'background .15s' }}
+                  onClick={() => setToolsOpen(false)}
+                  style={{
+                    display: 'block', padding: '10px 12px', borderRadius: 8,
+                    textDecoration: 'none',
+                    background: path === t.href ? 'var(--green-p)' : 'transparent',
+                    transition: 'background .15s'
+                  }}
                   onMouseEnter={e => e.currentTarget.style.background = 'var(--green-p)'}
                   onMouseLeave={e => e.currentTarget.style.background = path === t.href ? 'var(--green-p)' : 'transparent'}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 2 }}>{t.label}</div>
@@ -52,6 +83,7 @@ export default function Nav() {
             </div>
           )}
         </li>
+
         {[{ href: '/pricing', label: 'Pricing' }, { href: '/about', label: 'About' }, { href: '/blog', label: 'Blog' }, { href: '/contact', label: 'Contact' }].map(l => (
           <li key={l.href}><a href={l.href} className={`nav-link ${path === l.href ? 'active' : ''}`}>{l.label}</a></li>
         ))}

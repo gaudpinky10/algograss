@@ -1,5 +1,9 @@
+import { cookies } from 'next/headers';
+import connectDB from '@/lib/mongodb';
+import Complaint from '@/models/Complaint';
+
 export async function POST(request) {
-  const { complaint, businessName } = await request.json()
+  const { complaint, businessName, channel } = await request.json()
   if (!complaint) return Response.json({ error: 'Complaint text required' }, { status: 400 })
 
   const apiKey = process.env.ANTHROPIC_API_KEY
@@ -27,13 +31,35 @@ export async function POST(request) {
   "riskLevel": "High | Medium | Low",
   "riskExplanation": "brief explanation of the risk if not handled correctly"
 }`,
-        messages: [{ role: 'user', content: `Business: ${businessName || 'Unknown'}\n\nComplaint text:\n${complaint}` }],
+        messages: [{ role: 'user', content: `Business: ${businessName || 'Unknown'}\nChannel: ${channel || 'Website Form'}\n\nComplaint text:\n${complaint}` }],
       }),
     })
     const data = await res.json()
     if (data.error) return Response.json({ error: data.error.message }, { status: 500 })
     const text = data.content[0].text
     const result = JSON.parse(text)
+
+    // Save to DB
+    try {
+      const cookieStore = cookies();
+      const userCookie = cookieStore.get('algograss_user');
+      if (userCookie) {
+        const user = JSON.parse(Buffer.from(userCookie.value, 'base64').toString());
+        if (user?.id) {
+          await connectDB();
+          await Complaint.create({
+            userId: user.id,
+            userEmail: user.email,
+            channel: channel || 'Website Form',
+            complaintText: complaint,
+            ...result,
+          });
+        }
+      }
+    } catch (dbErr) {
+      console.error('DB save error (non-fatal):', dbErr);
+    }
+
     return Response.json({ result, analyzedAt: new Date().toISOString() })
   } catch (err) {
     return Response.json({ error: 'Analysis failed: ' + err.message }, { status: 500 })

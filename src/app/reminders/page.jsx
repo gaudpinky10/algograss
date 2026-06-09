@@ -41,55 +41,74 @@ export default function RemindersPage() {
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }))
 
   useEffect(() => {
-    const saved = getData(REMINDERS_KEY)
-    setReminders(saved)
+    // Load from DB first, fallback to localStorage
+    fetch('/api/reminders')
+      .then(r => r.json())
+      .then(data => {
+        if (data.reminders && data.reminders.length > 0) {
+          // Normalize DB reminders (dueDate field) to match UI (date field)
+          const normalized = data.reminders.map(r => ({ ...r, date: r.dueDate || r.date, id: r._id || r.id }))
+          setReminders(normalized)
+        } else {
+          // Fallback: try localStorage
+          const saved = getData(REMINDERS_KEY)
+          setReminders(saved)
+        }
+      })
+      .catch(() => {
+        const saved = getData(REMINDERS_KEY)
+        setReminders(saved)
+      })
 
     // Restore auto-reminder settings
     const savedAutoEmail = localStorage.getItem(AUTO_EMAIL_KEY) || ''
     if (savedAutoEmail) {
       setAutoEmail(savedAutoEmail)
       setAutoEnabled(true)
-
-      // Check if already sent today
       const lastSent = localStorage.getItem(LAST_SENT_KEY) || ''
       const today = new Date().toDateString()
       if (lastSent === today) {
         setAutoStatus('sent')
-        return
-      }
-
-      // Auto-send if any reminders are due within 30 days
-      const dueSoon = saved.filter(r => getDaysUntil(r.date) <= 30)
-      if (dueSoon.length > 0) {
-        fetch('/api/reminders', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: savedAutoEmail, reminders: saved }),
-        })
-          .then(r => r.json())
-          .then(data => {
-            if (data.success) {
-              localStorage.setItem(LAST_SENT_KEY, today)
-              setAutoStatus('sent')
-            }
-          })
-          .catch(() => {})
-      } else {
-        setAutoStatus('no-due')
       }
     }
   }, [])
 
-  function addReminder() {
+  async function addReminder() {
     if (!form.title || !form.date) return
-    const updated = [{ id: Date.now(), ...form, createdAt: new Date().toISOString() }, ...reminders]
-    setReminders(updated); saveData(REMINDERS_KEY, updated)
+    try {
+      const res = await fetch('/api/reminders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: form.title, type: form.type, dueDate: form.date, owner: form.owner, notes: form.notes }),
+      })
+      const data = await res.json()
+      if (data.reminder) {
+        const normalized = { ...data.reminder, date: data.reminder.dueDate, id: data.reminder._id }
+        setReminders(prev => [normalized, ...prev])
+      } else {
+        // Fallback to localStorage
+        const updated = [{ id: Date.now(), ...form, createdAt: new Date().toISOString() }, ...reminders]
+        setReminders(updated); saveData(REMINDERS_KEY, updated)
+      }
+    } catch {
+      const updated = [{ id: Date.now(), ...form, createdAt: new Date().toISOString() }, ...reminders]
+      setReminders(updated); saveData(REMINDERS_KEY, updated)
+    }
     setShowForm(false); setForm({ title: '', type: 'Policy Review', date: '', owner: '', notes: '' })
   }
 
-  function deleteReminder(id) {
+  async function deleteReminder(id) {
+    setReminders(prev => prev.filter(r => r.id !== id && r._id !== id))
+    try {
+      await fetch('/api/reminders', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      })
+    } catch {}
+    // Also remove from localStorage fallback
     const updated = reminders.filter(r => r.id !== id)
-    setReminders(updated); saveData(REMINDERS_KEY, updated)
+    saveData(REMINDERS_KEY, updated)
   }
 
   async function sendEmailReminders() {
@@ -99,7 +118,7 @@ export default function RemindersPage() {
       const res = await fetch('/api/reminders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, reminders }),
+        body: JSON.stringify({ action: 'email', email, reminders }),
       })
       const data = await res.json()
       if (data.success) setEmailSent(true)
@@ -118,7 +137,7 @@ export default function RemindersPage() {
       const res = await fetch('/api/reminders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: autoEmail, reminders }),
+        body: JSON.stringify({ action: 'email', email: autoEmail, reminders }),
       })
       const data = await res.json()
       if (data.success) {
@@ -137,10 +156,11 @@ export default function RemindersPage() {
     setAutoStatus('')
   }
 
-  const sorted = [...reminders].sort((a, b) => new Date(a.date) - new Date(b.date))
-  const overdue = sorted.filter(r => getDaysUntil(r.date) < 0)
-  const thisWeek = sorted.filter(r => { const d = getDaysUntil(r.date); return d >= 0 && d <= 7 })
-  const thisMonth = sorted.filter(r => { const d = getDaysUntil(r.date); return d > 7 && d <= 30 })
+  const getDate = r => r.date || r.dueDate
+  const sorted = [...reminders].sort((a, b) => new Date(getDate(a)) - new Date(getDate(b)))
+  const overdue = sorted.filter(r => getDaysUntil(getDate(r)) < 0)
+  const thisWeek = sorted.filter(r => { const d = getDaysUntil(getDate(r)); return d >= 0 && d <= 7 })
+  const thisMonth = sorted.filter(r => { const d = getDaysUntil(getDate(r)); return d > 7 && d <= 30 })
   const filtered = filter === 'overdue' ? overdue : filter === 'week' ? thisWeek : filter === 'month' ? thisMonth : sorted
 
   return (
@@ -256,10 +276,12 @@ export default function RemindersPage() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {filtered.map(reminder => {
-              const days = getDaysUntil(reminder.date)
+              const rDate = getDate(reminder)
+              const days = getDaysUntil(rDate)
               const style = getStatusStyle(days)
+              const rid = reminder._id || reminder.id
               return (
-                <div key={reminder.id} style={{ background: style.bg, border: `1px solid ${style.border}`, borderRadius: 13, padding: '16px 20px', display: 'grid', gridTemplateColumns: 'auto 1fr auto auto', gap: 16, alignItems: 'center' }}>
+                <div key={rid} style={{ background: style.bg, border: `1px solid ${style.border}`, borderRadius: 13, padding: '16px 20px', display: 'grid', gridTemplateColumns: 'auto 1fr auto auto', gap: 16, alignItems: 'center' }}>
                   <div style={{ textAlign: 'center', minWidth: 60 }}>
                     <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 800, color: style.text, lineHeight: 1 }}>{style.label}</div>
                     <div style={{ fontSize: 10, color: style.text, opacity: .7, marginTop: 2 }}>{days < 0 ? 'overdue' : days === 0 ? '' : 'remaining'}</div>
@@ -268,7 +290,7 @@ export default function RemindersPage() {
                     <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', marginBottom: 4 }}>{reminder.title}</div>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'rgba(255,255,255,.6)', color: 'var(--ink2)' }}>{reminder.type}</span>
-                      <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'rgba(255,255,255,.6)', color: 'var(--ink2)' }}>📅 {new Date(reminder.date).toLocaleDateString('en-GB')}</span>
+                      <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'rgba(255,255,255,.6)', color: 'var(--ink2)' }}>📅 {new Date(rDate).toLocaleDateString('en-GB')}</span>
                       {reminder.owner && <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'rgba(255,255,255,.6)', color: 'var(--ink2)' }}>👤 {reminder.owner}</span>}
                       {reminder.notes && <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'rgba(255,255,255,.6)', color: 'var(--ink2)' }}>💬 {reminder.notes}</span>}
                     </div>
@@ -277,7 +299,7 @@ export default function RemindersPage() {
                     style={{ fontSize: 12, padding: '7px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,.5)', background: 'rgba(255,255,255,.4)', color: 'var(--ink)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
                     Take action →
                   </a>
-                  <button onClick={() => deleteReminder(reminder.id)} style={{ fontSize: 11, padding: '7px 12px', borderRadius: 8, border: '1px solid rgba(0,0,0,.1)', background: 'rgba(255,255,255,.4)', color: 'var(--ink2)', cursor: 'pointer' }}>✕</button>
+                  <button onClick={() => deleteReminder(rid)} style={{ fontSize: 11, padding: '7px 12px', borderRadius: 8, border: '1px solid rgba(0,0,0,.1)', background: 'rgba(255,255,255,.4)', color: 'var(--ink2)', cursor: 'pointer' }}>✕</button>
                 </div>
               )
             })}
@@ -297,10 +319,27 @@ export default function RemindersPage() {
                 { title: 'Vendor Contract Review', type: 'Vendor Contract Review', months: 6 },
                 { title: 'AI Register Review', type: 'AI Register Review', months: 6 },
               ].map(item => (
-                <button key={item.title} onClick={() => {
+                <button key={item.title} onClick={async () => {
                   const d = new Date(); d.setMonth(d.getMonth() + item.months)
-                  const r = { id: Date.now(), ...item, date: d.toISOString().split('T')[0], owner: '', notes: '', createdAt: new Date().toISOString() }
-                  const updated = [r, ...reminders]; setReminders(updated); saveData(REMINDERS_KEY, updated)
+                  const dueDate = d.toISOString().split('T')[0]
+                  try {
+                    const res = await fetch('/api/reminders', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ title: item.title, type: item.type, dueDate, owner: '', notes: '' }),
+                    })
+                    const data = await res.json()
+                    if (data.reminder) {
+                      const normalized = { ...data.reminder, date: data.reminder.dueDate, id: data.reminder._id }
+                      setReminders(prev => [normalized, ...prev])
+                    } else {
+                      const r = { id: Date.now(), ...item, date: dueDate, owner: '', notes: '' }
+                      setReminders(prev => [r, ...prev]); saveData(REMINDERS_KEY, [r, ...reminders])
+                    }
+                  } catch {
+                    const r = { id: Date.now(), ...item, date: dueDate, owner: '', notes: '' }
+                    setReminders(prev => [r, ...prev]); saveData(REMINDERS_KEY, [r, ...reminders])
+                  }
                 }} style={{ padding: '14px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--white)', cursor: 'pointer', textAlign: 'left' }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 4 }}>{item.title}</div>
                   <div style={{ fontSize: 11, color: 'var(--green)' }}>+ Add (due in {item.months} months)</div>

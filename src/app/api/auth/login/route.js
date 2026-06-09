@@ -1,29 +1,48 @@
-import { cookies } from 'next/headers'
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import connectDB from '@/lib/mongodb';
+import User from '@/models/User';
 
 export async function POST(request) {
-  const { email, password } = await request.json()
-  if (!email || !password) return Response.json({ error: 'Email and password required' }, { status: 400 })
+  try {
+    const { email, password } = await request.json();
+    if (!email || !password) {
+      return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
+    }
 
-  const isAdmin = email === (process.env.ADMIN_EMAIL || 'gaudpinky10@gmail.com')
+    await connectDB();
 
-  // Check existing cookie
-  const existing = cookies().get('algograss_user')
-  if (existing) {
-    try {
-      const user = JSON.parse(Buffer.from(existing.value, 'base64').toString())
-      if (user.email === email) {
-        const updated = { ...user, isAdmin }
-        cookies().set('algograss_user', Buffer.from(JSON.stringify(updated)).toString('base64'), {
-          httpOnly: false, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 60*60*24*30, path: '/'
-        })
-        return Response.json({ success: true, user: updated })
-      }
-    } catch {}
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      return NextResponse.json({ error: 'No account found with this email' }, { status: 401 });
+    }
+
+    const valid = await user.comparePassword(password);
+    if (!valid) {
+      return NextResponse.json({ error: 'Incorrect password' }, { status: 401 });
+    }
+
+    const userData = {
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      plan: user.plan,
+      website: user.website,
+      isAdmin: user.isAdmin,
+    };
+
+    cookies().set('algograss_user', Buffer.from(JSON.stringify(userData)).toString('base64'), {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 30,
+      path: '/',
+    });
+
+    return NextResponse.json({ success: true, user: userData });
+  } catch (error) {
+    console.error('Login error:', error);
+    return NextResponse.json({ error: 'Login failed. Please try again.' }, { status: 500 });
   }
-
-  const user = { name: email.split('@')[0], email, plan: isAdmin ? 'agency' : 'growth', isAdmin, createdAt: new Date().toISOString() }
-  cookies().set('algograss_user', Buffer.from(JSON.stringify(user)).toString('base64'), {
-    httpOnly: false, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 60*60*24*30, path: '/'
-  })
-  return Response.json({ success: true, user })
 }

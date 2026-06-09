@@ -1,5 +1,9 @@
+import { cookies } from 'next/headers';
+import connectDB from '@/lib/mongodb';
+import DsarRequest from '@/models/DsarRequest';
+
 export async function POST(request) {
-  const { requestText, businessName, dataTypes } = await request.json()
+  const { requestText, businessName, dataTypes, requesterName, requesterEmail, requestType } = await request.json()
   if (!requestText) return Response.json({ error: 'Request text required' }, { status: 400 })
 
   const apiKey = process.env.ANTHROPIC_API_KEY
@@ -23,7 +27,36 @@ export async function POST(request) {
     })
     const data = await res.json()
     if (data.error) return Response.json({ error: data.error.message }, { status: 500 })
-    return Response.json({ response: data.content[0].text, generatedAt: new Date().toISOString() })
+    const responseText = data.content[0].text
+
+    // Save to DB
+    try {
+      const cookieStore = cookies();
+      const userCookie = cookieStore.get('algograss_user');
+      if (userCookie) {
+        const user = JSON.parse(Buffer.from(userCookie.value, 'base64').toString());
+        if (user?.id) {
+          await connectDB();
+          const deadline = new Date();
+          deadline.setDate(deadline.getDate() + 30);
+          await DsarRequest.create({
+            userId: user.id,
+            userEmail: user.email,
+            requesterName: requesterName || 'Unknown',
+            requesterEmail: requesterEmail || '',
+            requestType: requestType || 'Subject Access Request',
+            requestDetails: requestText,
+            aiGuide: responseText,
+            deadlineDate: deadline,
+            status: 'in_progress',
+          });
+        }
+      }
+    } catch (dbErr) {
+      console.error('DB save error (non-fatal):', dbErr);
+    }
+
+    return Response.json({ response: responseText, generatedAt: new Date().toISOString() })
   } catch (err) {
     return Response.json({ error: 'Failed: ' + err.message }, { status: 500 })
   }
