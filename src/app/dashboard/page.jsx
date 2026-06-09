@@ -106,8 +106,27 @@ function Dashboard() {
   const chatRef = useRef(null)
 
   useEffect(() => {
-    setHistory(getHistory())
     setUser(getUser())
+    // Load scan history from DB, fallback to localStorage
+    fetch('/api/scan-history')
+      .then(r => r.json())
+      .then(data => {
+        if (data.scans && data.scans.length > 0) {
+          const normalized = data.scans.map(s => ({
+            id: s._id,
+            url: s.url,
+            score: s.score,
+            issueCount: s.issues?.length || 0,
+            scannedAt: s.scannedAt,
+            fromDb: true,
+          }))
+          setHistory(normalized)
+        } else {
+          setHistory(getHistory())
+        }
+      })
+      .catch(() => setHistory(getHistory()))
+
     const params = new URLSearchParams(window.location.search)
     if (params.get('upgraded') === 'true') {
       setTimeout(() => alert(`🎉 Welcome! Your ${params.get('plan') || ''} plan is now active.`), 500)
@@ -126,8 +145,18 @@ function Dashboard() {
       const data = await res.json()
       if (data.error) { setScanError(data.error); setScanning(false); return }
       setResult(data)
-      saveToHistory(data)
-      setHistory(getHistory())
+      saveToHistory(data) // also save to localStorage as fallback
+      // Reload history from DB
+      fetch('/api/scan-history')
+        .then(r => r.json())
+        .then(d => {
+          if (d.scans?.length > 0) {
+            setHistory(d.scans.map(s => ({ id: s._id, url: s.url, score: s.score, issueCount: s.issues?.length || 0, scannedAt: s.scannedAt, fromDb: true })))
+          } else {
+            setHistory(getHistory())
+          }
+        })
+        .catch(() => setHistory(getHistory()))
     } catch { setScanError('Could not connect to scanner. Please check your connection.') }
     setScanning(false)
   }
@@ -276,9 +305,18 @@ function Dashboard() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
               <div>
                 <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 600, marginBottom: 3 }}>Scan history</h2>
-                <p style={{ fontSize: 12, color: 'var(--ink2)' }}>Your last {MAX_HISTORY} scans — stored in this browser</p>
+                <p style={{ fontSize: 12, color: 'var(--ink2)' }}>
+                  {history.length > 0 && history[0].fromDb
+                    ? `${history.length} scan${history.length !== 1 ? 's' : ''} saved to your account — accessible from any device`
+                    : `Your last ${MAX_HISTORY} scans stored locally`}
+                </p>
               </div>
-              {history.length > 0 && <button onClick={() => { localStorage.removeItem(HISTORY_KEY); setHistory([]) }} style={{ fontSize: 12, padding: '7px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--white)', color: 'var(--ink2)', cursor: 'pointer' }}>Clear history</button>}
+              {history.length > 0 && (
+                <button onClick={() => { localStorage.removeItem(HISTORY_KEY); setHistory([]) }}
+                  style={{ fontSize: 12, padding: '7px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--white)', color: 'var(--ink2)', cursor: 'pointer' }}>
+                  Clear local cache
+                </button>
+              )}
             </div>
             {history.length === 0 ? (
               <div style={{ background: 'var(--green-p)', border: '1px solid var(--green-m)', borderRadius: 14, padding: 28, textAlign: 'center' }}>
@@ -290,18 +328,31 @@ function Dashboard() {
                 {history.map((h, i) => {
                   const col = h.score >= 70 ? 'var(--green)' : h.score >= 40 ? 'var(--amber-text)' : 'var(--red-text)'
                   return (
-                    <div key={i} style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 13, padding: '16px 22px', display: 'flex', alignItems: 'center', gap: 20 }}>
+                    <div key={h.id || i} style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 13, padding: '16px 22px', display: 'flex', alignItems: 'center', gap: 20 }}>
                       <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'var(--green-p)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         <span style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 16, color: col }}>{h.score}</span>
                       </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', marginBottom: 3 }}>{h.url}</div>
-                        <div style={{ fontSize: 12, color: 'var(--ink2)' }}>{h.issueCount} issue{h.issueCount !== 1 ? 's' : ''} · {new Date(h.scannedAt).toLocaleString('en-GB')}</div>
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: 12, color: 'var(--ink2)' }}>{h.issueCount} issue{h.issueCount !== 1 ? 's' : ''}</span>
+                          <span style={{ fontSize: 12, color: 'var(--ink2)' }}>·</span>
+                          <span style={{ fontSize: 12, color: 'var(--ink2)' }}>{new Date(h.scannedAt).toLocaleString('en-GB')}</span>
+                          {h.fromDb && <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 4, background: 'var(--green-p)', color: 'var(--green)', fontWeight: 600 }}>☁ Saved</span>}
+                        </div>
                       </div>
-                      <button onClick={() => { setScanUrl(h.url); runScan(h.url); setTab('overview') }}
-                        style={{ fontSize: 12, padding: '8px 15px', borderRadius: 8, border: '1px solid var(--green-m)', background: 'var(--green-p)', color: 'var(--green)', cursor: 'pointer', fontWeight: 500 }}>
-                        Re-scan →
-                      </button>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button onClick={() => { setScanUrl(h.url); runScan(h.url); setTab('overview') }}
+                          style={{ fontSize: 12, padding: '8px 15px', borderRadius: 8, border: '1px solid var(--green-m)', background: 'var(--green-p)', color: 'var(--green)', cursor: 'pointer', fontWeight: 500 }}>
+                          Re-scan →
+                        </button>
+                        {h.fromDb && h.id && (
+                          <button onClick={async () => {
+                            await fetch('/api/scan-history', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: h.id }) })
+                            setHistory(prev => prev.filter(s => s.id !== h.id))
+                          }} style={{ fontSize: 12, padding: '8px 11px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--white)', color: 'var(--ink2)', cursor: 'pointer' }}>✕</button>
+                        )}
+                      </div>
                     </div>
                   )
                 })}
