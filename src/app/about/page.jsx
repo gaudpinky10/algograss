@@ -52,24 +52,40 @@ export default function AboutPage() {
       <section className="section-white">
         <div className="wrap">
           <span className="eyebrow">The team</span>
-          <h2 className="heading" style={{fontSize:'clamp(22px,2.5vw,36px)',marginBottom:16}}>A small team building something we believe in</h2>
-          <p className="subtext" style={{maxWidth:560,marginBottom:44}}>We are not listing names or roles we have not yet filled — honesty matters, especially for a compliance business.</p>
-          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:22}}>
-            <div className="card" style={{background:'var(--green)',border:'none'}}>
-              <div style={{fontSize:28,marginBottom:14}}>👩‍💻</div>
-              <h3 style={{fontFamily:'Syne,sans-serif',fontSize:15,fontWeight:600,color:'#fff',marginBottom:7}}>Founder</h3>
-              <p style={{fontSize:13,color:'rgba(255,255,255,.75)',lineHeight:1.65}}>Building AlgoGrass with a background in LegalTech and AI. Passionate about making compliance practical for small businesses across the UK and EU.</p>
+          <h2 className="heading" style={{fontSize:'clamp(22px,2.5vw,36px)',marginBottom:16}}>The people behind AlgoGrass</h2>
+          <p className="subtext" style={{maxWidth:560,marginBottom:48}}>A passionate team making GDPR compliance accessible for every UK and EU small business.</p>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:28,maxWidth:780,margin:'0 auto'}}>
+
+            {/* Founder — Pinki Gaud */}
+            <div className="card" style={{textAlign:'center',padding:'36px 28px',border:'2px solid var(--green-m)',background:'var(--green-p)'}}>
+              <div style={{width:110,height:140,borderRadius:10,overflow:'hidden',margin:'0 auto 20px',border:'3px solid var(--green)',boxShadow:'0 4px 16px rgba(0,0,0,.12)',background:'#e8ede6'}}>
+                <img src="/team/pinki.jpg" alt="Pinki Gaud" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top'}} onError={e => { e.target.style.display='none'; e.target.parentNode.innerHTML='<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px">👩‍💼</div>' }} />
+              </div>
+              <div style={{display:'inline-block',padding:'3px 12px',borderRadius:100,background:'var(--green)',color:'#fff',fontSize:10,fontWeight:700,letterSpacing:'.07em',textTransform:'uppercase',marginBottom:10}}>Founder</div>
+              <h3 style={{fontFamily:'Syne,sans-serif',fontSize:18,fontWeight:700,color:'var(--ink)',marginBottom:4}}>Pinki Gaud</h3>
+              <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.65,marginBottom:18}}>Building AlgoGrass with a background in LegalTech and AI. Passionate about making GDPR compliance practical and affordable for SMEs across the UK and EU.</p>
+              <a href="https://www.linkedin.com/in/pinkigaud/" target="_blank" rel="noopener noreferrer"
+                style={{display:'inline-flex',alignItems:'center',gap:7,fontSize:13,fontWeight:600,color:'#0A66C2',textDecoration:'none',padding:'8px 16px',borderRadius:8,border:'1.5px solid #0A66C2',background:'#fff'}}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                LinkedIn
+              </a>
             </div>
-            <div className="card card-hover" style={{border:'2px dashed var(--green-m)',background:'var(--green-p)'}}>
-              <div style={{fontSize:28,marginBottom:14}}>⚖️</div>
-              <h3 style={{fontFamily:'Syne,sans-serif',fontSize:15,fontWeight:600,color:'var(--green)',marginBottom:7}}>Data Protection Advisor</h3>
-              <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.65}}>Looking for a qualified solicitor or CIPP-certified data protection professional to advise on our legal content. <a href="/contact" style={{color:'var(--green)',fontWeight:500}}>Get in touch →</a></p>
+
+            {/* Co-Founder — Kumar Kuppusamy */}
+            <div className="card" style={{textAlign:'center',padding:'36px 28px',border:'2px solid var(--green-m)',background:'var(--green-p)'}}>
+              <div style={{width:110,height:140,borderRadius:10,overflow:'hidden',margin:'0 auto 20px',border:'3px solid var(--green)',boxShadow:'0 4px 16px rgba(0,0,0,.12)',background:'#e8ede6'}}>
+                <img src="/team/kumar.jpg" alt="Kumar Kuppusamy" style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top'}} onError={e => { e.target.style.display='none'; e.target.parentNode.innerHTML='<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px">👨‍💼</div>' }} />
+              </div>
+              <div style={{display:'inline-block',padding:'3px 12px',borderRadius:100,background:'var(--green)',color:'#fff',fontSize:10,fontWeight:700,letterSpacing:'.07em',textTransform:'uppercase',marginBottom:10}}>Co-Founder</div>
+              <h3 style={{fontFamily:'Syne,sans-serif',fontSize:18,fontWeight:700,color:'var(--ink)',marginBottom:4}}>Kumar Kuppusamy</h3>
+              <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.65,marginBottom:18}}>Co-founding AlgoGrass with deep expertise in technology and business strategy. Focused on scaling compliant, AI-driven tools for businesses of all sizes.</p>
+              <a href="https://www.linkedin.com/in/kumar-kuppusamy/" target="_blank" rel="noopener noreferrer"
+                style={{display:'inline-flex',alignItems:'center',gap:7,fontSize:13,fontWeight:600,color:'#0A66C2',textDecoration:'none',padding:'8px 16px',borderRadius:8,border:'1.5px solid #0A66C2',background:'#fff'}}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                LinkedIn
+              </a>
             </div>
-            <div className="card card-hover" style={{border:'2px dashed var(--green-m)',background:'var(--green-p)'}}>
-              <div style={{fontSize:28,marginBottom:14}}>🚀</div>
-              <h3 style={{fontFamily:'Syne,sans-serif',fontSize:15,fontWeight:600,color:'var(--green)',marginBottom:7}}>Early Adopters</h3>
-              <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.65}}>Looking for SMEs to use AlgoGrass and give honest feedback. Try our scanner and tell us what you think. <a href="/contact" style={{color:'var(--green)',fontWeight:500}}>Tell us →</a></p>
-            </div>
+
           </div>
         </div>
       </section>
