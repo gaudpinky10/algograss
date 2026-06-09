@@ -12,9 +12,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <div style={{background:'var(--ink)',padding:'8px 0',textAlign:'center'}}>
-          <p style={{fontSize:11,color:'rgba(247,245,239,.5)'}}>
-            AlgoGrass is a compliance guidance tool — not a law firm. Our outputs do not constitute legal advice. Always review with a qualified solicitor.
+        <div style={{background:'linear-gradient(90deg,rgba(0,212,170,0.12),rgba(124,58,237,0.12))',borderBottom:'1px solid rgba(0,212,170,0.12)',padding:'7px 0',textAlign:'center'}}>
+          <p style={{fontSize:11,color:'rgba(232,240,254,0.4)',letterSpacing:'.02em'}}>
+            ✦ AlgoGrass is a compliance guidance platform — not a law firm. Always review outputs with a qualified solicitor. ✦
           </p>
         </div>
         <Nav />
