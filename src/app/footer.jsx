@@ -1,3 +1,4 @@
+'use client'
 const COLS = [
   { title: 'Platform', links: [['/', 'Home'], ['/scan', 'Free Scanner'], ['/dashboard', 'Dashboard'], ['/pricing', 'Pricing'], ['/blog', 'Blog']] },
   { title: 'GRC Tools', links: [['/complaint', 'Complaint Classifier'], ['/dsar', 'DSAR Handler'], ['/ai-governance', 'AI Governance'], ['/grc', 'GRC Platform'], ['/data-audit', 'Data Audit'], ['/reminders', 'Review Reminders']] },
