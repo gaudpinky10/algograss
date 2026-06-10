@@ -264,4 +264,48 @@ function EarlyAccess() {
   }
 
   return (
-    <s
+    <section className="section-white" style={{position:'relative',overflow:'hidden'}}>
+      <div className="orb orb-purple" style={{width:500,height:500,top:'-20%',left:'-10%',opacity:0.35}}/>
+      <div className="wrap" style={{maxWidth:560,textAlign:'center',position:'relative',zIndex:1}}>
+        <AnimateOnScroll>
+          <span className="eyebrow">Early access</span>
+          <h2 className="heading" style={{fontSize:'clamp(28px,3vw,44px)',marginBottom:14}}>Be first to access full features</h2>
+          <p className="subtext" style={{marginBottom:32}}>We're rolling out advanced features to early members first — unlimited scans, AI document generation, and GRC tools.</p>
+          {done ? (
+            <div style={{background:'rgba(0,212,170,0.1)',border:'1px solid rgba(0,212,170,0.3)',borderRadius:14,padding:'20px 28px'}}>
+              <p style={{fontSize:15,color:'var(--accent)',fontWeight:600}}>You're on the list ✓</p>
+              <p style={{fontSize:13,color:'var(--ink2)',marginTop:6}}>We'll be in touch when your access is ready.</p>
+            </div>
+          ) : (
+            <>
+              <div style={{display:'flex',background:'rgba(255,255,255,0.04)',border:'1.5px solid rgba(0,212,170,0.3)',borderRadius:12,padding:'5px 5px 5px 16px',maxWidth:420,margin:'0 auto 12px',gap:8,backdropFilter:'blur(8px)'}}>
+                <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="your@email.com" type="email"
+                  style={{flex:1,border:'none',outline:'none',background:'transparent',fontSize:14,color:'var(--ink)'}}/>
+                <button onClick={join} disabled={loading} className="btn btn-primary btn-sm">{loading?'Joining…':'Join list →'}</button>
+              </div>
+              {error&&<p style={{fontSize:12,color:'#F87171',marginBottom:8}}>{error}</p>}
+              <p style={{fontSize:11,color:'var(--ink2)'}}>No spam · Unsubscribe any time</p>
+            </>
+          )}
+        </AnimateOnScroll>
+      </div>
+    </section>
+  )
+}
+
+function CtaBanner() {
+  return (
+    <section style={{padding:'56px 0',background:'linear-gradient(135deg,rgba(0,212,170,0.1) 0%,rgba(139,92,246,0.1) 100%)',borderTop:'1px solid var(--border)'}}>
+      <div className="wrap" style={{textAlign:'center'}}>
+        <AnimateOnScroll>
+          <h2 style={{fontFamily:'Syne,sans-serif',fontSize:'clamp(26px,3vw,42px)',fontWeight:700,color:'var(--ink)',marginBottom:14}}>Ready to check your compliance?</h2>
+          <p className="subtext" style={{marginBottom:28,maxWidth:440,margin:'0 auto 28px'}}>Free scan. No account needed. Results in under 60 seconds.</p>
+          <div style={{display:'flex',gap:14,justifyContent:'center',flexWrap:'wrap'}}>
+            <a href="/scan" className="btn btn-primary btn-lg animate-pulse-glow">Scan my website →</a>
+            <a href="/pricing" className="btn btn-secondary btn-lg">View pricing</a>
+          </div>
+        </AnimateOnScroll>
+      </div>
+    </section>
+  )
+}
