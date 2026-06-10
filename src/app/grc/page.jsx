@@ -74,9 +74,9 @@ export default function GrcPage() {
   const sevColors = { Critical: '#DC2626', High: '#D97706', Medium: '#2563EB', Low: '#16A34A', Draft: '#6B7280', Active: '#16A34A', 'Under Review': '#D97706', Archived: '#9CA3AF', Open: '#D97706', Closed: '#16A34A', 'In Progress': '#2563EB' }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F0F2F0' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       {/* Header */}
-      <div style={{ background: 'var(--ink)', padding: '32px 0' }}>
+      <div style={{ background: 'var(--bg2)', padding: '32px 0', borderBottom: '1px solid var(--border)' }}>
         <div className="wrap">
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(184,217,106,.15)', border: '1px solid rgba(184,217,106,.3)', padding: '5px 13px', borderRadius: 100, marginBottom: 16, fontSize: 11, fontWeight: 600, color: 'var(--lime)', letterSpacing: '.06em', textTransform: 'uppercase' }}>GRC Platform</div>
           <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(26px,3vw,40px)', fontWeight: 800, color: '#fff', marginBottom: 8 }}>Governance, Risk & Compliance</h1>
@@ -128,7 +128,7 @@ export default function GrcPage() {
             </div>
 
             {overdueReviews > 0 && (
-              <div style={{ background: '#FEF2F2', border: '1px solid #F5B7B1', borderRadius: 12, padding: '14px 18px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ background: 'var(--red-bg)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 12, padding: '14px 18px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ fontSize: 20 }}>⚠️</span>
                 <div>
                   <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--red-text)' }}>{overdueReviews} policy review{overdueReviews > 1 ? 's are' : ' is'} overdue. </span>

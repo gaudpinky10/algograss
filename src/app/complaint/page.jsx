@@ -66,7 +66,7 @@ export default function ComplaintPage() {
 
   return (
     <div style={{ minHeight: '90vh', background: 'var(--cream)' }}>
-      <section style={{ background: 'var(--ink)', padding: '48px 0' }}>
+      <section style={{ background: 'var(--bg2)', padding: '48px 0', borderBottom: '1px solid var(--border)' }}>
         <div className="wrap">
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(184,217,106,.15)', border: '1px solid rgba(184,217,106,.3)', padding: '5px 13px', borderRadius: 100, marginBottom: 16, fontSize: 11, fontWeight: 600, color: 'var(--lime)', letterSpacing: '.06em', textTransform: 'uppercase' }}>Multi-Channel · AI Powered</div>
           <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(26px,3vw,44px)', fontWeight: 800, color: '#fff', marginBottom: 12 }}>Complaint Intake & Classifier</h1>
@@ -331,7 +331,7 @@ export default function ComplaintPage() {
             </div>
 
             {/* Env vars needed */}
-            <div style={{ background: 'var(--ink)', borderRadius: 14, padding: '20px 24px' }}>
+            <div style={{ background: 'var(--bg2)', borderRadius: 14, padding: '20px 24px' }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--lime)', marginBottom: 12 }}>Required Vercel environment variables</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {[

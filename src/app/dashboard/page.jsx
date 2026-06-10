@@ -218,9 +218,9 @@ function Dashboard() {
   ]
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F0F2F0' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
       {/* Header */}
-      <div style={{ background: 'var(--ink)', padding: '18px 0' }}>
+      <div style={{ background: 'var(--bg2)', padding: '18px 0', borderBottom: '1px solid var(--border)' }}>
         <div className="wrap" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
           <div>
             <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 2 }}>
@@ -252,7 +252,7 @@ function Dashboard() {
       </div>
 
       {/* Tabs */}
-      <div style={{ background: 'var(--white)', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ background: 'var(--bg2)', borderBottom: '1px solid var(--border)' }}>
         <div className="wrap" style={{ display: 'flex' }}>
           {tabs.map(([id, label]) => (
             <button key={id} onClick={() => setTab(id)} className={`tab ${tab === id ? 'on' : ''}`}>{label}</button>
@@ -546,7 +546,7 @@ function Dashboard() {
                           style={{ width: 24, height: 24, borderRadius: '50%', border: `2px solid ${checked ? 'var(--green)' : 'var(--border)'}`, background: checked ? 'var(--green)' : 'transparent', cursor: 'pointer', flexShrink: 0, marginTop: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12, transition: 'all .2s' }}>
                           {checked ? '✓' : ''}
                         </button>
-                        <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 0 }}>
+                        <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--surface2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 0 }}>
                           <span style={{ fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 12, color: '#fff' }}>{i + 1}</span>
                         </div>
                         <div style={{ flex: 1 }}>

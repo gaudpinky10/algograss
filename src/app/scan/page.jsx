@@ -23,16 +23,16 @@ export default function ScanPage() {
   const scLabel=sc>=70?'Good':sc>=40?'Needs work':'At risk'
   return (
     <div style={{minHeight:'90vh'}}>
-      <section style={{background:'var(--green)',padding:'56px 0 48px'}}>
+      <section style={{background:'var(--bg2)',padding:'56px 0 48px',borderBottom:'1px solid var(--border)'}}>
         <div className="wrap" style={{maxWidth:700,textAlign:'center'}}>
-          <span style={{fontSize:11,fontWeight:600,letterSpacing:'.1em',textTransform:'uppercase',color:'var(--lime)',display:'block',marginBottom:12}}>Free compliance scanner</span>
-          <h1 style={{fontFamily:'Syne,sans-serif',fontSize:'clamp(26px,3.5vw,44px)',fontWeight:800,color:'#fff',marginBottom:12,lineHeight:1.1}}>Scan your website for GDPR risks</h1>
-          <p style={{fontSize:16,color:'rgba(255,255,255,.75)',marginBottom:32,fontWeight:300,lineHeight:1.7}}>Enter your URL below. We check your site for the most common compliance issues in seconds — completely free, no account required.</p>
-          <form onSubmit={e=>{e.preventDefault();runScan()}} style={{display:'flex',gap:8,background:'rgba(255,255,255,.12)',border:'1px solid rgba(255,255,255,.2)',borderRadius:12,padding:'6px 6px 6px 18px',maxWidth:560,margin:'0 auto'}}>
-            <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="yourwebsite.co.uk" disabled={status==='scanning'} style={{flex:1,border:'none',background:'transparent',fontSize:15,color:'#fff',outline:'none'}}/>
+          <span style={{fontSize:11,fontWeight:600,letterSpacing:'.1em',textTransform:'uppercase',color:'var(--accent)',display:'block',marginBottom:12}}>Free compliance scanner</span>
+          <h1 style={{fontFamily:'Syne,sans-serif',fontSize:'clamp(26px,3.5vw,44px)',fontWeight:800,color:'var(--ink)',marginBottom:12,lineHeight:1.1}}>Scan your website for GDPR risks</h1>
+          <p style={{fontSize:16,color:'var(--ink2)',marginBottom:32,fontWeight:300,lineHeight:1.7}}>Enter your URL below. We check your site for the most common compliance issues in seconds — completely free, no account required.</p>
+          <form onSubmit={e=>{e.preventDefault();runScan()}} style={{display:'flex',gap:8,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(0,212,170,0.3)',borderRadius:12,padding:'6px 6px 6px 18px',maxWidth:560,margin:'0 auto'}}>
+            <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="yourwebsite.co.uk" disabled={status==='scanning'} style={{flex:1,border:'none',background:'transparent',fontSize:15,color:'var(--ink)',outline:'none'}}/>
             <button type="submit" className="btn btn-lime" style={{padding:'11px 24px',borderRadius:9}} disabled={status==='scanning'}>{status==='scanning'?'Scanning...':'Scan now →'}</button>
           </form>
-          <p style={{fontSize:11,color:'rgba(255,255,255,.5)',marginTop:12}}>Checks: HTTPS · Cookie consent · Privacy policy · Trackers · Forms · Data rights</p>
+          <p style={{fontSize:11,color:'var(--ink2)',marginTop:12}}>Checks: HTTPS · Cookie consent · Privacy policy · Trackers · Forms · Data rights</p>
         </div>
       </section>
       {status==='scanning'&&(

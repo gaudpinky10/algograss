@@ -96,7 +96,7 @@ export default function AiGovernancePage() {
   return (
     <div style={{ minHeight: '90vh', background: 'var(--cream)' }}>
       {/* Header */}
-      <div style={{ background: 'var(--ink)', padding: '40px 0' }}>
+      <div style={{ background: 'var(--bg2)', padding: '40px 0', borderBottom: '1px solid var(--border)' }}>
         <div className="wrap">
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(184,217,106,.15)', border: '1px solid rgba(184,217,106,.3)', padding: '5px 13px', borderRadius: 100, marginBottom: 16, fontSize: 11, fontWeight: 600, color: 'var(--lime)', letterSpacing: '.06em', textTransform: 'uppercase' }}>AI Governance</div>
           <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(26px,3vw,42px)', fontWeight: 800, color: '#fff', marginBottom: 10 }}>AI Governance Platform</h1>
@@ -281,8 +281,8 @@ export default function AiGovernancePage() {
                       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                         <span style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, background: 'var(--cream)', color: 'var(--ink2)' }}>📊 {s.dataTypes || 'No personal data'}</span>
                         <span style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, background: 'var(--cream)', color: 'var(--ink2)' }}>⚖️ {s.legalBasis}</span>
-                        {s.assessment?.dpiaRequired && <span style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, background: '#FFFBEB', color: 'var(--amber-text)', fontWeight: 600 }}>⚠️ DPIA Required</span>}
-                        {s.status === 'Rejected' && s.reviewNote && <span style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, background: '#FEF2F2', color: 'var(--red-text)' }}>Note: {s.reviewNote}</span>}
+                        {s.assessment?.dpiaRequired && <span style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, background: 'var(--amber-bg)', color: 'var(--amber-text)', fontWeight: 600 }}>⚠️ DPIA Required</span>}
+                        {s.status === 'Rejected' && s.reviewNote && <span style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, background: 'var(--red-bg)', color: 'var(--red-text)' }}>Note: {s.reviewNote}</span>}
                       </div>
                     </div>
                   )
@@ -352,7 +352,7 @@ export default function AiGovernancePage() {
                   <p style={{ fontSize: 12, color: 'var(--ink2)', lineHeight: 1.5, marginBottom: 12 }}>{item.risk}</p>
                   <div style={{ display: 'flex', gap: 8 }}>
                     <button style={{ flex: 1, padding: '7px', borderRadius: 8, border: '1px solid var(--green-m)', background: 'var(--green-p)', color: 'var(--green)', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>✅ Yes</button>
-                    <button style={{ flex: 1, padding: '7px', borderRadius: 8, border: '1px solid #F5B7B1', background: '#FEF2F2', color: 'var(--red-text)', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>❌ No</button>
+                    <button style={{ flex: 1, padding: '7px', borderRadius: 8, border: '1px solid #F5B7B1', background: 'var(--red-bg)', color: 'var(--red-text)', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>❌ No</button>
                     <button style={{ flex: 1, padding: '7px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--cream)', color: 'var(--ink2)', fontSize: 12, cursor: 'pointer' }}>Not sure</button>
                   </div>
                 </div>
