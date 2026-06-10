@@ -82,7 +82,7 @@ export default function UkGdprVsEuGdpr(){
         'Subject Access Requests — searches need only be "reasonable and proportionate"; organisations can pause the clock to request clarification',
         'A new framework for automated decision-making',
         'Cookie consent — low-risk cookies (e.g. analytics) may be permitted without explicit consent provided users can opt out',
-        'Children'''s data — new requirements for online services likely accessed by children, requiring higher data protection standards',
+        "Children's data — new requirements for online services likely accessed by children, requiring higher data protection standards",
       ]}/>
       <Callout type="warn">The Data (Use and Access) Act 2025 changes are significant. UK businesses should review their SAR processes, cookie consent approach, and legitimate interests documentation. The EU has signalled these changes could affect the UK adequacy decision.</Callout>
 
