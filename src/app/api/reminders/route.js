@@ -1,103 +1,68 @@
 import { cookies } from 'next/headers';
-import connectDB from '@/lib/mongodb';
-import Reminder from '@/models/Reminder';
+import { getCollection } from '@/lib/dbHelpers';
 
-// GET - fetch user's reminders from DB
-export async function GET(request) {
+async function getUserEmail() {
   try {
-    const cookieStore = cookies();
-    const userCookie = cookieStore.get('algograss_user');
-    if (!userCookie) return Response.json({ reminders: [] });
-
-    const user = JSON.parse(Buffer.from(userCookie.value, 'base64').toString());
-    if (!user?.id) return Response.json({ reminders: [] });
-
-    await connectDB();
-    const reminders = await Reminder.find({ userId: user.id }).sort({ dueDate: 1 });
-    return Response.json({ reminders });
-  } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
-  }
+    const userCookie = cookies().get('algograss_user')
+    if (!userCookie) return null
+    const user = JSON.parse(Buffer.from(userCookie.value, 'base64').toString())
+    return user?.email || null
+  } catch { return null }
 }
 
-// POST - save reminder or send email digest
+export async function GET() {
+  const email = await getUserEmail()
+  if (!email) return Response.json({ reminders: [] })
+  try {
+    const col = await getCollection('reminders')
+    if (!col) return Response.json({ reminders: [] })
+    const reminders = await col.find({ userEmail: email }).sort({ dueDate: 1 }).toArray()
+    return Response.json({ reminders })
+  } catch (err) { return Response.json({ error: err.message }, { status: 500 }) }
+}
+
 export async function POST(request) {
-  const body = await request.json();
-
-  // Send email digest
-  if (body.action === 'email') {
-    const { email, reminders } = body;
-    if (!email || !reminders?.length) return Response.json({ error: 'Email and reminders required' }, { status: 400 });
-
-    const formspreeId = process.env.FORMSPREE_ID;
-    if (!formspreeId) return Response.json({ error: 'Email not configured.' }, { status: 500 });
-
-    const upcoming = reminders.filter(r => {
-      const days = Math.ceil((new Date(r.dueDate) - new Date()) / (1000 * 60 * 60 * 24));
-      return days >= 0 && days <= 30;
-    });
-
-    const message = `AlgoGrass Compliance Review Reminders\n\nUpcoming reviews for ${email}:\n\n${reminders.map(r => {
-      const days = Math.ceil((new Date(r.dueDate) - new Date()) / (1000 * 60 * 60 * 24));
-      const status = days < 0 ? '⚠️ OVERDUE' : days === 0 ? '🔴 DUE TODAY' : days <= 7 ? `🟡 Due in ${days} days` : `🟢 Due in ${days} days`;
-      return `${status} — ${r.title} (${r.type})\nDue: ${new Date(r.dueDate).toLocaleDateString('en-GB')}\nOwner: ${r.owner || 'Unassigned'}`;
-    }).join('\n\n')}\n\nLog in to AlgoGrass to manage your reviews: https://www.algograss.co.uk/reminders`;
-
-    try {
-      await fetch(`https://formspree.io/f/${formspreeId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          _subject: `AlgoGrass: ${upcoming.length} compliance review${upcoming.length !== 1 ? 's' : ''} coming up`,
-          _replyto: email,
-          email,
-          message,
-        }),
-      });
-      return Response.json({ success: true, sent: reminders.length });
-    } catch (err) {
-      return Response.json({ error: err.message }, { status: 500 });
-    }
-  }
-
-  // Save new reminder to DB
+  const email = await getUserEmail()
+  if (!email) return Response.json({ error: 'Not authenticated' }, { status: 401 })
+  const { title, description, dueDate, priority, category } = await request.json()
+  if (!title) return Response.json({ error: 'Title required' }, { status: 400 })
   try {
-    const cookieStore = cookies();
-    const userCookie = cookieStore.get('algograss_user');
-    if (!userCookie) return Response.json({ error: 'Not logged in' }, { status: 401 });
-
-    const user = JSON.parse(Buffer.from(userCookie.value, 'base64').toString());
-    if (!user?.id) return Response.json({ error: 'Invalid session' }, { status: 401 });
-
-    await connectDB();
-    const reminder = await Reminder.create({
-      userId: user.id,
-      userEmail: user.email,
-      title: body.title,
-      type: body.type,
-      dueDate: body.dueDate,
-      owner: body.owner,
-      notes: body.notes,
-    });
-    return Response.json({ success: true, reminder });
-  } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
-  }
+    const col = await getCollection('reminders')
+    if (!col) return Response.json({ error: 'DB unavailable' }, { status: 503 })
+    const result = await col.insertOne({ userEmail: email, title, description: description || '', dueDate: dueDate ? new Date(dueDate) : null, priority: priority || 'Medium', category: category || 'General', completed: false, createdAt: new Date() })
+    return Response.json({ success: true, id: result.insertedId })
+  } catch (err) { return Response.json({ error: err.message }, { status: 500 }) }
 }
 
-// DELETE - remove a reminder
-export async function DELETE(request) {
+export async function PUT(request) {
+  const email = await getUserEmail()
+  if (!email) return Response.json({ error: 'Not authenticated' }, { status: 401 })
+  const { id, completed, title, dueDate, priority } = await request.json()
+  if (!id) return Response.json({ error: 'ID required' }, { status: 400 })
   try {
-    const { id } = await request.json();
-    const cookieStore = cookies();
-    const userCookie = cookieStore.get('algograss_user');
-    if (!userCookie) return Response.json({ error: 'Not logged in' }, { status: 401 });
+    const { ObjectId } = await import('mongodb')
+    const col = await getCollection('reminders')
+    if (!col) return Response.json({ error: 'DB unavailable' }, { status: 503 })
+    const update = {}
+    if (completed !== undefined) update.completed = completed
+    if (title) update.title = title
+    if (dueDate) update.dueDate = new Date(dueDate)
+    if (priority) update.priority = priority
+    await col.updateOne({ _id: new ObjectId(id), userEmail: email }, { $set: update })
+    return Response.json({ success: true })
+  } catch (err) { return Response.json({ error: err.message }, { status: 500 }) }
+}
 
-    const user = JSON.parse(Buffer.from(userCookie.value, 'base64').toString());
-    await connectDB();
-    await Reminder.deleteOne({ _id: id, userId: user.id });
-    return Response.json({ success: true });
-  } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
-  }
+export async function DELETE(request) {
+  const email = await getUserEmail()
+  if (!email) return Response.json({ error: 'Not authenticated' }, { status: 401 })
+  const { id } = await request.json()
+  if (!id) return Response.json({ error: 'ID required' }, { status: 400 })
+  try {
+    const { ObjectId } = await import('mongodb')
+    const col = await getCollection('reminders')
+    if (!col) return Response.json({ error: 'DB unavailable' }, { status: 503 })
+    await col.deleteOne({ _id: new ObjectId(id), userEmail: email })
+    return Response.json({ success: true })
+  } catch (err) { return Response.json({ error: err.message }, { status: 500 }) }
 }

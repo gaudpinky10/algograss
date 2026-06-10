@@ -1,28 +1,29 @@
-import mongoose from 'mongoose';
+import { MongoClient } from 'mongodb';
 
-let cached = global.mongoose;
+const uri = process.env.MONGODB_URI;
+let client;
+let clientPromise;
 
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+if (!uri) {
+  // No DB configured — all DB operations will be skipped gracefully
+  clientPromise = null;
+} else {
+  if (process.env.NODE_ENV === 'development') {
+    if (!global._mongoClientPromise) {
+      client = new MongoClient(uri);
+      global._mongoClientPromise = client.connect();
+    }
+    clientPromise = global._mongoClientPromise;
+  } else {
+    client = new MongoClient(uri);
+    clientPromise = client.connect();
+  }
 }
 
-async function connectDB() {
-  const MONGODB_URI = process.env.MONGODB_URI;
+export default clientPromise;
 
-  if (!MONGODB_URI) {
-    throw new Error('MONGODB_URI is not defined. Add it to your Vercel environment variables.');
-  }
-
-  if (cached.conn) return cached.conn;
-
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI, {
-      bufferCommands: false,
-    }).then((m) => m);
-  }
-
-  cached.conn = await cached.promise;
-  return cached.conn;
+export async function getDb() {
+  if (!clientPromise) return null;
+  const c = await clientPromise;
+  return c.db('algograss');
 }
-
-export default connectDB;
