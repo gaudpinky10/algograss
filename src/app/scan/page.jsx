@@ -59,8 +59,8 @@ export default function ScanPage() {
         <section style={{padding:'48px 0 80px'}}>
           <div className="wrap">
             <div style={{background:'var(--white)',border:'1px solid var(--border)',borderRadius:20,padding:'32px 36px',marginBottom:24,display:'grid',gridTemplateColumns:'auto 1fr auto',gap:28,alignItems:'center'}}>
-              <div style={{width:96,height:96,borderRadius:'50%',background:`conic-gradient(${scCol} ${result.score*3.6}deg, var(--green-p) ${result.score*3.6}deg)`,display:'flex',alignItems:'center',justifyContent:'center',position:'relative',flexShrink:0}}>
-                <div style={{position:'absolute',width:72,height:72,background:'var(--white)',borderRadius:'50%'}}/>
+              <div style={{width:96,height:96,borderRadius:'50%',background:`conic-gradient(${scCol} ${result.score*3.6}deg, rgba(255,255,255,0.08) ${result.score*3.6}deg)`,display:'flex',alignItems:'center',justifyContent:'center',position:'relative',flexShrink:0}}>
+                <div style={{position:'absolute',width:72,height:72,background:'var(--bg2)',borderRadius:'50%'}}/>
                 <span style={{position:'relative',fontFamily:'Syne,sans-serif',fontWeight:800,fontSize:22,color:scCol,zIndex:1}}>{result.score}</span>
               </div>
               <div>
