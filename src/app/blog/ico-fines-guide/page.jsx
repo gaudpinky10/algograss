@@ -24,7 +24,7 @@ export default function IcoFinesGuide(){
       <H2>Real ICO Enforcement Cases: What Actually Gets Fined</H2>
       <FineCard company="British Airways" fine="£20 million" reason="Failure to implement appropriate technical security measures, resulting in a breach affecting 400,000 customers. Payment data was scraped by attackers over several months." year="2020"/>
       <FineCard company="Marriott International" fine="£18.4 million" reason="Inadequate security measures following acquisition of Starwood Hotels, where attackers had been in the system for four years before discovery." year="2020"/>
-      <FineCard company="Clearview AI" fine="£7.5 million" reason="Illegal processing of biometric data of UK residents scraped from the internet without a lawful basis." year="2022"/>
+      <FineCard company="Clearview AI" fine="£7.5 million (disputed)" reason="ICO fined Clearview for scraping biometric data of UK residents without lawful basis. The fine was initially overturned by the First-tier Tribunal in 2023, but the Upper Tribunal upheld the ICO's appeal in October 2025. Case ongoing." year="2022–2025"/>
       <FineCard company="TikTok" fine="£12.7 million" reason="Processing personal data of children under 13 without parental consent, failing to use children's data transparently." year="2023"/>
       <FineCard company="Advanced Computer Software" fine="£3.07 million" reason="Ransomware attack that disrupted NHS services. Insufficient security controls including MFA not applied consistently." year="2024"/>
 

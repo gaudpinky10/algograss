@@ -75,16 +75,16 @@ export default function UkGdprVsEuGdpr(){
       <P>In the EU, cookie consent sits under the ePrivacy Directive (soon to be replaced by the ePrivacy Regulation). In the UK, it sits under PECR — the Privacy and Electronic Communications Regulations 2003, which predates GDPR and has been retained and updated. The practical obligations are very similar: you need freely given, informed, unambiguous consent before setting non-essential cookies. However, PECR is UK-specific and the ICO is the enforcing authority.</P>
       <P>One practical difference: the UK is currently reviewing PECR, and future reforms may move the UK's cookie rules away from the EU's direction. UK businesses should monitor ICO guidance rather than assuming EU cookie rulings directly apply.</P>
 
-      <H3>5. UK GDPR Reform: DPDI Act</H3>
-      <P>The Data Protection and Digital Information (DPDI) Act received Royal Assent in 2025. This introduces some modifications to UK data protection law that further distinguish it from EU GDPR, including:</P>
+      <H3>5. UK GDPR Reform: Data (Use and Access) Act 2025</H3>
+      <P>The Data (Use and Access) Act 2025 received Royal Assent on 19 June 2025, with key data protection provisions coming into force on 5 February 2026. This further distinguishes UK data protection law from EU GDPR. Key changes include:</P>
       <Ul items={[
-        'Changes to the legitimate interests test — removing the need for a balancing test in some cases for listed public interest activities',
-        'Reformed subject access request rules — allowing organisations to reject vexatious or excessive requests more easily',
+        'Recognised Legitimate Interests (RLI) — a new category allowing processing for specified purposes (e.g. national security, crime prevention, direct marketing) without a balancing test',
+        'Subject Access Requests — searches need only be "reasonable and proportionate"; organisations can pause the clock to request clarification',
         'A new framework for automated decision-making',
-        'Changes to cookie consent rules — moving toward a recognised legitimate interest basis for some analytics cookies',
-        'New accountability framework replacing DPOs in some cases with Senior Responsible Individuals (SRIs)',
+        'Cookie consent — low-risk cookies (e.g. analytics) may be permitted without explicit consent provided users can opt out',
+        'Children'''s data — new requirements for online services likely accessed by children, requiring higher data protection standards',
       ]}/>
-      <Callout type="warn">The DPDI Act changes are significant and UK businesses should review their compliance programmes in light of the new rules. The EU has signalled these changes could affect the UK adequacy decision.</Callout>
+      <Callout type="warn">The Data (Use and Access) Act 2025 changes are significant. UK businesses should review their SAR processes, cookie consent approach, and legitimate interests documentation. The EU has signalled these changes could affect the UK adequacy decision.</Callout>
 
       <H2>What UK Businesses with EU Customers Must Do</H2>
       <Ul items={[
@@ -113,7 +113,7 @@ export default function UkGdprVsEuGdpr(){
 
       <H2>Summary: Dual Compliance for UK–EU Businesses</H2>
       <P>UK businesses that process data from EU residents effectively need to comply with both UK GDPR and EU GDPR. In practice, this means a compliant UK GDPR programme satisfies approximately 95% of EU GDPR requirements. The gaps are mainly around appointing an EU Representative, using the correct transfer mechanisms (IDTAs for UK-origin transfers, EU SCCs for EU-origin transfers), and monitoring EU supervisory authority guidance alongside ICO guidance.</P>
-      <P>The adequacy decision gives UK organisations a significant advantage — they can receive data from EU organisations without additional safeguards. But this is not guaranteed to last indefinitely, particularly in light of the DPDI Act reforms.</P>
+      <P>The adequacy decision gives UK organisations a significant advantage — they can receive data from EU organisations without additional safeguards. But this is not guaranteed to last indefinitely, particularly in light of the Data (Use and Access) Act 2025 reforms.</P>
 
       <div style={{background:'rgba(0,212,170,0.07)',border:'1px solid rgba(0,212,170,0.2)',borderRadius:16,padding:'28px 32px',marginTop:48,textAlign:'center'}}>
         <p style={{fontFamily:'Syne,sans-serif',fontSize:18,fontWeight:600,color:'var(--ink)',marginBottom:10}}>Check your UK and EU GDPR compliance in one scan</p>
