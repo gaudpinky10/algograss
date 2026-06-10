@@ -65,7 +65,7 @@ export default function PricingPage() {
               <button onClick={() => handleCheckout(PLANS.find(p => p.id === showEmail))} className="btn btn-primary btn-sm">Continue →</button>
             </div>
           )}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(120px,1fr))', gap: 14 }}>
             {PLANS.map(p => (
               <div key={p.id} style={{ background: p.popular ? 'var(--green)' : 'var(--white)', border: p.popular ? 'none' : '1px solid var(--border)', borderRadius: 18, padding: 24, position: 'relative', display: 'flex', flexDirection: 'column' }}>
                 {p.popular && <div style={{ position: 'absolute', top: -11, left: '50%', transform: 'translateX(-50%)', background: 'var(--lime)', color: 'var(--ink)', fontSize: 9, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, whiteSpace: 'nowrap' }}>Most popular</div>}

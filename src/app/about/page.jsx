@@ -58,7 +58,7 @@ export default function AboutPage() {
 
       {/* Mission */}
       <section style={{ padding: '80px 0', background: 'rgba(13,21,37,0.8)', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)', position: 'relative', zIndex: 1 }}>
-        <div className="wrap" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 72, alignItems: 'center' }}>
+        <div className="wrap grid-2col">
           <AnimateOnScroll direction="left">
             <span className="eyebrow">Our mission</span>
             <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(24px,2.5vw,38px)', fontWeight: 700, color: 'var(--ink)', marginBottom: 16, letterSpacing: '-0.5px' }}>Compliance shouldn't cost thousands</h2>
@@ -101,7 +101,7 @@ export default function AboutPage() {
             </div>
           </AnimateOnScroll>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 28, maxWidth: 820, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 28, maxWidth: 820, margin: '0 auto' }}>
             {/* Founder — Pinki Gaud */}
             <AnimateOnScroll direction="left">
               <TiltCard intensity={7}>
@@ -155,12 +155,3 @@ export default function AboutPage() {
             <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(24px,3vw,38px)', fontWeight: 700, color: 'var(--ink)', marginBottom: 14 }}>Try the free scanner today</h2>
             <p style={{ fontSize: 15, color: 'rgba(232,240,254,0.5)', marginBottom: 28, lineHeight: 1.7 }}>No account, no card. See your compliance position in seconds.</p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-              <a href="/scan" className="btn btn-primary btn-lg animate-pulse-glow">Scan my website free →</a>
-              <a href="/pricing" className="btn btn-secondary btn-lg">View pricing</a>
-            </div>
-          </AnimateOnScroll>
-        </div>
-      </section>
-    </>
-  )
-}

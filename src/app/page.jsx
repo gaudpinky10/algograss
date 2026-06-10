@@ -14,9 +14,9 @@ function Hero() {
   const router = useRouter()
   const [url, setUrl] = useState('')
   return (
-    <section style={{minHeight:'91vh',display:'flex',alignItems:'center',padding:'56px 0',position:'relative',overflow:'hidden'}}>
+    <section className='hero-section' style={{minHeight:'91vh',display:'flex',alignItems:'center',padding:'56px 0',position:'relative',overflow:'hidden'}}>
       {/* Particle network background */}
-      <ParticleCanvas count={90} speed={0.35} connectDist={120} />
+      <ParticleCanvas count={90} speed={0.35} connectDist={120} className='particle-canvas' />
 
       {/* Glow orbs */}
       <div className="orb orb-teal" style={{width:700,height:700,top:'-20%',right:'-10%',opacity:0.8}}/>
@@ -26,7 +26,7 @@ function Hero() {
       {/* Grid overlay */}
       <div style={{position:'absolute',inset:0,opacity:.028,backgroundImage:'linear-gradient(var(--ink) 1px,transparent 1px),linear-gradient(90deg,var(--ink) 1px,transparent 1px)',backgroundSize:'44px 44px',pointerEvents:'none'}}/>
 
-      <div className="wrap" style={{position:'relative',zIndex:1,width:'100%',display:'grid',gridTemplateColumns:'1fr 360px',gap:64,alignItems:'center'}}>
+      <div className="wrap grid-hero" style={{position:'relative',zIndex:1}}>
         <div>
           {/* Badge */}
           <div className="animate-fade-up" style={{animationDelay:'0.1s',display:'inline-flex',alignItems:'center',gap:7,background:'var(--green-p)',border:'1px solid var(--green-m)',padding:'5px 13px',borderRadius:100,marginBottom:28,fontSize:11,fontWeight:600,color:'var(--green)',letterSpacing:'.06em',textTransform:'uppercase'}}>
@@ -57,7 +57,7 @@ function Hero() {
           <p className="animate-fade-up" style={{animationDelay:'0.5s',fontSize:12,color:'var(--ink2)'}}>No credit card · No account needed · GDPR + UK DPA 2018 + ePrivacy</p>
 
           {/* Animated stats */}
-          <div className="animate-fade-up" style={{animationDelay:'0.65s',display:'flex',gap:36,marginTop:44}}>
+          <div className="animate-fade-up stats-row" style={{animationDelay:'0.65s',marginTop:44}}>
             {[
               {end:20,suffix:'M',prefix:'€',label:'Max GDPR fine',src:'GDPR Art. 83'},
               {end:72,suffix:' hrs',label:'Breach notification',src:'GDPR Art. 33'},
@@ -75,7 +75,7 @@ function Hero() {
         </div>
 
         {/* Hero card — 3D tilt */}
-        <TiltCard intensity={8}>
+        <div className='hero-card-hide'><TiltCard intensity={8}>
           <div className="card animate-scale-in" style={{animationDelay:'0.5s',padding:22,boxShadow:'0 24px 80px rgba(0,0,0,0.4)',border:'1px solid rgba(0,212,170,0.15)'}}>
             <div style={{display:'flex',alignItems:'center',gap:8,background:'rgba(0,212,170,0.06)',border:'1px solid rgba(0,212,170,0.2)',borderRadius:8,padding:'9px 13px',marginBottom:18,fontSize:12,color:'var(--ink2)'}}>
               <span style={{width:7,height:7,background:'var(--accent)',borderRadius:'50%'}} className="animate-pulse-glow"/>
@@ -100,7 +100,7 @@ function Hero() {
             <a href="/scan" className="btn btn-primary btn-full" style={{marginTop:14,borderRadius:8}}>Scan your website →</a>
             <p style={{fontSize:10,color:'var(--ink2)',textAlign:'center',marginTop:8}}>Example result · scan your own site for free</p>
           </div>
-        </TiltCard>
+        </TiltCard></div>
       </div>
     </section>
   )
@@ -127,7 +127,7 @@ function Problem() {
   return (
     <section className="section" style={{position:'relative',overflow:'hidden'}}>
       <div className="orb orb-purple" style={{width:500,height:500,top:'-10%',right:'-15%',opacity:0.4}}/>
-      <div className="wrap" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:64,alignItems:'center',position:'relative',zIndex:1}}>
+      <div className="wrap grid-2col" style={{position:'relative',zIndex:1}}>
         <AnimateOnScroll direction="left">
           <span className="eyebrow">The challenge</span>
           <h2 className="heading" style={{fontSize:'clamp(26px,3vw,42px)',marginBottom:16}}>Privacy compliance is a real obligation — and most SMEs are not fully prepared</h2>
@@ -135,7 +135,7 @@ function Problem() {
           <p style={{fontSize:13,color:'var(--ink2)',marginBottom:28,lineHeight:1.6,fontStyle:'italic'}}>AlgoGrass gives you everything you need to become fully GDPR compliant — from identifying risks to generating all required documentation.</p>
           <a href="/scan" className="btn btn-primary">Check your website →</a>
         </AnimateOnScroll>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
+        <div className='grid-stats'>
           {[
             {end:20,suffix:'M',prefix:'€',l:'Maximum GDPR fine — or 4% of global annual turnover',src:'GDPR Art. 83',d:1},
             {end:72,suffix:' hrs',l:'Time limit to notify the ICO after a personal data breach',src:'GDPR Art. 33',d:2},
@@ -170,7 +170,7 @@ function HowItWorks() {
           <h2 className="heading" style={{fontSize:'clamp(26px,3vw,42px)',marginBottom:10}}>From scan to documented in 3 steps</h2>
           <p className="subtext" style={{maxWidth:480,marginBottom:44}}>Built for founders and business owners — not compliance specialists.</p>
         </AnimateOnScroll>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:3,marginBottom:44}}>
+        <div className='grid-3col' style={{marginBottom:44}}>
           {[
             {n:'01',title:'Scan your website',desc:'Paste your URL. AlgoGrass fetches your live website and checks for cookies, trackers, data forms, and consent mechanisms against GDPR and UK DPA 2018.'},
             {n:'02',title:'Review your risk report',desc:'Get a plain-English compliance report with your score, every issue ranked by severity, the specific regulation it relates to, and clear guidance.'},
@@ -213,7 +213,7 @@ function Features() {
           <h2 className="heading" style={{fontSize:'clamp(26px,3vw,42px)',marginBottom:10}}>Everything you need to stay compliant</h2>
           <p className="subtext" style={{maxWidth:520,marginBottom:44}}>All features are live and available today.</p>
         </AnimateOnScroll>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:20,marginBottom:22}}>
+        <div className='grid-2feat' style={{marginBottom:22}}>
           {feats.map(({icon,title,desc,badge},i)=>(
             <AnimateOnScroll key={title} delay={(i%3)+1} direction={i%2===0?'left':'right'}>
               <TiltCard intensity={5}>

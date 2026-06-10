@@ -14,7 +14,7 @@ export default function Footer() {
       <div style={{ position: 'absolute', bottom: -60, right: '10%', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle,rgba(124,58,237,0.05),transparent 70%)', pointerEvents: 'none' }} />
 
       <div className="wrap" style={{ position: 'relative', zIndex: 1 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 48, marginBottom: 48 }}>
+        <div className='footer-grid' style={{ marginBottom: 48 }}>
 
           {/* Brand column */}
           <div>

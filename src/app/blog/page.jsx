@@ -20,7 +20,7 @@ export default function BlogPage() {
       </section>
       <section style={{padding:'0 0 88px',background:'var(--white)'}}>
         <div className="wrap">
-          <div style={{background:'var(--green)',borderRadius:22,padding:'44px 52px',marginBottom:40,display:'grid',gridTemplateColumns:'1fr auto',gap:32,alignItems:'center'}}>
+          <div style={{background:'var(--green)',borderRadius:22,padding:'44px 52px',marginBottom:40,display:'flex',flexWrap:'wrap',gap:24,alignItems:'center'}}>
             <div>
               <span style={{display:'inline-block',background:'var(--lime)',color:'var(--ink)',fontSize:9,fontWeight:700,padding:'4px 10px',borderRadius:100,marginBottom:14,textTransform:'uppercase',letterSpacing:'.07em'}}>Featured</span>
               <h2 style={{fontFamily:'Syne,sans-serif',fontSize:'clamp(18px,2.5vw,26px)',fontWeight:700,color:'#fff',marginBottom:10,lineHeight:1.25}}>{featured.title}</h2>
@@ -32,7 +32,7 @@ export default function BlogPage() {
               <div style={{fontSize:12,color:'rgba(255,255,255,.5)',marginTop:4}}>{featured.read} read</div>
             </div>
           </div>
-          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:20}}>
+          <div className='grid-3col' style={{gap:20}}>
             {rest.map(post=>{
               const [bg,col]=(CAT[post.cat]||['#F5F5F5','#444'])
               return (

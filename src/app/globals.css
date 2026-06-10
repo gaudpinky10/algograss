@@ -419,3 +419,158 @@ select option{background:#0D1525;color:var(--ink)}
   border-radius:8px;
   animation:skeletonPulse 1.5s ease-in-out infinite;
 }
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE GRID UTILITY CLASSES
+   Use these instead of inline gridTemplateColumns so
+   media queries can collapse them on mobile.
+═══════════════════════════════════════════════════════ */
+.grid-hero  { display:grid; grid-template-columns:1fr 360px; gap:64px; align-items:center; width:100%; }
+.grid-2col  { display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; }
+.grid-3col  { display:grid; grid-template-columns:repeat(3,1fr); gap:3px; }
+.grid-2feat { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+.grid-stats { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+.grid-4col  { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+.grid-logos { display:flex; align-items:center; gap:36px; flex-wrap:wrap; }
+
+
+/* Footer grid */
+.footer-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px; }
+/* ═══════════════════════════════════════════════════════
+   MOBILE — max-width: 768px
+═══════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* Wrap padding */
+  .wrap { padding-left:20px !important; padding-right:20px !important; }
+
+  /* Section padding */
+  .section      { padding:48px 0 !important; }
+  .section-white{ padding:48px 0 !important; }
+
+  /* Collapse all grid utility classes to single column */
+  .grid-hero,
+  .grid-2col,
+  .grid-3col,
+  .grid-2feat,
+  .grid-stats,
+  .grid-4col  {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  /* Hide hero card (TiltCard) on mobile — too tall to stack nicely */
+  .hero-card-hide { display:none !important; }
+
+  /* Hero section */
+  .hero-section { padding:72px 0 48px !important; min-height:auto !important; }
+
+  /* Headings scale down */
+  .display { font-size:clamp(32px,8vw,52px) !important; }
+  .heading  { font-size:clamp(22px,6vw,36px) !important; }
+
+  /* Stats row wraps */
+  .stats-row {
+    display:flex !important;
+    flex-wrap:wrap !important;
+    gap:20px !important;
+  }
+  .stats-row > div { flex:1 1 120px; }
+
+  /* Nav desktop links hidden — hamburger shown */
+  .nav-links { display:none !important; }
+  .nav-hamburger { display:flex !important; }
+  .nav-root { padding:0 20px !important; }
+
+  /* Mobile nav drawer */
+  .nav-drawer {
+    position:fixed;
+    top:64px; left:0; right:0; bottom:0;
+    background:rgba(6,11,20,0.98);
+    backdrop-filter:blur(24px);
+    display:flex;
+    flex-direction:column;
+    padding:24px 20px;
+    gap:4px;
+    overflow-y:auto;
+    z-index:998;
+    border-top:1px solid rgba(255,255,255,0.08);
+  }
+  .nav-drawer-link {
+    display:block;
+    padding:14px 16px;
+    border-radius:12px;
+    color:rgba(232,240,254,0.8);
+    font-size:16px;
+    font-weight:500;
+    text-decoration:none;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    transition:background .15s, color .15s;
+  }
+  .nav-drawer-link:hover, .nav-drawer-link.active {
+    background:rgba(0,212,170,0.1);
+    color:#00D4AA;
+  }
+  .nav-drawer-divider {
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:rgba(232,240,254,0.3);
+    padding:16px 16px 6px;
+  }
+  .nav-drawer-cta {
+    display:block;
+    margin-top:12px;
+    padding:14px 20px;
+    border-radius:12px;
+    background:linear-gradient(135deg,#00D4AA,#00A882);
+    color:#06111E;
+    font-size:15px;
+    font-weight:700;
+    text-align:center;
+    text-decoration:none;
+  }
+
+  /* Blog grid */
+  .blog-grid { grid-template-columns:1fr !important; }
+
+  /* How it works steps get rounded corners individually */
+  .step-card { border-radius:14px !important; }
+
+  /* Pricing cards stack */
+  .pricing-grid { grid-template-columns:1fr !important; max-width:400px; margin:0 auto; }
+
+  /* Footer grid */
+  .footer-grid { grid-template-columns:1fr !important; gap:32px !important; }
+
+  /* Dashboard sidebar stacks */
+  .dashboard-layout { flex-direction:column !important; }
+  .dashboard-sidebar { width:100% !important; height:auto !important; position:static !important; border-right:none !important; border-bottom:1px solid var(--border) !important; }
+
+  /* Tables become scrollable */
+  .table-wrap { overflow-x:auto !important; }
+
+  /* Form inputs full width */
+  .form-row { flex-direction:column !important; gap:12px !important; }
+
+  /* Scan URL bar */
+  .scan-form { flex-direction:column !important; gap:10px !important; }
+  .scan-form input, .scan-form button { width:100% !important; border-radius:10px !important; }
+
+  /* Hide particle canvas on mobile (performance) */
+  .particle-canvas { display:none !important; }
+
+  /* Remove 3D transforms on mobile (they break scroll) */
+  .tilt-card { transform:none !important; transition:none !important; }
+  .tilt-card:hover { transform:none !important; box-shadow:none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   SMALL MOBILE — max-width: 480px
+═══════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .wrap { padding-left:16px !important; padding-right:16px !important; }
+  .btn-lg { padding:12px 20px !important; font-size:14px !important; }
+  .card   { padding:18px !important; }
+}
