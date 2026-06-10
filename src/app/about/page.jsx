@@ -155,3 +155,12 @@ export default function AboutPage() {
             <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(24px,3vw,38px)', fontWeight: 700, color: 'var(--ink)', marginBottom: 14 }}>Try the free scanner today</h2>
             <p style={{ fontSize: 15, color: 'rgba(232,240,254,0.5)', marginBottom: 28, lineHeight: 1.7 }}>No account, no card. See your compliance position in seconds.</p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+              <a href="/scan" className="btn btn-primary">Scan my website →</a>
+              <a href="/pricing" className="btn btn-secondary">View pricing</a>
+            </div>
+          </AnimateOnScroll>
+        </div>
+      </section>
+    </>
+  )
+}
