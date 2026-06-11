@@ -3,13 +3,16 @@ import { usePathname } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
 
 const TOOLS = [
-  { href: '/scan',          label: 'Website Scanner',     icon: '🔍', desc: 'GDPR compliance scan of any website' },
-  { href: '/data-audit',    label: 'Data Audit',          icon: '🗂️', desc: 'CRM, HR, email & vendor compliance' },
-  { href: '/complaint',     label: 'Complaint Classifier',icon: '📨', desc: 'Email, WhatsApp, social — any channel' },
-  { href: '/dsar',          label: 'DSAR Handler',        icon: '📋', desc: 'Respond to Subject Access Requests' },
-  { href: '/ai-governance', label: 'AI Governance',       icon: '🤖', desc: 'AI use case approval & register' },
-  { href: '/grc',           label: 'GRC Platform',        icon: '🏛️', desc: 'Risk, policies & incident management' },
-  { href: '/reminders',     label: 'Review Reminders',    icon: '🔔', desc: 'Never miss a compliance deadline' },
+  { href: '/scan',                 label: 'Website Scanner',        icon: '🔍', desc: 'GDPR compliance scan of any website' },
+  { href: '/dpia',                 label: 'DPIA Automation',        icon: '📊', desc: 'Data Protection Impact Assessment wizard' },
+  { href: '/vendor-risk',          label: 'Vendor Risk Reviews',    icon: '🏢', desc: 'Third-party processor risk & DPA tracking' },
+  { href: '/regulatory-monitor',   label: 'Regulatory Monitor',     icon: '📡', desc: 'GDPR, UK GDPR & EU AI Act updates' },
+  { href: '/grc',                  label: 'GRC Platform',           icon: '🏛️', desc: '20 core GDPR controls dashboard' },
+  { href: '/ai-governance',        label: 'AI Governance',          icon: '🤖', desc: 'EU AI Act risk classification wizard' },
+  { href: '/dsar',                 label: 'DSAR Handler',           icon: '📋', desc: 'Respond to Subject Access Requests' },
+  { href: '/data-audit',           label: 'Data Audit',             icon: '🗂️', desc: 'CRM, HR, email & vendor compliance' },
+  { href: '/complaint',            label: 'Complaint Classifier',   icon: '📨', desc: 'Email, WhatsApp, social — any channel' },
+  { href: '/reminders',            label: 'Review Reminders',       icon: '🔔', desc: 'Never miss a compliance deadline' },
 ]
 const NAV_LINKS = [
   { href: '/pricing', label: 'Pricing' },
