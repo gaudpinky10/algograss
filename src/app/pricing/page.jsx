@@ -79,14 +79,20 @@ export default function PricingPage() {
               </div>
             </div>
 
-            {/* Trial badge */}
+            {/* Verification info */}
+            <div style={{ background:'rgba(245,158,11,0.08)', border:'1px solid rgba(245,158,11,0.25)', borderRadius:10, padding:'12px 14px', marginBottom:20, marginTop:16 }}>
+              <p style={{ margin:0, fontSize:13, color:'#F59E0B', fontWeight:600 }}>💳 £1.00 card verification</p>
+              <p style={{ margin:'4px 0 0', fontSize:12, color:'#94A3B8', lineHeight:1.6 }}>
+                We charge £1 to confirm your card is valid and active. <b style={{color:'#E8F0FE'}}>This is refunded automatically</b> — usually within minutes. You will see it appear and disappear on your statement.
+              </p>
+            </div>
             {emailFor.trial && (
-              <div style={{ background:'rgba(0,212,170,0.08)', border:'1px solid rgba(0,212,170,0.2)', borderRadius:10, padding:'10px 14px', marginBottom:20, marginTop:16 }}>
-                <p style={{ margin:0, fontSize:13, color:'#00D4AA', fontWeight:600 }}>🎁 1-month free trial</p>
-                <p style={{ margin:'3px 0 0', fontSize:12, color:'#94A3B8' }}>Your card is saved but nothing is charged for 30 days. Cancel any time.</p>
+              <div style={{ background:'rgba(0,212,170,0.06)', border:'1px solid rgba(0,212,170,0.15)', borderRadius:10, padding:'10px 14px', marginBottom:20 }}>
+                <p style={{ margin:0, fontSize:12, color:'#00D4AA', fontWeight:600 }}>🎁 After verification — 1 month free</p>
+                <p style={{ margin:'3px 0 0', fontSize:12, color:'#94A3B8' }}>Your plan starts free for 30 days once your card is verified. Nothing else charged until day 31.</p>
               </div>
             )}
-            {!emailFor.trial && <div style={{ marginBottom:20 }} />}
+            {!emailFor.trial && <div style={{ marginBottom:4 }} />}
 
             {/* Email input */}
             <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#94A3B8', marginBottom:6, letterSpacing:'0.05em', textTransform:'uppercase' }}>Your email address</label>

@@ -131,9 +131,10 @@ function Dashboard() {
     if (params.get('upgraded') === 'true') {
       const plan = params.get('plan') || ''
       const isTrial = params.get('trial') === '1'
+      const isVerified = params.get('verified') === 'true'
       const msg = isTrial
-        ? `🎉 Your 1-month free trial has started!\n\nPlan: ${plan.charAt(0).toUpperCase()+plan.slice(1)}\nYou will NOT be charged for 30 days.\n\nStart exploring AlgoGrass — scan your website, generate documents, and check your GDPR compliance.`
-        : `🎉 Welcome to AlgoGrass!\n\nYour ${plan.charAt(0).toUpperCase()+plan.slice(1)} plan is now active. Start by scanning your website below.`
+        ? `🎉 Card verified & free trial started!\n\nPlan: ${plan.charAt(0).toUpperCase()+plan.slice(1)}\n${isVerified ? '✅ The £1 verification charge has been refunded to your card.\n' : ''}You will NOT be charged for 30 days.\n\nStart exploring AlgoGrass — scan your website, generate documents, and check your GDPR compliance.`
+        : `🎉 Card verified — welcome to AlgoGrass!\n\n${isVerified ? '✅ The £1 verification charge has been refunded.\n\n' : ''}Your ${plan.charAt(0).toUpperCase()+plan.slice(1)} plan is now active. Start by scanning your website below.`
       setTimeout(() => alert(msg), 500)
       window.history.replaceState({}, '', '/dashboard')
     }
