@@ -66,32 +66,62 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* ── EMAIL CAPTURE ── */}
+      {/* ── EMAIL CAPTURE MODAL ── */}
       {emailFor && (
-        <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.55)', zIndex:999, display:'flex', alignItems:'center', justifyContent:'center' }}>
-          <div style={{ background:'var(--white)', borderRadius:16, padding:32, maxWidth:420, width:'90%', boxShadow:'0 24px 80px rgba(0,0,0,.2)' }}>
-            <h3 style={{ margin:'0 0 6px', fontSize:20, color:'var(--ink)' }}>Enter your email to continue</h3>
-            <p style={{ fontSize:13, color:'var(--ink2)', margin:'0 0 20px' }}>
-              {emailFor.trial
-                ? "You're starting a 1-month free trial. We'll collect card details on the next screen — nothing is charged for 30 days."
-                : "You're one step away from activating your plan. Enter your email to continue to secure checkout."}
-            </p>
+        <div style={{ position:'fixed', inset:0, background:'rgba(6,11,20,0.82)', backdropFilter:'blur(6px)', WebkitBackdropFilter:'blur(6px)', zIndex:999, display:'flex', alignItems:'center', justifyContent:'center', padding:'0 16px' }}>
+          <div style={{ background:'#0D1525', border:'1px solid rgba(0,212,170,0.25)', borderRadius:20, padding:'36px 32px', maxWidth:440, width:'100%', boxShadow:'0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,212,170,0.08)' }}>
+            {/* Header */}
+            <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
+              <div style={{ width:40, height:40, borderRadius:10, background:'rgba(0,212,170,0.12)', border:'1px solid rgba(0,212,170,0.25)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>🔒</div>
+              <div>
+                <h3 style={{ margin:0, fontSize:18, color:'#E8F0FE', fontWeight:700 }}>Secure checkout</h3>
+                <p style={{ margin:0, fontSize:12, color:'#64748B' }}>Powered by Stripe</p>
+              </div>
+            </div>
+
+            {/* Trial badge */}
+            {emailFor.trial && (
+              <div style={{ background:'rgba(0,212,170,0.08)', border:'1px solid rgba(0,212,170,0.2)', borderRadius:10, padding:'10px 14px', marginBottom:20, marginTop:16 }}>
+                <p style={{ margin:0, fontSize:13, color:'#00D4AA', fontWeight:600 }}>🎁 1-month free trial</p>
+                <p style={{ margin:'3px 0 0', fontSize:12, color:'#94A3B8' }}>Your card is saved but nothing is charged for 30 days. Cancel any time.</p>
+              </div>
+            )}
+            {!emailFor.trial && <div style={{ marginBottom:20 }} />}
+
+            {/* Email input */}
+            <label style={{ display:'block', fontSize:12, fontWeight:600, color:'#94A3B8', marginBottom:6, letterSpacing:'0.05em', textTransform:'uppercase' }}>Your email address</label>
             <input
               type="email" placeholder="you@example.com" value={email}
               onChange={e=>setEmail(e.target.value)}
               onKeyDown={e=>e.key==='Enter'&&email&&startCheckout(PLANS.find(p=>p.id===emailFor.planId), emailFor.trial)}
-              style={{ width:'100%', border:'1px solid var(--border)', borderRadius:9, padding:'11px 14px', fontSize:14, marginBottom:12, boxSizing:'border-box', outline:'none' }}
+              style={{ width:'100%', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.12)', borderRadius:10, padding:'12px 16px', fontSize:14, color:'#E8F0FE', marginBottom:6, boxSizing:'border-box', outline:'none' }}
               autoFocus
             />
-            {error && <p style={{ color:'#EF4444', fontSize:13, marginBottom:10 }}>{error}</p>}
-            <div style={{ display:'flex', gap:10 }}>
-              <button onClick={()=>{setEmailFor(null);setError('')}} style={{ flex:1, padding:'11px', borderRadius:9, border:'1px solid var(--border)', background:'transparent', color:'var(--ink2)', fontSize:14, cursor:'pointer' }}>Cancel</button>
-              <button onClick={()=>email&&startCheckout(PLANS.find(p=>p.id===emailFor.planId), emailFor.trial)} disabled={!email||!!loading}
-                style={{ flex:2, padding:'11px', borderRadius:9, border:'none', background:'var(--green)', color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer' }}>
-                {loading ? 'Loading…' : '→ Continue to payment'}
+            {error && (
+              <div style={{ background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.3)', borderRadius:8, padding:'10px 14px', marginBottom:12 }}>
+                <p style={{ margin:0, color:'#EF4444', fontSize:13 }}>⚠️ {error}</p>
+              </div>
+            )}
+
+            {/* Buttons */}
+            <div style={{ display:'flex', gap:10, marginTop:16 }}>
+              <button onClick={()=>{setEmailFor(null);setError('')}}
+                style={{ flex:1, padding:'12px', borderRadius:10, border:'1px solid rgba(255,255,255,0.12)', background:'transparent', color:'#94A3B8', fontSize:14, cursor:'pointer', fontWeight:500 }}>
+                Cancel
+              </button>
+              <button onClick={()=>email&&startCheckout(PLANS.find(p=>p.id===emailFor.planId), emailFor.trial)}
+                disabled={!email||!!loading}
+                style={{ flex:2, padding:'12px', borderRadius:10, border:'none', background: email&&!loading ?'#00D4AA':'rgba(0,212,170,0.3)', color: email&&!loading?'#060B14':'#64748B', fontSize:14, fontWeight:700, cursor: email&&!loading?'pointer':'default', transition:'all .2s' }}>
+                {loading ? '⏳ Loading…' : '→ Continue to payment'}
               </button>
             </div>
-            <p style={{ fontSize:11, color:'var(--ink2)', textAlign:'center', marginTop:12 }}>🔒 Secured by Stripe. We never store your card details.</p>
+
+            {/* Trust line */}
+            <div style={{ display:'flex', justifyContent:'center', alignItems:'center', gap:16, marginTop:18 }}>
+              {['🔒 SSL encrypted','💳 PCI compliant','❌ Cancel anytime'].map(t=>(
+                <span key={t} style={{ fontSize:10, color:'#475569' }}>{t}</span>
+              ))}
+            </div>
           </div>
         </div>
       )}
