@@ -129,7 +129,13 @@ function Dashboard() {
 
     const params = new URLSearchParams(window.location.search)
     if (params.get('upgraded') === 'true') {
-      setTimeout(() => alert(`🎉 Welcome! Your ${params.get('plan') || ''} plan is now active.`), 500)
+      const plan = params.get('plan') || ''
+      const isTrial = params.get('trial') === '1'
+      const msg = isTrial
+        ? `🎉 Your 1-month free trial has started!\n\nPlan: ${plan.charAt(0).toUpperCase()+plan.slice(1)}\nYou will NOT be charged for 30 days.\n\nStart exploring AlgoGrass — scan your website, generate documents, and check your GDPR compliance.`
+        : `🎉 Welcome to AlgoGrass!\n\nYour ${plan.charAt(0).toUpperCase()+plan.slice(1)} plan is now active. Start by scanning your website below.`
+      setTimeout(() => alert(msg), 500)
+      window.history.replaceState({}, '', '/dashboard')
     }
   }, [])
 
