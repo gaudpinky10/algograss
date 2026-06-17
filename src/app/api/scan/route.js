@@ -59,8 +59,13 @@ export async function POST(request) {
     const isHttps            = finalUrl.startsWith('https://')
     const hasHsts            = mainResult.headers.get('strict-transport-security') !== null
     const hasPrivacyLink     = detect(allText, [/privacy[\s_-]?policy/i,/privacy[\s_-]?notice/i,/data[\s_-]?protection[\s_-]?(policy|notice)/i,'how we use your data'])
-    const hasCookieBanner    = detect(mainHtml, [/cookie[\s_-]?(banner|notice|consent|bar|popup|modal|wall)/i,'cookieyes','cookiebot','onetrust','trustarc','quantcast','cookie-consent','cookieconsent','cookie_consent',/gdpr[\s_-]?consent/i,/acceptcookies/i,/we use cookies/i,/this (site|website|we) use[s]? cookies/i,'cookie-law','cookie-notice',/manage[\s_-]?(my[\s_-]?)?cookie/i])
-    const hasCookieReject    = detect(mainHtml, [/reject[\s_-]?(all|cookies)/i,/decline[\s_-]?(all[\s_-]?)?cookies/i,/refuse[\s_-]?cookies/i,/necessary[\s_-]?only/i,/essential[\s_-]?only/i,/manage[\s_-]?preferences/i,/cookie[\s_-]?settings/i,/customise[\s_-]?cookies/i,'opt out','opt-out'])
+    // Known compliant cookie consent platforms — all include a Reject option by default
+    const COMPLIANT_PLATFORMS = ['cookieyes','cookiebot','onetrust','trustarc','quantcast','borlabs-cookie','complianz','usercentrics','didomi','axeptio','iubenda','termly','secureprivacy','cookieinformation','civic','silktide','consentmanager','klaro','osano']
+    const detectedPlatform    = COMPLIANT_PLATFORMS.find(p => mainHtml.toLowerCase().includes(p))
+    const hasCookieBanner    = !!detectedPlatform || detect(mainHtml, [/cookie[\s_-]?(banner|notice|consent|bar|popup|modal|wall)/i,'cookie-consent','cookieconsent','cookie_consent',/gdpr[\s_-]?consent/i,/acceptcookies/i,/we use cookies/i,/this (site|website|we) use[s]? cookies/i,'cookie-law','cookie-notice',/manage[\s_-]?(my[\s_-]?)?cookie/i])
+    // Reject-all check: if using a known compliant platform → assume present (it's JS-rendered, not in raw HTML)
+    // Otherwise look for explicit text patterns
+    const hasCookieReject    = !!detectedPlatform || detect(mainHtml, [/reject[\s_-]?all/i,/reject[\s_-]?cookies/i,/rejectAll/i,/reject-all/i,/reject_all/i,/decline[\s_-]?(all[\s_-]?)?cookies/i,/refuse[\s_-]?cookies/i,/necessary[\s_-]?only/i,/essential[\s_-]?only/i,/manage[\s_-]?preferences/i,/cookie[\s_-]?settings/i,/customise[\s_-]?cookies/i,/customize[\s_-]?cookies/i,'opt out','opt-out',/no[,\s]+thanks/i,/decline[\s_-]?all/i])
     const hasContactForm     = detect(mainHtml, [/<form[^>]*>/i,'contact-form','contactform','wpcf7','gravityform','type="email"'])
     const hasTerms           = detect(allText, [/terms[\s_-]?(of[\s_-]?(service|use)|and[\s_-]?conditions)/i,/terms[\s_-]?&[\s_-]?conditions/i,'t&cs','terms of business'])
     const hasDataRights      = detect(allText, [/right[\s_-]?to[\s_-]?(access|erasure|deletion|rectification|portability|object)/i,/subject[\s_-]?access[\s_-]?request/i,/data[\s_-]?subject[\s_-]?rights?/i,'your rights','right to be forgotten','article 15','article 17'])
@@ -91,7 +96,7 @@ export async function POST(request) {
     if (!isHttps) issues.push({ sev:'High', title:'Website not using HTTPS', desc:'HTTPS is required under GDPR Art. 32. All data in transit must be encrypted.', reg:'GDPR Art. 32' })
     if (!hasCookieBanner && trackers.length > 0) issues.push({ sev:'High', title:'Tracking scripts running without cookie consent', desc:`${trackers.join(', ')} detected but no cookie consent banner found. Consent is required before setting non-essential cookies.`, reg:'ePrivacy Reg. 6 / PECR' })
     else if (!hasCookieBanner) issues.push({ sev:'High', title:'No cookie consent banner detected', desc:'No cookie consent mechanism found. Required under PECR before setting any non-essential cookies.', reg:'ePrivacy Reg. 6' })
-    else if (hasCookieBanner && !hasCookieReject) issues.push({ sev:'High', title:'Cookie banner missing "Reject all" option', desc:'Cookie banner found but no reject/decline option. ICO requires reject to be as prominent as Accept.', reg:'ICO Cookie Guidance 2023' })
+    else if (hasCookieBanner && !hasCookieReject) issues.push({ sev:'Medium', title:'Cookie banner may lack a "Reject All" option', desc:'Cookie consent detected but no visible "Reject All" button found in page source. ICO 2023 guidance requires reject to be as easy as accept. If your banner is JS-rendered, verify the Reject All button appears on first load without scrolling.', reg:'ICO Cookie Guidance 2023' })
     if (!hasPrivacyLink) issues.push({ sev:'High', title:'No privacy policy detected', desc:'A privacy notice is required under GDPR Articles 13 and 14 for all personal data collection.', reg:'GDPR Art. 13 & 14' })
     if (trackers.length > 0 && hasPrivacyLink && !hasSubprocessors) issues.push({ sev:'Medium', title:'Trackers may not be listed as processors', desc:`${trackers.join(', ')} detected. Each must be named as a data processor in your privacy policy.`, reg:'GDPR Art. 13(1)(e)' })
     if (hasContactForm && !hasPrivacyLink) issues.push({ sev:'Medium', title:'Contact form without privacy notice', desc:'A form collecting personal data was found but no privacy notice. Required at point of collection.', reg:'GDPR Art. 13' })
@@ -110,6 +115,7 @@ export async function POST(request) {
     const result = {
       url: finalUrl, score, isHttps, trackers, issues, isSpa,
       checks: { https:isHttps, hsts:hasHsts, privacyPolicy:hasPrivacyLink, cookieBanner:hasCookieBanner, cookieReject:hasCookieReject, termsOfService:hasTerms, lawfulBasis:hasLawfulBasis, dataRights:hasDataRights, retentionPolicy:hasRetentionPolicy, dsarContact:hasDsarContact, dpo:hasDpo, securityHeaders:hasSecurityHeaders, subprocessorsList:hasSubprocessors, accessibilityStatement:hasAccessibility },
+      consentPlatform: detectedPlatform || null,
       scannedAt: new Date().toISOString(),
       note: isSpa ? 'This site uses a JavaScript framework — sub-pages were also scanned for accuracy.' : undefined,
     }
