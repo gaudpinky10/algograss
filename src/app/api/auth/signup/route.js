@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { getCollection, hashPassword } from '@/lib/dbHelpers';
+import { getCollection, hashPassword, trackActivity } from '@/lib/dbHelpers';
 
 export async function POST(request) {
   try {
@@ -11,7 +11,6 @@ export async function POST(request) {
     const isAdmin = email.toLowerCase() === (process.env.ADMIN_EMAIL || '').toLowerCase();
     const userData = { name, email: email.toLowerCase(), plan: plan || 'free', website: website || '', isAdmin };
 
-    // Save to DB if available
     const users = await getCollection('users');
     if (users) {
       const existing = await users.findOne({ email: email.toLowerCase() });
@@ -24,14 +23,7 @@ export async function POST(request) {
       httpOnly: false, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 60*60*24*30, path: '/'
     });
 
-    if (process.env.FORMSPREE_ID) {
-      try {
-        await fetch(`https://formspree.io/f/${process.env.FORMSPREE_ID}`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify({ _replyto: email, _subject: `New AlgoGrass signup: ${name}`, message: `Name: ${name}\nEmail: ${email}\nPlan: ${plan || 'free'}\nWebsite: ${website || 'N/A'}` }),
-        });
-      } catch {}
-    }
+    await trackActivity({ userEmail: email.toLowerCase(), tool: 'auth', action: 'signup', detail: `New signup — plan: ${plan || 'free'}`, meta: { plan: plan || 'free', website: website || '' } });
 
     return NextResponse.json({ success: true, user: userData });
   } catch (err) {

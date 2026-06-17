@@ -1,9 +1,6 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-
-const AI_SUBMISSIONS_KEY = 'algograss_ai_submissions'
-const AUDIT_LOG_KEY = 'algograss_audit_log'
 
 function getUser() {
   try {
@@ -12,313 +9,244 @@ function getUser() {
   } catch { return null }
 }
 
-function getData(key) { try { return JSON.parse(localStorage.getItem(key) || '[]') } catch { return [] } }
-function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)) } catch {} }
+const TABS = [
+  { id:'overview',   label:'Overview',   icon:'📊' },
+  { id:'activities', label:'Activities', icon:'📋' },
+  { id:'users',      label:'Users',      icon:'👥' },
+  { id:'scans',      label:'Scans',      icon:'🔍' },
+  { id:'complaints', label:'Complaints', icon:'📨' },
+  { id:'dsars',      label:'DSARs',      icon:'📁' },
+  { id:'dpias',      label:'DPIAs',      icon:'📊' },
+  { id:'vendors',    label:'Vendors',    icon:'🏢' },
+]
+const TOOL_COLOR = { scan:'#00D4AA',auth:'#818CF8',complaint:'#F59E0B',dsar:'#EC4899',dpia:'#3B82F6','vendor-risk':'#10B981',grc:'#8B5CF6','ai-governance':'#F97316' }
 
-function addAuditLog(action, detail, adminEmail) {
-  const logs = getData(AUDIT_LOG_KEY)
-  logs.unshift({ action, detail, by: adminEmail, at: new Date().toISOString() })
-  saveData(AUDIT_LOG_KEY, logs.slice(0, 100))
+function Badge({ text, color }) {
+  return <span style={{fontSize:10,fontWeight:700,padding:'2px 8px',borderRadius:20,background:color+'18',color,border:`1px solid ${color}40`}}>{text}</span>
+}
+function StatCard({ label, value, sub, color='var(--accent)' }) {
+  return (
+    <div style={{background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:14,padding:'20px 22px'}}>
+      <div style={{fontFamily:'Syne,sans-serif',fontSize:32,fontWeight:800,color,marginBottom:4}}>{value}</div>
+      <div style={{fontSize:13,fontWeight:600,color:'var(--ink)',marginBottom:2}}>{label}</div>
+      {sub&&<div style={{fontSize:11,color:'var(--ink2)'}}>{sub}</div>}
+    </div>
+  )
+}
+function Table({ cols, rows, empty='No data yet' }) {
+  if (!rows.length) return <div style={{textAlign:'center',padding:'40px 0',color:'var(--ink2)',fontSize:13}}>{empty}</div>
+  return (
+    <div style={{overflowX:'auto'}}>
+      <table style={{width:'100%',borderCollapse:'collapse',fontSize:12}}>
+        <thead><tr>{cols.map(c=><th key={c.key} style={{padding:'10px 14px',textAlign:'left',fontSize:10,fontWeight:700,color:'var(--ink2)',textTransform:'uppercase',letterSpacing:'.06em',borderBottom:'1px solid var(--border)',whiteSpace:'nowrap'}}>{c.label}</th>)}</tr></thead>
+        <tbody>{rows.map((row,i)=><tr key={i} style={{borderBottom:'1px solid rgba(255,255,255,0.04)'}}>{cols.map(c=><td key={c.key} style={{padding:'10px 14px',color:'var(--ink2)',verticalAlign:'top',maxWidth:c.maxWidth||'none'}}>{c.render?c.render(row):String(row[c.key]??'—')}</td>)}</tr>)}</tbody>
+      </table>
+    </div>
+  )
+}
+function fmt(d) {
+  if (!d) return '—'
+  try { return new Date(d).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) } catch { return '—' }
 }
 
 export default function AdminPage() {
   const router = useRouter()
-  const [user, setUser] = useState(null)
-  const [tab, setTab] = useState('overview')
-  const [submissions, setSubmissions] = useState([])
-  const [auditLog, setAuditLog] = useState([])
-  const [note, setNote] = useState({})
+  const [user, setUser]       = useState(null)
+  const [tab, setTab]         = useState('overview')
+  const [data, setData]       = useState({})
+  const [totals, setTotals]   = useState({})
+  const [loading, setLoading] = useState(false)
+  const [noDb, setNoDb]       = useState(false)
 
   useEffect(() => {
     const u = getUser()
     if (!u || !u.isAdmin) { router.push('/login'); return }
     setUser(u)
-    setSubmissions(getData(AI_SUBMISSIONS_KEY))
-    setAuditLog(getData(AUDIT_LOG_KEY))
   }, [])
 
-  function approve(id, approved) {
-    const updated = submissions.map(s => s.id === id ? { ...s, status: approved ? 'Approved' : 'Rejected', reviewNote: note[id] || '', reviewedAt: new Date().toISOString(), reviewedBy: user?.email } : s)
-    setSubmissions(updated)
-    saveData(AI_SUBMISSIONS_KEY, updated)
-    addAuditLog(approved ? 'APPROVED' : 'REJECTED', `AI use case: ${submissions.find(s => s.id === id)?.toolName}`, user?.email)
-    setAuditLog(getData(AUDIT_LOG_KEY))
-    setNote(prev => ({ ...prev, [id]: '' }))
-  }
+  const load = useCallback(async (resource) => {
+    setLoading(true)
+    try {
+      const res  = await fetch(`/api/admin?resource=${resource}&limit=200`)
+      const json = await res.json()
+      if (json.noDb) setNoDb(true)
+      setData(prev  => ({ ...prev,   [resource]: json.data  || [] }))
+      setTotals(prev => ({ ...prev,  [resource]: json.total || 0  }))
+    } catch {}
+    setLoading(false)
+  }, [])
 
-  if (!user) return <div style={{ padding: 48, textAlign: 'center' }}>Loading...</div>
+  useEffect(() => {
+    if (!user) return
+    ;['activities','users','scans','complaints','dsars','dpias','vendors'].forEach(r => load(r))
+  }, [user])
 
-  const pending = submissions.filter(s => s.status === 'Pending').length
-  const approved = submissions.filter(s => s.status === 'Approved').length
-  const rejected = submissions.filter(s => s.status === 'Rejected').length
+  useEffect(() => {
+    if (user && tab !== 'overview' && !data[tab]) load(tab)
+  }, [tab, user])
+
+  const activities = data.activities || []
+  const users      = data.users      || []
+  const scans      = data.scans      || []
+  const complaints = data.complaints || []
+  const dsars      = data.dsars      || []
+  const dpias      = data.dpias      || []
+  const vendors    = data.vendors    || []
+
+  const today    = new Date(); today.setHours(0,0,0,0)
+  const todayActs = activities.filter(a => new Date(a.createdAt) >= today).length
+  const toolCounts = activities.reduce((acc,a) => { acc[a.tool]=(acc[a.tool]||0)+1; return acc }, {})
+  const avgScore   = scans.length ? Math.round(scans.reduce((s,sc)=>s+(sc.score||0),0)/scans.length) : 0
+  const highRisk   = vendors.filter(v=>v.level==='High').length
+  const noDpa      = vendors.filter(v=>v.dpaSigned!=='Yes').length
+
+  if (!user) return <div style={{padding:80,textAlign:'center',color:'var(--ink2)'}}>Checking access…</div>
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0F1712' }}>
-      {/* Admin Header */}
-      <div style={{ background: '#1a2e1f', borderBottom: '1px solid #2d4a35', padding: '18px 0' }}>
-        <div className="wrap" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{ background: 'var(--lime)', color: 'var(--ink)', fontSize: 10, fontWeight: 800, padding: '3px 10px', borderRadius: 100, letterSpacing: '.08em' }}>ADMIN</div>
+    <div style={{minHeight:'100vh',background:'var(--bg)'}}>
+      <section style={{background:'var(--bg2)',padding:'32px 0 24px',borderBottom:'1px solid var(--border)'}}>
+        <div className="wrap">
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:12}}>
             <div>
-              <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 2 }}>AlgoGrass Admin</h1>
-              <p style={{ fontSize: 11, color: 'rgba(255,255,255,.4)' }}>Logged in as {user.email}</p>
+              <span style={{fontSize:11,fontWeight:700,color:'var(--accent)',textTransform:'uppercase',letterSpacing:'.08em'}}>Admin</span>
+              <h1 style={{fontFamily:'Syne,sans-serif',fontSize:24,fontWeight:800,color:'var(--ink)',marginTop:4}}>AlgoGrass Dashboard</h1>
+            </div>
+            <div style={{display:'flex',gap:10,alignItems:'center'}}>
+              {noDb&&<span style={{fontSize:11,background:'rgba(239,68,68,0.1)',color:'#EF4444',padding:'5px 12px',borderRadius:20,border:'1px solid rgba(239,68,68,0.3)'}}>⚠ MongoDB not connected</span>}
+              <span style={{fontSize:12,color:'var(--ink2)'}}>{user.email}</span>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <a href="/dashboard" style={{ fontSize: 12, color: 'rgba(255,255,255,.5)', textDecoration: 'none', padding: '8px 14px', border: '1px solid rgba(255,255,255,.15)', borderRadius: 8 }}>User Dashboard</a>
-            <a href="/" style={{ fontSize: 12, color: 'rgba(255,255,255,.5)', textDecoration: 'none', padding: '8px 14px', border: '1px solid rgba(255,255,255,.15)', borderRadius: 8 }}>← Back to site</a>
+          <div style={{display:'flex',gap:4,marginTop:20,flexWrap:'wrap'}}>
+            {TABS.map(t=>(
+              <button key={t.id} onClick={()=>setTab(t.id)} style={{fontSize:12,fontWeight:600,padding:'7px 14px',borderRadius:8,border:'none',background:tab===t.id?'rgba(0,212,170,0.15)':'transparent',color:tab===t.id?'var(--accent)':'var(--ink2)',cursor:'pointer'}}>
+                {t.icon} {t.label}{totals[t.id]?' ('+totals[t.id]+')':''}
+              </button>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Tabs */}
-      <div style={{ background: '#1a2e1f', borderBottom: '1px solid #2d4a35' }}>
-        <div className="wrap" style={{ display: 'flex' }}>
-          {[['overview','📊 Overview'], ['approvals',`✅ AI Approvals${pending > 0 ? ` (${pending})` : ''}`], ['register','📋 AI Register'], ['audit','🔍 Audit Trail']].map(([id, label]) => (
-            <button key={id} onClick={() => setTab(id)}
-              style={{ padding: '14px 20px', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: tab === id ? 600 : 400, color: tab === id ? 'var(--lime)' : 'rgba(255,255,255,.5)', borderBottom: tab === id ? '2px solid var(--lime)' : '2px solid transparent' }}>
-              {label}
-            </button>
-          ))}
+      <section style={{padding:'28px 0 80px'}}>
+        <div className="wrap">
+          {noDb&&(
+            <div style={{background:'rgba(239,68,68,0.07)',border:'1px solid rgba(239,68,68,0.25)',borderRadius:12,padding:'16px 20px',marginBottom:24}}>
+              <p style={{fontWeight:700,color:'#EF4444',marginBottom:6,fontSize:14}}>⚠ MongoDB not connected — data is not being saved</p>
+              <p style={{color:'var(--ink2)',fontSize:13,margin:0}}>Add <strong>MONGODB_URI</strong> to Vercel → Settings → Environment Variables → Redeploy. Get the URI from MongoDB Atlas → Connect → Drivers.</p>
+            </div>
+          )}
+
+          {tab==='overview'&&(
+            <>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:20}}>
+                <StatCard label="Total users"      value={totals.users||0}      color="#818CF8"/>
+                <StatCard label="Website scans"    value={totals.scans||0}      color="var(--accent)" sub={`Avg score: ${avgScore}/100`}/>
+                <StatCard label="Activities today" value={todayActs}            color="#F59E0B"/>
+                <StatCard label="Total activities" value={totals.activities||0} color="var(--ink)"/>
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:28}}>
+                <StatCard label="Complaints"      value={totals.complaints||0} color="#F59E0B"/>
+                <StatCard label="DSARs"           value={totals.dsars||0}      color="#EC4899"/>
+                <StatCard label="DPIAs"           value={totals.dpias||0}      color="#3B82F6"/>
+                <StatCard label="Vendors tracked" value={totals.vendors||0}    color="#10B981" sub={`${highRisk} high risk · ${noDpa} missing DPA`}/>
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:18}}>
+                <div style={{background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:14,padding:'20px 22px'}}>
+                  <h3 style={{fontFamily:'Syne,sans-serif',fontSize:13,fontWeight:700,color:'var(--ink)',marginBottom:16,textTransform:'uppercase',letterSpacing:'.06em'}}>Tool Usage</h3>
+                  {Object.entries(toolCounts).sort((a,b)=>b[1]-a[1]).map(([tool,count])=>(
+                    <div key={tool} style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
+                      <span style={{fontSize:12,color:'var(--ink)',minWidth:110}}>{tool}</span>
+                      <div style={{flex:1,height:6,background:'rgba(255,255,255,0.06)',borderRadius:3,overflow:'hidden'}}>
+                        <div style={{height:'100%',width:`${Math.round(count/activities.length*100)}%`,background:TOOL_COLOR[tool]||'var(--accent)',borderRadius:3}}/>
+                      </div>
+                      <span style={{fontSize:11,color:'var(--ink2)',minWidth:24,textAlign:'right'}}>{count}</span>
+                    </div>
+                  ))}
+                  {!activities.length&&<p style={{fontSize:13,color:'var(--ink2)'}}>No activity yet</p>}
+                </div>
+                <div style={{background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:14,padding:'20px 22px'}}>
+                  <h3 style={{fontFamily:'Syne,sans-serif',fontSize:13,fontWeight:700,color:'var(--ink)',marginBottom:16,textTransform:'uppercase',letterSpacing:'.06em'}}>Recent Activity</h3>
+                  {activities.slice(0,8).map((a,i)=>(
+                    <div key={i} style={{display:'flex',gap:10,alignItems:'flex-start',marginBottom:10}}>
+                      <div style={{width:28,height:28,borderRadius:7,background:(TOOL_COLOR[a.tool]||'#888')+'18',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,flexShrink:0}}>
+                        {a.tool==='scan'?'🔍':a.tool==='auth'?'🔑':a.tool==='dsar'?'📁':a.tool==='complaint'?'📨':a.tool==='dpia'?'📊':a.tool==='vendor-risk'?'🏢':'⚡'}
+                      </div>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:12,color:'var(--ink)',fontWeight:500}}>{a.action.replace(/_/g,' ')}</div>
+                        <div style={{fontSize:11,color:'var(--ink2)'}}>{a.userEmail} · {fmt(a.createdAt)}</div>
+                      </div>
+                    </div>
+                  ))}
+                  {!activities.length&&<p style={{fontSize:13,color:'var(--ink2)'}}>No activity yet</p>}
+                </div>
+              </div>
+            </>
+          )}
+
+          {tab==='activities'&&<Table cols={[
+            {key:'userEmail', label:'User',   render:r=><span style={{color:'var(--accent)',fontSize:11}}>{r.userEmail}</span>},
+            {key:'tool',      label:'Tool',   render:r=><Badge text={r.tool} color={TOOL_COLOR[r.tool]||'#888'}/>},
+            {key:'action',    label:'Action', render:r=><span style={{color:'var(--ink)'}}>{r.action.replace(/_/g,' ')}</span>},
+            {key:'detail',    label:'Detail', maxWidth:'240px', render:r=><span style={{wordBreak:'break-all',fontSize:11}}>{r.detail||'—'}</span>},
+            {key:'createdAt', label:'Time',   render:r=>fmt(r.createdAt)},
+          ]} rows={activities} empty="No activities yet. Activities are logged when users use tools."/>}
+
+          {tab==='users'&&<Table cols={[
+            {key:'name',      label:'Name',    render:r=><span style={{color:'var(--ink)',fontWeight:600}}>{r.name}</span>},
+            {key:'email',     label:'Email',   render:r=><span style={{color:'var(--accent)',fontSize:11}}>{r.email}</span>},
+            {key:'plan',      label:'Plan',    render:r=><Badge text={r.plan||'free'} color={r.plan==='agency'?'#F59E0B':r.plan==='growth'?'#818CF8':'#888'}/>},
+            {key:'website',   label:'Website', render:r=>r.website?<a href={r.website} target="_blank" rel="noreferrer" style={{color:'var(--accent)',fontSize:11}}>{r.website}</a>:'—'},
+            {key:'isAdmin',   label:'Admin',   render:r=>r.isAdmin?'✅':'—'},
+            {key:'createdAt', label:'Joined',  render:r=>fmt(r.createdAt)},
+          ]} rows={users} empty="No users yet."/>}
+
+          {tab==='scans'&&<Table cols={[
+            {key:'userEmail', label:'User',     render:r=><span style={{color:'var(--accent)',fontSize:11}}>{r.userEmail}</span>},
+            {key:'url',       label:'URL',      maxWidth:'220px', render:r=><span style={{fontSize:11,wordBreak:'break-all'}}>{r.url}</span>},
+            {key:'score',     label:'Score',    render:r=>{const c=r.score>=70?'var(--accent)':r.score>=40?'#F59E0B':'#EF4444';return <span style={{fontWeight:700,color:c}}>{r.score}/100</span>}},
+            {key:'issues',    label:'Issues',   render:r=>{const h=(r.issues||[]).filter(i=>i.sev==='High').length;const m=(r.issues||[]).filter(i=>i.sev==='Medium').length;return <span style={{fontSize:11}}>{h>0&&<span style={{color:'#EF4444',marginRight:6}}>⬤ {h} High</span>}{m>0&&<span style={{color:'#F59E0B'}}>⬤ {m} Med</span>}</span>}},
+            {key:'trackers',  label:'Trackers', render:r=><span style={{fontSize:11}}>{(r.trackers||[]).join(', ')||'—'}</span>},
+            {key:'scannedAt', label:'Date',     render:r=>fmt(r.scannedAt||r.createdAt)},
+          ]} rows={scans} empty="No scans yet."/>}
+
+          {tab==='complaints'&&<Table cols={[
+            {key:'userEmail', label:'User',     render:r=><span style={{color:'var(--accent)',fontSize:11}}>{r.userEmail}</span>},
+            {key:'category',  label:'Category', render:r=><Badge text={r.category||'Unknown'} color="#F59E0B"/>},
+            {key:'urgency',   label:'Urgency',  render:r=><Badge text={r.urgency||'—'} color={r.urgency==='High'?'#EF4444':r.urgency==='Medium'?'#F59E0B':'var(--accent)'}/>},
+            {key:'channel',   label:'Channel',  render:r=>r.channel||'—'},
+            {key:'summary',   label:'Summary',  maxWidth:'200px', render:r=><span style={{fontSize:11}}>{r.summary||'—'}</span>},
+            {key:'createdAt', label:'Date',     render:r=>fmt(r.createdAt)},
+          ]} rows={complaints} empty="No complaints yet."/>}
+
+          {tab==='dsars'&&<Table cols={[
+            {key:'userEmail',      label:'User',      render:r=><span style={{color:'var(--accent)',fontSize:11}}>{r.userEmail}</span>},
+            {key:'requesterName',  label:'Requester', render:r=><span style={{color:'var(--ink)'}}>{r.requesterName||'—'}</span>},
+            {key:'requestType',    label:'Type',      render:r=><Badge text={r.requestType||'SAR'} color="#EC4899"/>},
+            {key:'requesterEmail', label:'Email',     render:r=><span style={{fontSize:11}}>{r.requesterEmail||'—'}</span>},
+            {key:'deadline',       label:'Deadline',  render:r=>{const d=r.deadline?new Date(r.deadline):null;const ov=d&&d<new Date();return <span style={{color:ov?'#EF4444':'var(--ink2)'}}>{d?d.toLocaleDateString('en-GB'):'—'}</span>}},
+            {key:'createdAt',      label:'Received',  render:r=>fmt(r.createdAt)},
+          ]} rows={dsars} empty="No DSARs yet."/>}
+
+          {tab==='dpias'&&<Table cols={[
+            {key:'userEmail',    label:'User',       render:r=><span style={{color:'var(--accent)',fontSize:11}}>{r.userEmail}</span>},
+            {key:'businessName', label:'Business',   render:r=><span style={{color:'var(--ink)'}}>{r.businessName||'—'}</span>},
+            {key:'project',      label:'Project',    maxWidth:'180px', render:r=><span style={{fontSize:11}}>{r.project||'—'}</span>},
+            {key:'legalBasis',   label:'Legal Basis',render:r=><Badge text={r.legalBasis||'—'} color="#3B82F6"/>},
+            {key:'status',       label:'Status',     render:r=><Badge text={r.status||'submitted'} color="var(--accent)"/>},
+            {key:'createdAt',    label:'Date',       render:r=>fmt(r.createdAt)},
+          ]} rows={dpias} empty="No DPIAs yet."/>}
+
+          {tab==='vendors'&&<Table cols={[
+            {key:'userEmail', label:'User',   render:r=><span style={{color:'var(--accent)',fontSize:11}}>{r.userEmail}</span>},
+            {key:'name',      label:'Vendor', render:r=><span style={{color:'var(--ink)',fontWeight:600}}>{r.name}</span>},
+            {key:'type',      label:'Type',   render:r=>r.type||'—'},
+            {key:'level',     label:'Risk',   render:r=><Badge text={r.level||'—'} color={r.level==='High'?'#EF4444':r.level==='Medium'?'#F59E0B':'var(--accent)'}/>},
+            {key:'dpaSigned', label:'DPA',    render:r=><span style={{color:r.dpaSigned==='Yes'?'var(--accent)':'#EF4444'}}>{r.dpaSigned==='Yes'?'✓ Signed':'✗ Missing'}</span>},
+            {key:'createdAt', label:'Added',  render:r=>fmt(r.createdAt)},
+          ]} rows={vendors} empty="No vendors yet."/>}
+
+          {loading&&<div style={{textAlign:'center',padding:'40px 0',color:'var(--ink2)',fontSize:13}}>Loading…</div>}
         </div>
-      </div>
-
-      <div className="wrap" style={{ padding: '32px 48px' }}>
-
-        {/* OVERVIEW */}
-        {tab === 'overview' && (
-          <>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 28 }}>
-              {[
-                ['AI Submissions', submissions.length, '#B8D96A', '🤖'],
-                ['Pending Review', pending, pending > 0 ? '#FCD34D' : '#B8D96A', '⏳'],
-                ['Approved', approved, '#B8D96A', '✅'],
-                ['Rejected', rejected, '#F87171', '❌'],
-              ].map(([label, val, col, icon]) => (
-                <div key={label} style={{ background: '#1a2e1f', border: '1px solid #2d4a35', borderRadius: 14, padding: '20px 18px' }}>
-                  <div style={{ fontSize: 24, marginBottom: 8 }}>{icon}</div>
-                  <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800, color: col, lineHeight: 1, marginBottom: 6 }}>{val}</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,.5)', fontWeight: 500 }}>{label}</div>
-                </div>
-              ))}
-            </div>
-
-            {pending > 0 && (
-              <div style={{ background: '#2d1f0a', border: '1px solid #78350f', borderRadius: 12, padding: '14px 18px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
-                <span style={{ fontSize: 20 }}>⏳</span>
-                <div style={{ flex: 1 }}>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: '#FCD34D' }}>{pending} AI use case{pending > 1 ? 's' : ''} waiting for your approval.</span>
-                </div>
-                <button onClick={() => setTab('approvals')} style={{ fontSize: 12, padding: '8px 16px', borderRadius: 8, border: '1px solid #78350f', background: '#FCD34D', color: '#1c1917', cursor: 'pointer', fontWeight: 600 }}>Review now →</button>
-              </div>
-            )}
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-              <div style={{ background: '#1a2e1f', border: '1px solid #2d4a35', borderRadius: 14, padding: 22 }}>
-                <h3 style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 16 }}>Recent AI Submissions</h3>
-                {submissions.length === 0 ? (
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,.4)' }}>No submissions yet.</p>
-                ) : submissions.slice(0, 5).map(s => (
-                  <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #2d4a35' }}>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 500, color: '#fff' }}>{s.toolName}</div>
-                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,.4)' }}>{s.submittedBy} · {new Date(s.submittedAt).toLocaleDateString('en-GB')}</div>
-                    </div>
-                    <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 100, fontWeight: 600, background: s.status === 'Approved' ? '#052e16' : s.status === 'Rejected' ? '#2d1515' : '#2d2505', color: s.status === 'Approved' ? '#86efac' : s.status === 'Rejected' ? '#f87171' : '#FCD34D' }}>{s.status}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div style={{ background: '#1a2e1f', border: '1px solid #2d4a35', borderRadius: 14, padding: 22 }}>
-                <h3 style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 16 }}>Recent Audit Log</h3>
-                {auditLog.length === 0 ? (
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,.4)' }}>No actions yet.</p>
-                ) : auditLog.slice(0, 6).map((log, i) => (
-                  <div key={i} style={{ padding: '8px 0', borderBottom: '1px solid #2d4a35' }}>
-                    <div style={{ fontSize: 12, color: '#B8D96A', fontWeight: 600 }}>{log.action}</div>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,.5)' }}>{log.detail} · {new Date(log.at).toLocaleString('en-GB')}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ marginTop: 20, background: '#1a2e1f', border: '1px solid #2d4a35', borderRadius: 14, padding: 22 }}>
-              <h3 style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 16 }}>Admin Actions</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
-                {[
-                  ['Review Approvals', '✅', () => setTab('approvals')],
-                  ['View AI Register', '📋', () => setTab('register')],
-                  ['View Audit Trail', '🔍', () => setTab('audit')],
-                  ['Go to Dashboard', '📊', () => router.push('/dashboard')],
-                ].map(([label, icon, action]) => (
-                  <button key={label} onClick={action}
-                    style={{ padding: '16px', borderRadius: 12, border: '1px solid #2d4a35', background: 'rgba(184,217,106,.05)', color: '#fff', cursor: 'pointer', textAlign: 'center', fontSize: 13 }}>
-                    <div style={{ fontSize: 24, marginBottom: 8 }}>{icon}</div>
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-
-        {/* APPROVALS */}
-        {tab === 'approvals' && (
-          <div>
-            <div style={{ marginBottom: 20 }}>
-              <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 600, color: '#fff', marginBottom: 3 }}>AI Use Case Approvals</h2>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,.4)' }}>Review and approve or reject AI tool submissions from your team</p>
-            </div>
-
-            {submissions.length === 0 ? (
-              <div style={{ background: '#1a2e1f', border: '1px solid #2d4a35', borderRadius: 14, padding: 40, textAlign: 'center' }}>
-                <div style={{ fontSize: 40, marginBottom: 12 }}>✅</div>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,.5)' }}>No submissions yet. They will appear here when users submit AI use cases.</p>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                {submissions.map(s => (
-                  <div key={s.id} style={{ background: '#1a2e1f', border: `1px solid ${s.status === 'Approved' ? '#2d4a35' : s.status === 'Rejected' ? '#4a1a1a' : '#4a3a00'}`, borderRadius: 14, padding: 22 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                          <h3 style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 600, color: '#fff' }}>{s.toolName}</h3>
-                          <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 100, fontWeight: 600, background: s.status === 'Approved' ? '#052e16' : s.status === 'Rejected' ? '#2d1515' : '#2d2505', color: s.status === 'Approved' ? '#86efac' : s.status === 'Rejected' ? '#f87171' : '#FCD34D' }}>{s.status}</span>
-                          {s.assessment?.riskLevel && (
-                            <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 100, fontWeight: 600, background: s.assessment.riskLevel === 'High' ? '#2d1515' : s.assessment.riskLevel === 'Medium' ? '#2d2505' : '#052e16', color: s.assessment.riskLevel === 'High' ? '#f87171' : s.assessment.riskLevel === 'Medium' ? '#FCD34D' : '#86efac' }}>
-                              Risk: {s.assessment.riskLevel}
-                            </span>
-                          )}
-                        </div>
-                        <p style={{ fontSize: 13, color: 'rgba(255,255,255,.6)', marginBottom: 4 }}>Submitted by: {s.submittedBy} · {new Date(s.submittedAt).toLocaleString('en-GB')}</p>
-                      </div>
-                    </div>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 14 }}>
-                      {[['Purpose', s.purpose], ['Data Types', s.dataTypes], ['Legal Basis', s.legalBasis]].map(([label, val]) => (
-                        <div key={label} style={{ background: 'rgba(255,255,255,.04)', borderRadius: 8, padding: '10px 12px' }}>
-                          <div style={{ fontSize: 10, color: 'rgba(255,255,255,.4)', textTransform: 'uppercase', fontWeight: 600, marginBottom: 4 }}>{label}</div>
-                          <div style={{ fontSize: 12, color: 'rgba(255,255,255,.8)' }}>{val || 'Not specified'}</div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {s.assessment && (
-                      <div style={{ background: 'rgba(0,0,0,.2)', borderRadius: 10, padding: '12px 14px', marginBottom: 14 }}>
-                        <div style={{ fontSize: 11, color: '#B8D96A', fontWeight: 600, marginBottom: 8 }}>🤖 AI Assessment</div>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 8 }}>
-                          <div style={{ fontSize: 12, color: 'rgba(255,255,255,.6)' }}>Risk Score: <strong style={{ color: '#fff' }}>{s.assessment.riskScore}/10</strong></div>
-                          <div style={{ fontSize: 12, color: 'rgba(255,255,255,.6)' }}>DPIA Required: <strong style={{ color: s.assessment.dpiaRequired ? '#f87171' : '#86efac' }}>{s.assessment.dpiaRequired ? 'Yes' : 'No'}</strong></div>
-                          <div style={{ fontSize: 12, color: 'rgba(255,255,255,.6)' }}>Legal Basis Valid: <strong style={{ color: s.assessment.legalBasisValid ? '#86efac' : '#f87171' }}>{s.assessment.legalBasisValid ? 'Yes' : 'No'}</strong></div>
-                          <div style={{ fontSize: 12, color: 'rgba(255,255,255,.6)' }}>Recommendation: <strong style={{ color: '#B8D96A' }}>{s.assessment.approvalRecommendation}</strong></div>
-                        </div>
-                        {s.assessment.conditions?.length > 0 && (
-                          <div style={{ marginTop: 8 }}>
-                            <div style={{ fontSize: 11, color: 'rgba(255,255,255,.4)', marginBottom: 4 }}>Conditions:</div>
-                            {s.assessment.conditions.map((c, i) => <div key={i} style={{ fontSize: 12, color: '#FCD34D' }}>• {c}</div>)}
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {s.status === 'Pending' && (
-                      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                        <input placeholder="Add a review note (optional)..." value={note[s.id] || ''} onChange={e => setNote(prev => ({ ...prev, [s.id]: e.target.value }))}
-                          style={{ flex: 1, background: 'rgba(255,255,255,.08)', border: '1px solid rgba(255,255,255,.15)', borderRadius: 8, padding: '9px 14px', fontSize: 13, color: '#fff', outline: 'none' }} />
-                        <button onClick={() => approve(s.id, true)} style={{ padding: '9px 20px', borderRadius: 8, border: 'none', background: '#16a34a', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>✅ Approve</button>
-                        <button onClick={() => approve(s.id, false)} style={{ padding: '9px 20px', borderRadius: 8, border: 'none', background: '#dc2626', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>❌ Reject</button>
-                      </div>
-                    )}
-
-                    {s.status !== 'Pending' && s.reviewNote && (
-                      <div style={{ background: 'rgba(255,255,255,.04)', borderRadius: 8, padding: '10px 12px', fontSize: 12, color: 'rgba(255,255,255,.6)' }}>
-                        <strong style={{ color: 'rgba(255,255,255,.8)' }}>Review note:</strong> {s.reviewNote} · by {s.reviewedBy} on {new Date(s.reviewedAt).toLocaleDateString('en-GB')}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* AI REGISTER */}
-        {tab === 'register' && (
-          <div>
-            <div style={{ marginBottom: 20 }}>
-              <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 600, color: '#fff', marginBottom: 3 }}>AI Register</h2>
-              <p style={{ fontSize: 12, color: 'rgba(255,255,255,.4)' }}>All approved AI tools in use across your organisation</p>
-            </div>
-            {submissions.filter(s => s.status === 'Approved').length === 0 ? (
-              <div style={{ background: '#1a2e1f', border: '1px solid #2d4a35', borderRadius: 14, padding: 40, textAlign: 'center' }}>
-                <div style={{ fontSize: 40, marginBottom: 12 }}>📋</div>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,.5)' }}>No approved AI tools yet. Approved submissions will appear here.</p>
-              </div>
-            ) : (
-              <div style={{ background: '#1a2e1f', border: '1px solid #2d4a35', borderRadius: 14, overflow: 'hidden' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ background: 'rgba(184,217,106,.08)' }}>
-                      {['Tool', 'Purpose', 'Data Types', 'Legal Basis', 'Risk', 'DPIA', 'Review Date', 'Status'].map(h => (
-                        <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,.5)', textTransform: 'uppercase', letterSpacing: '.05em' }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {submissions.filter(s => s.status === 'Approved').map((s, i) => (
-                      <tr key={s.id} style={{ borderTop: '1px solid #2d4a35', background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,.02)' }}>
-                        <td style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: '#fff' }}>{s.toolName}</td>
-                        <td style={{ padding: '12px 16px', fontSize: 12, color: 'rgba(255,255,255,.6)', maxWidth: 150 }}>{s.purpose}</td>
-                        <td style={{ padding: '12px 16px', fontSize: 12, color: 'rgba(255,255,255,.6)' }}>{s.dataTypes}</td>
-                        <td style={{ padding: '12px 16px', fontSize: 12, color: 'rgba(255,255,255,.6)' }}>{s.legalBasis}</td>
-                        <td style={{ padding: '12px 16px' }}>
-                          <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: s.assessment?.riskLevel === 'High' ? '#2d1515' : s.assessment?.riskLevel === 'Medium' ? '#2d2505' : '#052e16', color: s.assessment?.riskLevel === 'High' ? '#f87171' : s.assessment?.riskLevel === 'Medium' ? '#FCD34D' : '#86efac', fontWeight: 600 }}>{s.assessment?.riskLevel || 'N/A'}</span>
-                        </td>
-                        <td style={{ padding: '12px 16px', fontSize: 12, color: s.assessment?.dpiaRequired ? '#f87171' : '#86efac' }}>{s.assessment?.dpiaRequired ? 'Required' : 'Not needed'}</td>
-                        <td style={{ padding: '12px 16px', fontSize: 12, color: 'rgba(255,255,255,.5)' }}>{s.assessment?.reviewDate || 'N/A'}</td>
-                        <td style={{ padding: '12px 16px' }}>
-                          <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 6, background: '#052e16', color: '#86efac', fontWeight: 600 }}>Approved</span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* AUDIT TRAIL */}
-        {tab === 'audit' && (
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <div>
-                <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 600, color: '#fff', marginBottom: 3 }}>Audit Trail</h2>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,.4)' }}>Complete log of all admin actions</p>
-              </div>
-              <button onClick={() => { saveData(AUDIT_LOG_KEY, []); setAuditLog([]) }} style={{ fontSize: 12, padding: '7px 14px', borderRadius: 8, border: '1px solid #2d4a35', background: 'transparent', color: 'rgba(255,255,255,.4)', cursor: 'pointer' }}>Clear log</button>
-            </div>
-            {auditLog.length === 0 ? (
-              <div style={{ background: '#1a2e1f', border: '1px solid #2d4a35', borderRadius: 14, padding: 40, textAlign: 'center' }}>
-                <p style={{ fontSize: 14, color: 'rgba(255,255,255,.4)' }}>No audit entries yet.</p>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {auditLog.map((log, i) => (
-                  <div key={i} style={{ background: '#1a2e1f', border: '1px solid #2d4a35', borderRadius: 10, padding: '14px 18px', display: 'grid', gridTemplateColumns: 'auto 1fr auto', gap: 14, alignItems: 'center' }}>
-                    <span style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, fontWeight: 700, background: log.action === 'APPROVED' ? '#052e16' : log.action === 'REJECTED' ? '#2d1515' : 'rgba(184,217,106,.1)', color: log.action === 'APPROVED' ? '#86efac' : log.action === 'REJECTED' ? '#f87171' : '#B8D96A' }}>{log.action}</span>
-                    <div>
-                      <div style={{ fontSize: 13, color: '#fff', marginBottom: 2 }}>{log.detail}</div>
-                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,.4)' }}>by {log.by}</div>
-                    </div>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,.4)', textAlign: 'right' }}>{new Date(log.at).toLocaleString('en-GB')}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+      </section>
     </div>
   )
 }
