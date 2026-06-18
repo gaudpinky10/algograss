@@ -1,62 +1,98 @@
 import { trackActivity } from '@/lib/dbHelpers'
 
-async function stripe(path, method = 'GET', body = null, key) {
+// Stripe helper — throws on API errors instead of silently returning them
+async function stripeReq(path, method = 'GET', body = null, key) {
   const opts = {
     method,
-    headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers: {
+      'Authorization': `Bearer ${key}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
   }
-  if (body) opts.body = new URLSearchParams(body)
-  const res = await fetch(`https://api.stripe.com/v1${path}`, opts)
-  return res.json()
+  if (body && method !== 'GET') opts.body = new URLSearchParams(body).toString()
+  const res  = await fetch(`https://api.stripe.com/v1${path}`, opts)
+  const json = await res.json()
+  if (json.error) throw new Error(`Stripe error on ${method} ${path}: ${json.error.message}`)
+  return json
 }
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
   const sessionId = searchParams.get('session_id')
-  const plan      = searchParams.get('plan')   || 'starter'
-  const trial     = searchParams.get('trial')  === '1'
+  const plan      = searchParams.get('plan')  || 'starter'
+  const trial     = searchParams.get('trial') === '1'
   const key       = process.env.STRIPE_SECRET_KEY
   const base      = process.env.NEXT_PUBLIC_URL || 'https://www.algograss.co.uk'
 
-  const failUrl    = `${base}/pricing?error=activation_failed`
   const successUrl = `${base}/dashboard?upgraded=true&plan=${plan}&trial=${trial?'1':'0'}&verified=true`
+  const failUrl    = `${base}/pricing?error=activation_failed`
 
-  if (!sessionId || !key) return Response.redirect(failUrl)
+  if (!sessionId || !key) {
+    console.error('Activate: missing sessionId or STRIPE_SECRET_KEY')
+    return Response.redirect(failUrl, 302)
+  }
+
+  let customerEmail = ''
 
   try {
-    // 1 — Retrieve checkout session (expand payment_intent and customer)
-    const session = await stripe(
+    // ── Step 1: Retrieve checkout session with payment_intent expanded ──
+    const session = await stripeReq(
       `/checkout/sessions/${sessionId}?expand[]=payment_intent&expand[]=customer`,
       'GET', null, key
     )
-    if (session.error) return Response.redirect(failUrl)
 
-    const customerId      = typeof session.customer === 'object' ? session.customer.id : session.customer
-    const paymentIntent   = session.payment_intent
+    const customerId    = typeof session.customer === 'object' ? session.customer.id : session.customer
+    customerEmail       = session.customer_details?.email || session.customer_email || ''
+    const paymentIntent = session.payment_intent
     const paymentIntentId = typeof paymentIntent === 'object' ? paymentIntent.id : paymentIntent
-    const customerEmail   = session.customer_email || session.customer_details?.email || ''
 
-    // 2 — Refund the £1 verification charge immediately
+    if (!customerId) throw new Error('No customer ID in session')
+
+    // ── Step 2: Refund the £1 immediately ──
+    // Wrapped in its own try so a refund failure doesn't block subscription creation
+    let refundStatus = 'not_attempted'
     if (paymentIntentId) {
-      await stripe('/refunds', 'POST', {
-        payment_intent: paymentIntentId,
-        reason:         'requested_by_customer',
-        'metadata[reason]': 'Automatic card verification refund — AlgoGrass',
-      }, key)
+      try {
+        const refund = await stripeReq('/refunds', 'POST', {
+          payment_intent: paymentIntentId,
+          reason:         'requested_by_customer',
+        }, key)
+        refundStatus = refund.status // 'succeeded' or 'pending'
+        console.log('Refund created:', refund.id, refundStatus)
+      } catch (refundErr) {
+        // Log but don't block — subscription must still be created
+        console.error('Refund failed:', refundErr.message)
+        refundStatus = 'failed'
+      }
     }
 
-    // 3 — Get the saved payment method from the customer
-    const pmData = await stripe(`/customers/${customerId}/payment_methods?type=card&limit=1`, 'GET', null, key)
-    const paymentMethodId = pmData.data?.[0]?.id
+    // ── Step 3: Get saved payment method ──
+    // First try from the payment intent itself (most reliable, no lag)
+    let paymentMethodId = null
 
-    // 4 — Set it as the default payment method for the customer
-    if (paymentMethodId) {
-      await stripe(`/customers/${customerId}`, 'POST', {
-        'invoice_settings[default_payment_method]': paymentMethodId,
-      }, key)
+    if (typeof paymentIntent === 'object' && paymentIntent.payment_method) {
+      paymentMethodId = typeof paymentIntent.payment_method === 'object'
+        ? paymentIntent.payment_method.id
+        : paymentIntent.payment_method
     }
 
-    // 5 — Create the subscription
+    // Fallback: list customer's saved cards
+    if (!paymentMethodId) {
+      const pmData = await stripeReq(
+        `/customers/${customerId}/payment_methods?type=card&limit=1`,
+        'GET', null, key
+      )
+      paymentMethodId = pmData.data?.[0]?.id
+    }
+
+    if (!paymentMethodId) throw new Error('No payment method found for customer')
+
+    // ── Step 4: Set as default payment method on the customer ──
+    await stripeReq(`/customers/${customerId}`, 'POST', {
+      'invoice_settings[default_payment_method]': paymentMethodId,
+    }, key)
+
+    // ── Step 5: Create the subscription ──
     const PRICES = {
       starter: process.env.STRIPE_PRICE_STARTER,
       growth:  process.env.STRIPE_PRICE_GROWTH,
@@ -64,32 +100,36 @@ export async function GET(request) {
     }
     const priceId = PRICES[plan]
 
-    if (priceId && paymentMethodId) {
+    if (!priceId) {
+      console.error(`No price ID for plan: ${plan}. Check STRIPE_PRICE_${plan.toUpperCase()} env var.`)
+    } else {
       const subBody = {
-        'customer':                customerId,
-        'items[0][price]':         priceId,
-        'default_payment_method':  paymentMethodId,
-        'expand[]':                'latest_invoice.payment_intent',
+        'customer':               customerId,
+        'items[0][price]':        priceId,
+        'default_payment_method': paymentMethodId,
+        // Stripe will auto-charge this payment method when trial ends or immediately if no trial
       }
       if (trial) subBody['trial_period_days'] = '30'
 
-      await stripe('/subscriptions', 'POST', subBody, key)
+      const subscription = await stripeReq('/subscriptions', 'POST', subBody, key)
+      console.log('Subscription created:', subscription.id, subscription.status)
     }
 
-    // 6 — Track activity
+    // ── Step 6: Track ──
     await trackActivity({
       userEmail: customerEmail,
       tool:   'billing',
       action: trial ? 'trial_activated' : 'subscription_activated',
       detail: plan,
-      meta:   { plan, trial, verified: true, customerId },
-    })
+      meta:   { plan, trial, refundStatus, customerId },
+    }).catch(() => {}) // never block redirect on tracking failure
 
-    return Response.redirect(successUrl)
+    return Response.redirect(successUrl, 302)
 
   } catch (err) {
-    console.error('Activate error:', err.message)
-    // Even if something fails, send them to dashboard — don't leave user stranded
-    return Response.redirect(successUrl)
+    console.error('Activate critical error:', err.message)
+    // Still redirect to dashboard — user paid, don't strand them
+    // The subscription/refund issue can be fixed manually in Stripe dashboard
+    return Response.redirect(successUrl, 302)
   }
 }
