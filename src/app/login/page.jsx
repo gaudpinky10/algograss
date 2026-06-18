@@ -42,7 +42,7 @@ export default function LoginPage() {
           <form onSubmit={submit}>
             <div className="field-wrap"><label className="field-label">Email address</label><input className="field-input" type="email" placeholder="you@company.com" value={form.email} onChange={set('email')} required /></div>
             <div style={{ marginBottom: 8 }}><label className="field-label">Password</label><input className="field-input" type="password" placeholder="••••••••" value={form.password} onChange={set('password')} required /></div>
-            <div style={{ textAlign: 'right', marginBottom: 20 }}><a href="#" style={{ fontSize: 12, color: 'var(--green)' }}>Forgot password?</a></div>
+            <div style={{ textAlign: 'right', marginBottom: 20 }}><a href="/forgot-password" style={{ fontSize: 12, color: 'var(--green)' }}>Forgot password?</a></div>
             {error && <p style={{ fontSize: 13, color: 'var(--red-text)', marginBottom: 12 }}>{error}</p>}
             <button type="submit" className="btn btn-primary btn-full" disabled={loading}>{loading ? 'Logging in...' : 'Log in →'}</button>
           </form>
