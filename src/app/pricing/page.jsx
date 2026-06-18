@@ -22,17 +22,20 @@ const FAQS = [
 ]
 
 export default function PricingPage() {
-  const [annual,    setAnnual]    = useState(false)
-  const [loading,   setLoading]   = useState(null)
-  const [email,     setEmail]     = useState('')
-  const [emailFor,  setEmailFor]  = useState(null) // { planId, trial }
-  const [error,     setError]     = useState('')
+  const [annual,      setAnnual]      = useState(false)
+  const [loading,     setLoading]     = useState(null)
+  const [redirecting, setRedirecting] = useState(false)
+  const [email,       setEmail]       = useState('')
+  const [emailFor,    setEmailFor]    = useState(null) // { planId, trial }
+  const [error,       setError]       = useState('')
 
   async function startCheckout(plan, trial) {
     if (plan.href) { window.location.href = plan.href; return }
     if (!email) { setEmailFor({ planId: plan.id, trial }); return }
     setError('')
     setLoading(plan.id + (trial ? '_trial' : '_pay'))
+    // Show full-screen redirect overlay immediately so it feels instant
+    setRedirecting(true)
     try {
       const res  = await fetch('/api/checkout', {
         method:  'POST',
@@ -41,8 +44,12 @@ export default function PricingPage() {
       })
       const data = await res.json()
       if (data.url) { window.location.href = data.url; return }
+      setRedirecting(false)
       setError(data.error || 'Something went wrong. Please try again.')
-    } catch { setError('Connection error. Please try again.') }
+    } catch {
+      setRedirecting(false)
+      setError('Connection error. Please try again.')
+    }
     setLoading(null)
   }
 
@@ -65,6 +72,16 @@ export default function PricingPage() {
           </div>
         </div>
       </section>
+
+      {/* ── REDIRECT OVERLAY ── */}
+      {redirecting && (
+        <div style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(6,11,20,0.92)', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:20 }}>
+          <div style={{ width:56, height:56, borderRadius:'50%', border:'3px solid rgba(0,212,170,0.2)', borderTop:'3px solid #00D4AA', animation:'spin 0.8s linear infinite' }} />
+          <p style={{ color:'#E8F0FE', fontSize:16, fontWeight:600, margin:0 }}>Connecting to secure checkout…</p>
+          <p style={{ color:'#64748B', fontSize:13, margin:0 }}>Powered by Stripe — please wait</p>
+          <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+        </div>
+      )}
 
       {/* ── EMAIL CAPTURE MODAL ── */}
       {emailFor && (

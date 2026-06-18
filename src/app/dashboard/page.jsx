@@ -103,6 +103,7 @@ function Dashboard() {
   const [roadmapChecked, setRoadmapChecked] = useState({})
   const [emailReport, setEmailReport] = useState('')
   const [emailSent, setEmailSent] = useState(false)
+  const [toast, setToast] = useState(null)
   const chatRef = useRef(null)
 
   useEffect(() => {
@@ -135,7 +136,7 @@ function Dashboard() {
       const msg = isTrial
         ? `🎉 Card verified & free trial started!\n\nPlan: ${plan.charAt(0).toUpperCase()+plan.slice(1)}\n${isVerified ? '✅ The £1 verification charge has been refunded to your card.\n' : ''}You will NOT be charged for 30 days.\n\nStart exploring AlgoGrass — scan your website, generate documents, and check your GDPR compliance.`
         : `🎉 Card verified — welcome to AlgoGrass!\n\n${isVerified ? '✅ The £1 verification charge has been refunded.\n\n' : ''}Your ${plan.charAt(0).toUpperCase()+plan.slice(1)} plan is now active. Start by scanning your website below.`
-      setTimeout(() => alert(msg), 500)
+      setToast({ plan: plan.charAt(0).toUpperCase()+plan.slice(1), isTrial, isVerified })
       window.history.replaceState({}, '', '/dashboard')
     }
   }, [])
@@ -226,6 +227,32 @@ function Dashboard() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+
+      {/* ── UPGRADE TOAST ── */}
+      {toast && (
+        <div style={{ position:'fixed', inset:0, zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(6,11,20,0.75)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', padding:'0 16px' }}>
+          <div style={{ background:'#0D1525', border:'1px solid rgba(0,212,170,0.3)', borderRadius:24, padding:'40px 36px', maxWidth:460, width:'100%', boxShadow:'0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,212,170,0.08)', textAlign:'center' }}>
+            <div style={{ width:64, height:64, borderRadius:'50%', background:'rgba(0,212,170,0.12)', border:'2px solid rgba(0,212,170,0.3)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:30, margin:'0 auto 20px' }}>✅</div>
+            <h2 style={{ margin:'0 0 6px', fontSize:22, fontWeight:800, color:'#E8F0FE' }}>
+              {toast.isTrial ? 'Free trial activated!' : 'Welcome to AlgoGrass!'}
+            </h2>
+            <p style={{ margin:'0 0 20px', fontSize:14, color:'#94A3B8' }}>
+              {toast.isTrial ? `Your ${toast.plan} plan is free for the next 30 days. No charge until day 31.` : `Your ${toast.plan} plan is now active.`}
+            </p>
+            {toast.isVerified && (
+              <div style={{ background:'rgba(0,212,170,0.08)', border:'1px solid rgba(0,212,170,0.2)', borderRadius:10, padding:'12px 16px', marginBottom:20 }}>
+                <p style={{ margin:0, fontSize:13, color:'#00D4AA', fontWeight:600 }}>💳 £1 verification charge refunded</p>
+                <p style={{ margin:'4px 0 0', fontSize:12, color:'#64748B' }}>The £1 has been returned to your card — it will appear and disappear on your statement.</p>
+              </div>
+            )}
+            <button onClick={()=>setToast(null)}
+              style={{ padding:'13px 40px', borderRadius:10, border:'none', background:'#00D4AA', color:'#060B14', fontWeight:700, fontSize:14, cursor:'pointer', width:'100%' }}>
+              Start exploring AlgoGrass →
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div style={{ background: 'var(--bg2)', padding: '18px 0', borderBottom: '1px solid var(--border)' }}>
         <div className="wrap" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
