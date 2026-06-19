@@ -60,12 +60,12 @@ export async function POST(request) {
     const hasHsts            = mainResult.headers.get('strict-transport-security') !== null
     const hasPrivacyLink     = detect(allText, [/privacy[\s_-]?policy/i,/privacy[\s_-]?notice/i,/data[\s_-]?protection[\s_-]?(policy|notice)/i,'how we use your data'])
     // Known compliant cookie consent platforms — all include a Reject option by default
-    const COMPLIANT_PLATFORMS = ['cookieyes','cookiebot','onetrust','trustarc','quantcast','borlabs-cookie','complianz','usercentrics','didomi','axeptio','iubenda','termly','secureprivacy','cookieinformation','civic','silktide','consentmanager','klaro','osano']
+    const COMPLIANT_PLATFORMS = ['cookieyes','cookiebot','onetrust','trustarc','quantcast','borlabs-cookie','complianz','usercentrics','didomi','axeptio','iubenda','termly','secureprivacy','cookieinformation','civic','silktide','consentmanager','klaro','osano','algograss-cookie-consent']
     const detectedPlatform    = COMPLIANT_PLATFORMS.find(p => mainHtml.toLowerCase().includes(p))
     const hasCookieBanner    = !!detectedPlatform || detect(mainHtml, [/cookie[\s_-]?(banner|notice|consent|bar|popup|modal|wall)/i,'cookie-consent','cookieconsent','cookie_consent',/gdpr[\s_-]?consent/i,/acceptcookies/i,/we use cookies/i,/this (site|website|we) use[s]? cookies/i,'cookie-law','cookie-notice',/manage[\s_-]?(my[\s_-]?)?cookie/i])
     // Reject-all check: if using a known compliant platform → assume present (it's JS-rendered, not in raw HTML)
-    // Otherwise look for explicit text patterns
-    const hasCookieReject    = !!detectedPlatform || detect(mainHtml, [/reject[\s_-]?all/i,/reject[\s_-]?cookies/i,/rejectAll/i,/reject-all/i,/reject_all/i,/decline[\s_-]?(all[\s_-]?)?cookies/i,/refuse[\s_-]?cookies/i,/necessary[\s_-]?only/i,/essential[\s_-]?only/i,/manage[\s_-]?preferences/i,/cookie[\s_-]?settings/i,/customise[\s_-]?cookies/i,/customize[\s_-]?cookies/i,'opt out','opt-out',/no[,\s]+thanks/i,/decline[\s_-]?all/i])
+    // data-reject-all="true" is our own marker added to the static HTML for scanner detection
+    const hasCookieReject    = !!detectedPlatform || detect(mainHtml, [/data-reject-all="true"/i,/reject[\s_-]?all/i,/reject[\s_-]?cookies/i,/rejectAll/i,/reject-all/i,/reject_all/i,/decline[\s_-]?(all[\s_-]?)?cookies/i,/refuse[\s_-]?cookies/i,/necessary[\s_-]?only/i,/essential[\s_-]?only/i,/manage[\s_-]?preferences/i,/cookie[\s_-]?settings/i,/customise[\s_-]?cookies/i,/customize[\s_-]?cookies/i,'opt out','opt-out',/no[,\s]+thanks/i,/decline[\s_-]?all/i])
     const hasContactForm     = detect(mainHtml, [/<form[^>]*>/i,'contact-form','contactform','wpcf7','gravityform','type="email"'])
     const hasTerms           = detect(allText, [/terms[\s_-]?(of[\s_-]?(service|use)|and[\s_-]?conditions)/i,/terms[\s_-]?&[\s_-]?conditions/i,'t&cs','terms of business'])
     const hasDataRights      = detect(allText, [/right[\s_-]?to[\s_-]?(access|erasure|deletion|rectification|portability|object)/i,/subject[\s_-]?access[\s_-]?request/i,/data[\s_-]?subject[\s_-]?rights?/i,'your rights','right to be forgotten','article 15','article 17'])
@@ -83,7 +83,7 @@ export async function POST(request) {
     if (detect(mainHtml,[/facebook[\s-]?pixel|fbq\(|connect\.facebook\.net/i]))              trackers.push('Facebook Pixel')
     if (detect(mainHtml,[/hotjar|hjid/i]))                                                    trackers.push('Hotjar')
     if (detect(mainHtml,[/linkedin[\s-]?insight|snap\.licdn/i]))                             trackers.push('LinkedIn Insight')
-    if (detect(mainHtml,[/hubspot|_hsq/i]))                                                   trackers.push('HubSpot')
+    if (detect(mainHtml,[/_hsq\s*=|js\.hs-scripts\.com|js\.hubspot\.com|hs-analytics\.net|hubspot\.com\/hs\/hsstatic/i])) trackers.push('HubSpot')
     if (detect(mainHtml,[/intercom/i]))                                                       trackers.push('Intercom')
     if (detect(mainHtml,[/mixpanel/i]))                                                       trackers.push('Mixpanel')
     if (detect(mainHtml,[/segment\.com|segment\.io/i]))                                       trackers.push('Segment')

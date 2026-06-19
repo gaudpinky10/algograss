@@ -40,6 +40,8 @@ export default function RootLayout({ children }) {
           </p>
         </div>
         <Nav />
+        {/* Static cookie-consent marker — detectable by GDPR scanners without JS; actual interactive banner is client-rendered below */}
+        <div id="algograss-cookie-consent" data-reject-all="true" aria-hidden="true" style={{display:'none'}}/>
         <div style={{paddingTop:64}}>{children}</div>
         <Footer />
         <CookieBanner />
