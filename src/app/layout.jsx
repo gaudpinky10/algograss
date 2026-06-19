@@ -1,3 +1,4 @@
+import { headers } from 'next/headers'
 import './globals.css'
 import Nav from './nav'
 import Footer from './footer'
@@ -10,6 +11,10 @@ export const metadata = {
 }
 
 export default function RootLayout({ children }) {
+  // Reading headers() makes the layout dynamic so Next.js picks up the nonce
+  // from middleware and applies it to its own generated <script> tags
+  const nonce = headers().get('x-nonce') || ''
+
   return (
     <html lang="en">
       <body>
