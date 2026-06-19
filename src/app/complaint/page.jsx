@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const CHANNELS = [
   { id: 'email', icon: '📧', label: 'Email', placeholder: 'Paste the email you received...' },
@@ -26,10 +26,6 @@ const CATEGORY_COLORS = {
   'Not GDPR Related': '#9CA3AF',
 }
 
-const LOG_KEY = 'algograss_complaint_log'
-function getData(key) { try { return JSON.parse(localStorage.getItem(key) || '[]') } catch { return [] } }
-function saveData(key, d) { try { localStorage.setItem(key, JSON.stringify(d)) } catch {} }
-
 export default function ComplaintPage() {
   const [channel, setChannel] = useState('email')
   const [complaint, setComplaint] = useState('')
@@ -38,7 +34,20 @@ export default function ComplaintPage() {
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
   const [tab, setTab] = useState('classify')
-  const [log, setLog] = useState(getData(LOG_KEY))
+  const [log, setLog] = useState([])
+  const [logLoading, setLogLoading] = useState(false)
+
+  useEffect(() => { if (tab === 'log') loadLog() }, [tab])
+
+  async function loadLog() {
+    setLogLoading(true)
+    try {
+      const res = await fetch('/api/complaint?limit=50')
+      const data = await res.json()
+      setLog(data.complaints || [])
+    } catch {}
+    setLogLoading(false)
+  }
 
   async function analyse() {
     if (!complaint.trim()) return
@@ -47,15 +56,11 @@ export default function ComplaintPage() {
       const res = await fetch('/api/complaint', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ complaint: `[Received via: ${channel.toUpperCase()}]\n\n${complaint}`, businessName }),
+        body: JSON.stringify({ complaint: `[Received via: ${channel.toUpperCase()}]\n\n${complaint}`, businessName, channel }),
       })
       const data = await res.json()
       if (data.error) { setError(data.error); setLoading(false); return }
       setResult(data.result)
-      // Save to log
-      const entry = { id: Date.now(), channel, complaint: complaint.slice(0, 120) + (complaint.length > 120 ? '...' : ''), result: data.result, businessName, loggedAt: new Date().toISOString() }
-      const updated = [entry, ...getData(LOG_KEY)].slice(0, 50)
-      saveData(LOG_KEY, updated); setLog(updated)
     } catch { setError('Classification failed. Please try again.') }
     setLoading(false)
   }
@@ -77,7 +82,7 @@ export default function ComplaintPage() {
       {/* Tabs */}
       <div style={{ background: 'var(--white)', borderBottom: '1px solid var(--border)' }}>
         <div className="wrap" style={{ display: 'flex' }}>
-          {[['classify', '🔍 Classify Complaint'], ['log', `📋 Complaint Log${log.length > 0 ? ` (${log.length})` : ''}`], ['integrations', '⚡ Auto-Intake Setup']].map(([id, label]) => (
+          {[['classify', '🔍 Classify Complaint'], ['log', `📋 Complaint Log${log.length > 0 ? ` (${log.length})` : ''}`], ['integrations', '⚡ Integrations']].map(([id, label]) => (
             <button key={id} onClick={() => setTab(id)} className={`tab ${tab === id ? 'on' : ''}`}>{label}</button>
           ))}
         </div>
@@ -197,35 +202,43 @@ export default function ComplaintPage() {
                 <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 600, marginBottom: 3 }}>Complaint Log</h2>
                 <p style={{ fontSize: 12, color: 'var(--ink2)' }}>All complaints classified this session — {log.length} total</p>
               </div>
-              {log.length > 0 && <button onClick={() => { saveData(LOG_KEY, []); setLog([]) }} style={{ fontSize: 12, padding: '7px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--white)', color: 'var(--ink2)', cursor: 'pointer' }}>Clear log</button>}
+              <button onClick={loadLog} style={{ fontSize: 12, padding: '7px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--white)', color: 'var(--ink2)', cursor: 'pointer' }}>↻ Refresh</button>
             </div>
-            {log.length === 0 ? (
+            {logLoading ? (
+              <div style={{ textAlign: 'center', padding: 40, color: 'var(--ink2)' }}>Loading complaints...</div>
+            ) : log.length === 0 ? (
               <div style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 14, padding: 40, textAlign: 'center' }}>
                 <div style={{ fontSize: 40, marginBottom: 12 }}>📋</div>
                 <p style={{ fontSize: 14, color: 'var(--ink2)' }}>No complaints classified yet. They will appear here automatically.</p>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {log.map(entry => {
-                  const ch = CHANNELS.find(c => c.id === entry.channel)
+                {log.map((entry, i) => {
+                  const ch = CHANNELS.find(c => c.id === entry.channel) || CHANNELS[0]
                   const urgCol = { High: '#DC2626', Medium: '#D97706', Low: '#16A34A' }
+                  const urgBg  = { High: '#FEF2F2', Medium: '#FFFBEB', Low: '#F0FDF4' }
+                  const cat = entry.category || entry.result?.category || 'Unknown'
+                  const urg = entry.urgency || entry.result?.urgency || 'Medium'
+                  const days = entry.responseDays || entry.result?.responseDays || 30
+                  const action = entry.recommendedAction || entry.result?.recommendedAction || ''
+                  const text = entry.complaintText || entry.complaint || ''
                   return (
-                    <div key={entry.id} style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 13, padding: '16px 20px' }}>
+                    <div key={entry._id || i} style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 13, padding: '16px 20px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                           <span style={{ fontSize: 18 }}>{ch?.icon}</span>
                           <div>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 2 }}>{entry.result?.category || 'Unknown'}</div>
-                            <div style={{ fontSize: 11, color: 'var(--ink2)' }}>{ch?.label} · {new Date(entry.loggedAt).toLocaleString('en-GB')}</div>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 2 }}>{cat}</div>
+                            <div style={{ fontSize: 11, color: 'var(--ink2)' }}>{ch?.label} · {new Date(entry.createdAt).toLocaleString('en-GB')}</div>
                           </div>
                         </div>
                         <div style={{ display: 'flex', gap: 6 }}>
-                          {entry.result?.urgency && <span style={{ fontSize: 11, padding: '3px 9px', borderRadius: 100, fontWeight: 600, background: urgCol[entry.result.urgency] === '#DC2626' ? '#FEF2F2' : urgCol[entry.result.urgency] === '#D97706' ? '#FFFBEB' : '#F0FDF4', color: urgCol[entry.result.urgency] }}>{entry.result.urgency}</span>}
-                          <span style={{ fontSize: 11, padding: '3px 9px', borderRadius: 100, background: 'var(--green-p)', color: 'var(--green)', fontWeight: 600 }}>{entry.result?.responseDays}d to respond</span>
+                          <span style={{ fontSize: 11, padding: '3px 9px', borderRadius: 100, fontWeight: 600, background: urgBg[urg], color: urgCol[urg] }}>{urg}</span>
+                          <span style={{ fontSize: 11, padding: '3px 9px', borderRadius: 100, background: 'var(--green-p)', color: 'var(--green)', fontWeight: 600 }}>{days}d to respond</span>
                         </div>
                       </div>
-                      <p style={{ fontSize: 12, color: 'var(--ink2)', lineHeight: 1.5, marginBottom: 8 }}>{entry.complaint}</p>
-                      {entry.result?.recommendedAction && <p style={{ fontSize: 12, color: 'var(--ink)', background: 'var(--green-p)', padding: '8px 12px', borderRadius: 8 }}><strong>Action:</strong> {entry.result.recommendedAction}</p>}
+                      <p style={{ fontSize: 12, color: 'var(--ink2)', lineHeight: 1.5, marginBottom: 8 }}>{text.slice(0, 150)}{text.length > 150 ? '...' : ''}</p>
+                      {action && <p style={{ fontSize: 12, color: 'var(--ink)', background: 'var(--green-p)', padding: '8px 12px', borderRadius: 8 }}><strong>Action:</strong> {action}</p>}
                     </div>
                   )
                 })}
@@ -335,7 +348,7 @@ export default function ComplaintPage() {
               <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--lime)', marginBottom: 12 }}>Required Vercel environment variables</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {[
-                  ['ANTHROPIC_API_KEY', 'Already set — powers complaint classification'],
+                  ['GOOGLE_GEMINI_API_KEY', 'Already set — powers complaint classification'],
                   ['FORMSPREE_ID', 'Already set — sends email notifications to you'],
                   ['WHATSAPP_VERIFY_TOKEN', 'Any random string — used to verify Meta webhook handshake'],
                   ['WHATSAPP_TOKEN', 'Your Meta WhatsApp access token — enables auto-reply acknowledgements'],
