@@ -15,6 +15,7 @@ const TOOLS = [
   { href: '/reminders',            label: 'Review Reminders',       icon: '🔔', desc: 'Never miss a compliance deadline' },
 ]
 const NAV_LINKS = [
+  { href: '/ai',      label: '✦ AI Assistant', highlight: true },
   { href: '/pricing', label: 'Pricing' },
   { href: '/about',   label: 'About' },
   { href: '/blog',    label: 'Blog' },
@@ -128,9 +129,12 @@ export default function Nav() {
           {NAV_LINKS.map(l=>(
             <li key={l.href}>
               <a href={l.href} style={{
-                fontSize:14, color:path===l.href?'#00D4AA':'rgba(232,240,254,0.6)',
+                fontSize:14,
+                color: l.highlight ? '#00D4AA' : path===l.href?'#00D4AA':'rgba(232,240,254,0.6)',
                 padding:'6px 12px', borderRadius:8, transition:'color .2s, background .2s',
-                background:path===l.href?'rgba(0,212,170,0.08)':'transparent',
+                background: l.highlight ? 'rgba(0,212,170,0.08)' : path===l.href?'rgba(0,212,170,0.08)':'transparent',
+                border: l.highlight ? '1px solid rgba(0,212,170,0.25)' : '1px solid transparent',
+                fontWeight: l.highlight ? 600 : 400,
                 fontWeight:path===l.href?500:400,
               }}
                 onMouseEnter={e=>{e.currentTarget.style.color='#00D4AA';e.currentTarget.style.background='rgba(0,212,170,0.08)'}}

@@ -207,6 +207,17 @@ const COLLECTIONS = [
     description: 'Pre-launch waitlist / signup interest',
   },
 
+  // ── AlgoGrass AI Chat History ────────────────────────────
+  {
+    name: 'ai_chats',
+    indexes: [
+      { key: { sessionId: 1 },                unique: true,  name: 'session_unique' },
+      { key: { userEmail: 1, updatedAt: -1 }, unique: false, name: 'user_updated' },
+      { key: { createdAt: 1 }, unique: false, name: 'ttl_90d', expireAfterSeconds: 7776000 },
+    ],
+    description: 'AlgoGrass AI chat sessions (90d TTL)',
+  },
+
   // ── Contact / Feedback ────────────────────────────────────
   {
     name: 'contact_messages',
