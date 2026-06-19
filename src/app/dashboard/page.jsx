@@ -97,6 +97,8 @@ function Dashboard() {
   const [input, setInput] = useState('')
   const [aiLoading, setAiLoading] = useState(false)
   const [history, setHistory] = useState([])
+  const [activities, setActivities] = useState([])
+  const [activitiesLoading, setActivitiesLoading] = useState(false)
   const [docState, setDocState] = useState({ privacy: null, cookie: null, dpa: null })
   const [docLoading, setDocLoading] = useState({ privacy: false, cookie: false, dpa: false })
   const [user, setUser] = useState(null)
@@ -127,6 +129,13 @@ function Dashboard() {
         }
       })
       .catch(() => setHistory(getHistory()))
+
+    // Load activity history
+    setActivitiesLoading(true)
+    fetch('/api/user/activities?limit=50')
+      .then(r => r.json())
+      .then(data => { setActivities(data.activities || []); setActivitiesLoading(false) })
+      .catch(() => setActivitiesLoading(false))
 
     const params = new URLSearchParams(window.location.search)
     if (params.get('upgraded') === 'true') {
@@ -223,6 +232,7 @@ function Dashboard() {
     ['documents', 'Documents'],
     ['assistant', 'AI Assistant'],
     ['history', `History${history.length > 0 ? ` (${history.length})` : ''}`],
+    ['activity', `Activity${activities.length > 0 ? ` (${activities.length})` : ''}`],
   ]
 
   return (
@@ -701,6 +711,57 @@ function Dashboard() {
             )}
           </>
         )}
+        {/* ACTIVITY TAB */}
+        {tab === 'activity' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <div>
+                <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 600, marginBottom: 3 }}>Your activity</h2>
+                <p style={{ fontSize: 12, color: 'var(--ink2)' }}>
+                  {user ? `All actions for ${user.email}` : 'All your tool usage and history'}
+                </p>
+              </div>
+              <button onClick={() => {
+                setActivitiesLoading(true)
+                fetch('/api/user/activities?limit=50').then(r=>r.json()).then(d=>{ setActivities(d.activities||[]); setActivitiesLoading(false) }).catch(()=>setActivitiesLoading(false))
+              }} style={{ fontSize: 12, padding: '7px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--white)', color: 'var(--ink2)', cursor: 'pointer' }}>
+                ↺ Refresh
+              </button>
+            </div>
+            {activitiesLoading ? (
+              <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--ink2)', fontSize: 14 }}>Loading your activity…</div>
+            ) : activities.length === 0 ? (
+              <div style={{ background: 'var(--green-p)', border: '1px solid var(--green-m)', borderRadius: 14, padding: 28, textAlign: 'center' }}>
+                <div style={{ fontSize: 40, marginBottom: 12 }}>📊</div>
+                <p style={{ fontSize: 14, color: 'var(--ink2)' }}>No activity yet. Use any tool and it will appear here.</p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {activities.map((a, i) => {
+                  const toolIcons = { scan: '🔍', complaint: '📨', dsar: '📋', 'vendor-risk': '🏢', dpia: '📊', grc: '🏛️', 'ai-governance': '🤖', reminders: '🔔', 'data-audit': '🗂️', 'algograss-ai': '🛡️', auth: '🔑', waitlist: '📧' }
+                  const icon = toolIcons[a.tool] || '📌'
+                  const actionColor = a.action?.includes('fail') || a.action?.includes('error') ? 'var(--red-text)' : a.action === 'signup' || a.action === 'login' ? 'var(--green)' : 'var(--ink)'
+                  return (
+                    <div key={a._id || i} style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 11, padding: '13px 18px', display: 'flex', alignItems: 'center', gap: 14 }}>
+                      <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--green-p)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>{icon}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2, flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: actionColor, textTransform: 'capitalize' }}>{(a.action || '').replace(/_/g, ' ')}</span>
+                          <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 4, background: 'var(--green-p)', color: 'var(--green)', fontWeight: 600 }}>{a.tool}</span>
+                        </div>
+                        {a.detail && <div style={{ fontSize: 12, color: 'var(--ink2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.detail}</div>}
+                      </div>
+                      <div style={{ fontSize: 11, color: 'var(--ink2)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                        {a.createdAt ? new Date(a.createdAt).toLocaleString('en-GB', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : ''}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
       </div>
     </div>
   )
