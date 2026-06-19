@@ -46,14 +46,6 @@ You are a world-class specialist in:
 - UK Cyber Security and Resilience Bill introduced November 2025 (replaces NIS Regulations)
 - EU NIS2 in force October 2024 for EU member states
 
-## Key Legal References
-- GDPR Articles 1–99 and all Recitals
-- UK DPA 2018 schedules and exemptions
-- ICO enforcement actions and fines
-- ICO Accountability Framework
-- EDPB guidelines
-- All ICO codes: Direct Marketing, Children's, Data Sharing, CCTV, Employment Practices
-
 ## How You Respond
 - Give practical, actionable advice — not vague generalities
 - Always cite the specific GDPR Article, ICO guidance, or regulation you're referencing
@@ -91,8 +83,6 @@ async function searchKnowledge(query, limit = 4) {
   try {
     const col = await getCollection('knowledge_base')
     if (!col) return []
-
-    // MongoDB text search across title + content + tags
     const results = await col
       .find(
         { $text: { $search: query } },
@@ -101,7 +91,6 @@ async function searchKnowledge(query, limit = 4) {
       .sort({ score: { $meta: 'textScore' } })
       .limit(limit)
       .toArray()
-
     return results
   } catch {
     return []
@@ -118,12 +107,12 @@ function buildRagContext(docs) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// POST handler
+// POST handler — uses Google Gemini (free tier)
 // ─────────────────────────────────────────────────────────────────────────────
 export async function POST(request) {
-  const apiKey = process.env.ANTHROPIC_API_KEY
+  const apiKey = process.env.GOOGLE_GEMINI_API_KEY
   if (!apiKey) {
-    return Response.json({ error: 'AI not configured' }, { status: 503 })
+    return Response.json({ error: 'AI not configured. Add GOOGLE_GEMINI_API_KEY to Vercel environment variables.' }, { status: 503 })
   }
 
   const userCookie = cookies().get('algograss_user')
@@ -157,89 +146,70 @@ export async function POST(request) {
     } catch {}
   })()
 
-  // ── Stream from Anthropic ─────────────────────────────────────
+  // ── Call Gemini API ───────────────────────────────────────────
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type':      'application/json',
-        'x-api-key':         apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-beta':    'messages-2023-06-01',
-      },
-      body: JSON.stringify({
-        model:      'claude-haiku-4-5-20251001',
-        max_tokens: 2048,
-        system:     systemPrompt,
-        stream:     true,
-        messages:   messages.map(m => ({ role: m.role, content: m.content })),
-      }),
-    })
+    // Convert messages to Gemini format (alternating user/model)
+    const contents = messages.map(m => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }],
+    }))
+
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents,
+          generationConfig: { maxOutputTokens: 2048, temperature: 0.3 },
+        }),
+      }
+    )
 
     if (!res.ok) {
       const err = await res.json()
       return Response.json({ error: err.error?.message || 'AI error' }, { status: 500 })
     }
 
+    const data = await res.json()
+    const fullResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response received.'
+
+    // ── Stream the response word-by-word ─────────────────────────
     const encoder = new TextEncoder()
-    let fullResponse = ''
+    const words   = fullResponse.split(/(\s+)/)
 
     const stream = new ReadableStream({
       async start(controller) {
-        const reader  = res.body.getReader()
-        const decoder = new TextDecoder()
-
-        try {
-          while (true) {
-            const { done, value } = await reader.read()
-            if (done) break
-
-            const chunk = decoder.decode(value)
-            const lines = chunk.split('\n')
-
-            for (const line of lines) {
-              if (line.startsWith('data: ')) {
-                const data = line.slice(6)
-                if (data === '[DONE]') continue
-                try {
-                  const parsed = JSON.parse(data)
-                  if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
-                    fullResponse += parsed.delta.text
-                    controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: parsed.delta.text })}\n\n`))
-                  }
-                  if (parsed.type === 'message_stop') {
-                    controller.enqueue(encoder.encode(`data: [DONE]\n\n`))
-                  }
-                } catch {}
-              }
-            }
-          }
-        } finally {
-          controller.close()
-          reader.cancel()
-
-          // ── Save AI response to DB ────────────────────────────
-          ;(async () => {
-            try {
-              const col = await getCollection('ai_chats')
-              if (col && sessionId && fullResponse) {
-                await col.updateOne(
-                  { sessionId },
-                  {
-                    $push: { messages: { role: 'assistant', content: fullResponse, timestamp: new Date() } },
-                    $set:  { updatedAt: new Date(), ragDocsUsed: ragDocs.length },
-                  }
-                )
-              }
-              await trackActivity({
-                userEmail: user?.email,
-                tool:      'algograss-ai',
-                action:    'ai_query',
-                detail:    lastUserMsg.content.slice(0, 100),
-              })
-            } catch {}
-          })()
+        for (const word of words) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: word })}\n\n`))
+          // Small delay to simulate streaming effect
+          await new Promise(r => setTimeout(r, 8))
         }
+        controller.enqueue(encoder.encode(`data: [DONE]\n\n`))
+        controller.close()
+
+        // ── Save AI response to DB ──────────────────────────────
+        ;(async () => {
+          try {
+            const col = await getCollection('ai_chats')
+            if (col && sessionId && fullResponse) {
+              await col.updateOne(
+                { sessionId },
+                {
+                  $push: { messages: { role: 'assistant', content: fullResponse, timestamp: new Date() } },
+                  $set:  { updatedAt: new Date(), ragDocsUsed: ragDocs.length },
+                }
+              )
+            }
+            await trackActivity({
+              userEmail: user?.email,
+              tool:      'algograss-ai',
+              action:    'ai_query',
+              detail:    lastUserMsg.content.slice(0, 100),
+            })
+          } catch {}
+        })()
       },
     })
 
