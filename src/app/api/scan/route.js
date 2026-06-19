@@ -3,33 +3,48 @@ import { getCollection, trackActivity, parseUserCookie } from '@/lib/dbHelpers';
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
 
-async function fetchPage(url, timeoutMs = 7000) {
-  try {
+async function fetchPage(url, timeoutMs = 15000) {
+  const FETCH_HEADERS = {
+    'User-Agent': UA,
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    'Accept-Language': 'en-GB,en;q=0.9,en-US;q=0.8',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+    'Sec-Fetch-Dest': 'document',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-Site': 'none',
+    'Upgrade-Insecure-Requests': '1',
+  }
+  const tryFetch = async (u) => {
     const ctrl = new AbortController()
     const timer = setTimeout(() => ctrl.abort(), timeoutMs)
-    const res = await fetch(url, {
-      headers: { 'User-Agent': UA, 'Accept': 'text/html,application/xhtml+xml,*/*;q=0.9', 'Accept-Language': 'en-GB,en;q=0.9' },
-      signal: ctrl.signal, redirect: 'follow',
-    })
-    clearTimeout(timer)
-    const reader = res.body.getReader()
-    const chunks = []
-    let bytes = 0
-    while (bytes < 600 * 1024) {
-      const { done, value } = await reader.read()
-      if (done) break
-      chunks.push(value); bytes += value.length
+    try {
+      const res = await fetch(u, { headers: FETCH_HEADERS, signal: ctrl.signal, redirect: 'follow', cache: 'no-store' })
+      clearTimeout(timer)
+      // Accept any response that has a body — even 403/429 pages contain useful HTML
+      const text = await res.text().catch(() => '')
+      if (!text && res.status >= 400) return null
+      return { ok: true, text: text.slice(0, 700 * 1024), status: res.status, headers: res.headers, finalUrl: res.url }
+    } catch (e) {
+      clearTimeout(timer)
+      return null
     }
-    reader.cancel()
-    return { ok: true, text: new TextDecoder().decode(Buffer.concat(chunks.map(c => Buffer.from(c)))), status: res.status, headers: res.headers, finalUrl: res.url }
-  } catch { return { ok: false, text: '', status: 0, headers: new Headers(), finalUrl: url } }
+  }
+
+  // Try https first, then http fallback if url was originally http or https failed
+  let result = await tryFetch(url)
+  if (!result && url.startsWith('https://')) {
+    result = await tryFetch(url.replace('https://', 'http://'))
+  }
+  return result || { ok: false, text: '', status: 0, headers: new Headers(), finalUrl: url }
 }
 
 async function fetchSubPages(baseUrl) {
   const paths = ['/privacy-policy','/privacy','/privacy-notice','/data-protection','/cookie-policy','/cookies','/cookie-notice','/terms','/terms-of-service','/terms-and-conditions','/legal','/gdpr']
   const origin = (() => { try { return new URL(baseUrl).origin } catch { return baseUrl } })()
-  const results = await Promise.allSettled(paths.map(p => fetchPage(origin + p, 4000)))
-  return results.filter(r => r.status === 'fulfilled' && r.value.ok && r.value.status === 200).map(r => r.value.text).join('\n')
+  const results = await Promise.allSettled(paths.map(p => fetchPage(origin + p, 8000)))
+  return results.filter(r => r.status === 'fulfilled' && r.value?.ok).map(r => r.value.text).join('\n')
 }
 
 function detect(text, patterns) {
