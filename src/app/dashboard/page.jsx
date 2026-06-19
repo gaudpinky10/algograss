@@ -36,7 +36,7 @@ function downloadText(text, filename) {
   URL.revokeObjectURL(a.href)
 }
 
-function downloadPDF(result) {
+async function downloadPDF(result) {
   const score = result.score
   const scoreColor = score >= 70 ? '#00A882' : score >= 40 ? '#D97706' : '#DC2626'
   const scoreLabel = score >= 70 ? 'Good' : score >= 40 ? 'Needs Work' : 'At Risk'
@@ -45,192 +45,249 @@ function downloadPDF(result) {
   const medium = result.issues.filter(i => i.sev === 'Medium')
   const low    = result.issues.filter(i => i.sev === 'Low')
 
-  const sevBg  = { High:'#FEE2E2', Medium:'#FEF3C7', Low:'#DCFCE7', Info:'#EFF6FF' }
-  const sevCol = { High:'#DC2626', Medium:'#D97706', Low:'#16A34A', Info:'#2563EB' }
-
-  const issueRows = result.issues.map(iss => `
-    <tr>
-      <td style="padding:10px 14px;border-bottom:1px solid #F1F5F9;vertical-align:top;">
-        <span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:${sevBg[iss.sev]||'#F1F5F9'};color:${sevCol[iss.sev]||'#374151'}">${iss.sev}</span>
-      </td>
-      <td style="padding:10px 14px;border-bottom:1px solid #F1F5F9;font-size:13px;font-weight:600;color:#1E293B;vertical-align:top;">${iss.title}</td>
-      <td style="padding:10px 14px;border-bottom:1px solid #F1F5F9;font-size:12px;color:#64748B;vertical-align:top;">${iss.desc}</td>
-      <td style="padding:10px 14px;border-bottom:1px solid #F1F5F9;font-size:11px;color:#00A882;font-weight:500;vertical-align:top;white-space:nowrap;">${iss.reg}</td>
-    </tr>`).join('')
-
-  const checkRows = Object.entries({
-    'HTTPS Encryption': result.checks.https,
-    'Privacy Policy': result.checks.privacyPolicy,
-    'Cookie Banner': result.checks.cookieBanner,
-    'Cookie Reject Option': result.checks.cookieReject,
-    'Terms of Service': result.checks.termsOfService,
-    'Lawful Basis Stated': result.checks.lawfulBasis,
-    'Data Subject Rights': result.checks.dataRights,
-    'Trackers Disclosed': result.checks.trackersDisclosed,
-    'Retention Period': result.checks.retentionPolicy,
-    'DSAR Contact': result.checks.dsarContact,
-    'DPO Mentioned': result.checks.dpo,
-    'Subprocessors Listed': result.checks.subprocessorsList,
-  }).map(([label, passed]) => `
-    <tr>
-      <td style="padding:9px 14px;border-bottom:1px solid #F1F5F9;font-size:13px;color:#334155;">${label}</td>
-      <td style="padding:9px 14px;border-bottom:1px solid #F1F5F9;text-align:center;font-size:15px;">${passed ? '✅' : '❌'}</td>
-      <td style="padding:9px 14px;border-bottom:1px solid #F1F5F9;font-size:12px;color:${passed?'#16A34A':'#DC2626'};font-weight:600;">${passed ? 'Pass' : 'Fail'}</td>
-    </tr>`).join('')
-
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>AlgoGrass GDPR Compliance Report — ${result.url}</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:'Inter',sans-serif;background:#fff;color:#1E293B;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  @page{margin:18mm 16mm;size:A4}
-  @media print{
-    .no-print{display:none!important}
-    body{background:#fff}
-    .page-break{page-break-before:always}
+  // Load jsPDF from CDN
+  if (!window.jspdf) {
+    await new Promise((res, rej) => {
+      const s = document.createElement('script')
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
+      s.onload = res; s.onerror = rej
+      document.head.appendChild(s)
+    })
   }
-</style>
-</head>
-<body>
+  // Load autotable plugin
+  await new Promise((res, rej) => {
+    const s = document.createElement('script')
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js'
+    s.onload = res; s.onerror = rej
+    document.head.appendChild(s)
+  })
 
-<!-- PRINT BUTTON -->
-<div class="no-print" style="position:fixed;top:20px;right:20px;z-index:999;display:flex;gap:10px">
-  <button onclick="window.print()" style="padding:10px 24px;background:linear-gradient(135deg,#00D4AA,#00A882);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,212,170,0.4)">⬇ Save as PDF</button>
-  <button onclick="window.close()" style="padding:10px 16px;background:#F1F5F9;color:#64748B;border:none;border-radius:8px;font-size:13px;cursor:pointer">✕ Close</button>
-</div>
+  const { jsPDF } = window.jspdf
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+  const W = 210
+  const M = 14
+  const CW = W - M * 2
 
-<!-- HEADER -->
-<div style="background:linear-gradient(135deg,#060B14 0%,#0D1A2E 100%);padding:40px 48px 36px;margin-bottom:0">
-  <div style="display:flex;justify-content:space-between;align-items:flex-start">
-    <div>
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-        <svg width="32" height="36" viewBox="0 0 32 36" fill="none">
-          <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00D4AA"/><stop offset="100%" stop-color="#7C9EFF"/></linearGradient></defs>
-          <path d="M16 0 L32 6 L32 20 Q32 30 16 36 Q0 30 0 20 L0 6 Z" fill="url(#g)" opacity="0.9"/>
-          <path d="M10 18 L14 22 L22 14" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span style="font-size:22px;font-weight:800;background:linear-gradient(135deg,#00D4AA,#7C9EFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">AlgoGrass</span>
-      </div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">GDPR Compliance Report</div>
-      <div style="font-size:22px;font-weight:700;color:#fff;margin-bottom:6px">${result.url}</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.5)">Scanned: ${date}</div>
-    </div>
-    <div style="text-align:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px 28px">
-      <div style="font-size:48px;font-weight:800;color:${scoreColor};line-height:1">${score}</div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px">/100</div>
-      <div style="font-size:13px;font-weight:700;color:${scoreColor};margin-top:6px">${scoreLabel}</div>
-    </div>
-  </div>
-</div>
+  // ── HEADER BACKGROUND ───────────────────────────────────────────
+  doc.setFillColor(6, 11, 20)
+  doc.rect(0, 0, W, 54, 'F')
 
-<!-- SUMMARY STRIP -->
-<div style="background:#F8FAFC;border-bottom:1px solid #E2E8F0;padding:20px 48px;display:flex;gap:32px">
-  <div style="display:flex;align-items:center;gap:8px">
-    <span style="font-size:18px">${result.isHttps ? '🔒' : '⚠️'}</span>
-    <div>
-      <div style="font-size:10px;color:#94A3B8;text-transform:uppercase;letter-spacing:.08em;font-weight:600">HTTPS</div>
-      <div style="font-size:14px;font-weight:700;color:${result.isHttps?'#16A34A':'#DC2626'}">${result.isHttps ? 'Secure' : 'Not secure'}</div>
-    </div>
-  </div>
-  <div style="width:1px;background:#E2E8F0"></div>
-  <div>
-    <div style="font-size:10px;color:#94A3B8;text-transform:uppercase;letter-spacing:.08em;font-weight:600">Issues Found</div>
-    <div style="font-size:14px;font-weight:700;color:${result.issues.length>0?'#DC2626':'#16A34A'}">${result.issues.length} issue${result.issues.length!==1?'s':''}</div>
-  </div>
-  <div style="width:1px;background:#E2E8F0"></div>
-  <div>
-    <div style="font-size:10px;color:#94A3B8;text-transform:uppercase;letter-spacing:.08em;font-weight:600">Critical</div>
-    <div style="font-size:14px;font-weight:700;color:${high.length>0?'#DC2626':'#16A34A'}">${high.length} high priority</div>
-  </div>
-  <div style="width:1px;background:#E2E8F0"></div>
-  <div>
-    <div style="font-size:10px;color:#94A3B8;text-transform:uppercase;letter-spacing:.08em;font-weight:600">Trackers</div>
-    <div style="font-size:14px;font-weight:700;color:${result.trackers.length>0?'#D97706':'#16A34A'}">${result.trackers.length>0?result.trackers.join(', '):'None detected'}</div>
-  </div>
-</div>
+  // Logo shield
+  doc.setFillColor(0, 212, 170)
+  doc.roundedRect(M, 10, 9, 11, 2, 2, 'F')
+  doc.setTextColor(255, 255, 255)
+  doc.setFontSize(7)
+  doc.setFont('helvetica', 'bold')
+  doc.text('✓', M + 4.5, 17, { align: 'center' })
 
-<div style="padding:36px 48px">
+  // Brand name
+  doc.setTextColor(0, 212, 170)
+  doc.setFontSize(16)
+  doc.setFont('helvetica', 'bold')
+  doc.text('AlgoGrass', M + 12, 18)
 
-  <!-- COMPLIANCE CHECKS -->
-  <div style="margin-bottom:36px">
-    <h2 style="font-size:16px;font-weight:700;color:#0F172A;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #00D4AA;display:flex;align-items:center;gap:8px">
-      <span style="color:#00D4AA">✦</span> Compliance Checks
-    </h2>
-    <table style="width:100%;border-collapse:collapse;background:#fff;border:1px solid #E2E8F0;border-radius:10px;overflow:hidden">
-      <thead>
-        <tr style="background:#F8FAFC">
-          <th style="padding:11px 14px;text-align:left;font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #E2E8F0">Check</th>
-          <th style="padding:11px 14px;text-align:center;font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #E2E8F0;width:70px">Result</th>
-          <th style="padding:11px 14px;text-align:left;font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #E2E8F0;width:80px">Status</th>
-        </tr>
-      </thead>
-      <tbody>${checkRows}</tbody>
-    </table>
-  </div>
+  // Sub-label
+  doc.setTextColor(160, 160, 160)
+  doc.setFontSize(7)
+  doc.setFont('helvetica', 'normal')
+  doc.text('GDPR COMPLIANCE REPORT', M, 25)
 
-  ${result.issues.length > 0 ? `
-  <!-- ISSUES -->
-  <div style="margin-bottom:36px" class="${result.issues.length > 4 ? 'page-break' : ''}">
-    <h2 style="font-size:16px;font-weight:700;color:#0F172A;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #DC2626;display:flex;align-items:center;gap:8px">
-      <span style="color:#DC2626">⚠</span> Issues Detected (${result.issues.length})
-    </h2>
-    <table style="width:100%;border-collapse:collapse;background:#fff;border:1px solid #E2E8F0;border-radius:10px;overflow:hidden">
-      <thead>
-        <tr style="background:#F8FAFC">
-          <th style="padding:11px 14px;text-align:left;font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #E2E8F0;width:90px">Severity</th>
-          <th style="padding:11px 14px;text-align:left;font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #E2E8F0">Issue</th>
-          <th style="padding:11px 14px;text-align:left;font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #E2E8F0">Description</th>
-          <th style="padding:11px 14px;text-align:left;font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid #E2E8F0;width:140px">Regulation</th>
-        </tr>
-      </thead>
-      <tbody>${issueRows}</tbody>
-    </table>
-  </div>` : `
-  <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:12px;padding:24px;margin-bottom:36px;text-align:center">
-    <div style="font-size:32px;margin-bottom:8px">🎉</div>
-    <div style="font-size:16px;font-weight:700;color:#16A34A">No issues detected</div>
-    <div style="font-size:13px;color:#4B5563;margin-top:4px">This website passed all automated GDPR compliance checks.</div>
-  </div>`}
+  // URL
+  doc.setTextColor(255, 255, 255)
+  doc.setFontSize(12)
+  doc.setFont('helvetica', 'bold')
+  const urlText = result.url.length > 55 ? result.url.slice(0, 52) + '...' : result.url
+  doc.text(urlText, M, 33)
 
-  <!-- RECOMMENDATION -->
-  <div style="background:linear-gradient(135deg,#F0FDF9,#EFF6FF);border:1px solid #A7F3D0;border-radius:12px;padding:24px;margin-bottom:36px">
-    <h3 style="font-size:14px;font-weight:700;color:#065F46;margin-bottom:10px">📋 Recommended Next Steps</h3>
-    <div style="font-size:13px;color:#374151;line-height:1.7">
-      ${high.length > 0 ? `<p style="margin-bottom:6px">1. <strong>Fix ${high.length} critical issue${high.length>1?'s':''} immediately</strong> — ${high.map(i=>i.title).join(', ')}</p>` : ''}
-      ${medium.length > 0 ? `<p style="margin-bottom:6px">${high.length>0?'2':'1'}. <strong>Address ${medium.length} medium priority issue${medium.length>1?'s':''}</strong> within 30 days</p>` : ''}
-      <p style="margin-bottom:6px">${result.issues.length > 0 ? (high.length+medium.length>0?'3':'1') : '1'}. <strong>Re-scan</strong> after making changes to verify your compliance score improves</p>
-      <p>Visit <strong>algograss.co.uk</strong> to use the full compliance toolkit — DSAR handler, DPIAs, GRC platform and more.</p>
-    </div>
-  </div>
+  // Date
+  doc.setTextColor(140, 140, 140)
+  doc.setFontSize(8)
+  doc.setFont('helvetica', 'normal')
+  doc.text(`Scanned: ${date}`, M, 40)
 
-</div>
+  // Score box
+  const scoreRgb = score >= 70 ? [0, 168, 130] : score >= 40 ? [217, 119, 6] : [220, 38, 38]
+  doc.setFillColor(20, 35, 58)
+  doc.roundedRect(W - M - 34, 6, 34, 44, 3, 3, 'F')
+  doc.setTextColor(...scoreRgb)
+  doc.setFontSize(28)
+  doc.setFont('helvetica', 'bold')
+  doc.text(String(score), W - M - 17, 28, { align: 'center' })
+  doc.setFontSize(8)
+  doc.setTextColor(140, 140, 140)
+  doc.setFont('helvetica', 'normal')
+  doc.text('/100', W - M - 17, 34, { align: 'center' })
+  doc.setFontSize(9)
+  doc.setFont('helvetica', 'bold')
+  doc.setTextColor(...scoreRgb)
+  doc.text(scoreLabel, W - M - 17, 43, { align: 'center' })
 
-<!-- FOOTER -->
-<div style="background:#060B14;padding:24px 48px;margin-top:auto">
-  <div style="display:flex;justify-content:space-between;align-items:center">
-    <div>
-      <div style="font-size:13px;font-weight:700;color:#00D4AA;margin-bottom:2px">AlgoGrass</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.35)">algograss.co.uk · Expert GDPR Compliance Platform</div>
-    </div>
-    <div style="text-align:right">
-      <div style="font-size:11px;color:rgba(255,255,255,0.35)">Report generated ${date}</div>
-      <div style="font-size:10px;color:rgba(255,255,255,0.2);margin-top:2px">This report is for informational purposes only and does not constitute legal advice.</div>
-    </div>
-  </div>
-</div>
+  // ── SUMMARY STRIP ───────────────────────────────────────────────
+  doc.setFillColor(248, 250, 252)
+  doc.rect(0, 54, W, 20, 'F')
+  doc.setDrawColor(226, 232, 240)
+  doc.setLineWidth(0.2)
+  doc.line(0, 54, W, 54)
+  doc.line(0, 74, W, 74)
 
-</body>
-</html>`
+  const summaryItems = [
+    ['HTTPS', result.isHttps ? 'Secure' : 'Not Secure', result.isHttps ? [22,163,74] : [220,38,38]],
+    ['ISSUES FOUND', `${result.issues.length} issue${result.issues.length!==1?'s':''}`, result.issues.length>0?[220,38,38]:[22,163,74]],
+    ['CRITICAL', `${high.length} high priority`, high.length>0?[220,38,38]:[22,163,74]],
+    ['TRACKERS', result.trackers?.length>0 ? result.trackers.slice(0,2).join(', ') : 'None detected', result.trackers?.length>0?[217,119,6]:[22,163,74]],
+  ]
+  summaryItems.forEach(([label, val, col], i) => {
+    const x = M + i * (CW / 4)
+    doc.setTextColor(148, 163, 184)
+    doc.setFontSize(6.5)
+    doc.setFont('helvetica', 'bold')
+    doc.text(label, x, 62)
+    doc.setTextColor(...col)
+    doc.setFontSize(8.5)
+    doc.setFont('helvetica', 'bold')
+    doc.text(val, x, 70)
+  })
 
-  const win = window.open('', '_blank', 'width=900,height=700')
-  win.document.write(html)
-  win.document.close()
-  setTimeout(() => win.focus(), 300)
+  let y = 82
+
+  // ── COMPLIANCE CHECKS ───────────────────────────────────────────
+  doc.setTextColor(15, 23, 42)
+  doc.setFontSize(11)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Compliance Checks', M, y)
+  doc.setDrawColor(0, 212, 170)
+  doc.setLineWidth(0.7)
+  doc.line(M, y + 2, M + 50, y + 2)
+  doc.setLineWidth(0.2)
+  y += 5
+
+  const checks = [
+    ['HTTPS Encryption', result.checks?.https],
+    ['Privacy Policy', result.checks?.privacyPolicy],
+    ['Cookie Banner', result.checks?.cookieBanner],
+    ['Cookie Reject Option', result.checks?.cookieReject],
+    ['Terms of Service', result.checks?.termsOfService],
+    ['Lawful Basis Stated', result.checks?.lawfulBasis],
+    ['Data Subject Rights', result.checks?.dataRights],
+    ['Trackers Disclosed', result.checks?.trackersDisclosed],
+    ['Retention Period', result.checks?.retentionPolicy],
+    ['DSAR Contact', result.checks?.dsarContact],
+    ['DPO Mentioned', result.checks?.dpo],
+    ['Subprocessors Listed', result.checks?.subprocessorsList],
+  ]
+
+  doc.autoTable({
+    startY: y,
+    margin: { left: M, right: M },
+    head: [['Compliance Check', 'Status', 'Result']],
+    body: checks.map(([label, passed]) => [label, passed ? 'PASS' : 'FAIL', passed ? 'Pass' : 'Fail']),
+    headStyles: { fillColor: [241, 245, 249], textColor: [100, 116, 139], fontSize: 7.5, fontStyle: 'bold', halign: 'left' },
+    bodyStyles: { fontSize: 8.5, textColor: [51, 65, 85] },
+    columnStyles: {
+      0: { cellWidth: 100 },
+      1: { cellWidth: 28, halign: 'center', fontStyle: 'bold' },
+      2: { cellWidth: 24, halign: 'center' },
+    },
+    alternateRowStyles: { fillColor: [248, 250, 252] },
+    didParseCell: (d) => {
+      if (d.column.index === 1 && d.section === 'body') {
+        d.cell.styles.textColor = d.cell.raw === 'PASS' ? [22, 163, 74] : [220, 38, 38]
+      }
+      if (d.column.index === 2 && d.section === 'body') {
+        d.cell.styles.textColor = d.cell.raw === 'Pass' ? [22, 163, 74] : [220, 38, 38]
+      }
+    },
+    tableLineColor: [226, 232, 240],
+    tableLineWidth: 0.2,
+  })
+  y = doc.lastAutoTable.finalY + 10
+
+  // ── ISSUES TABLE ────────────────────────────────────────────────
+  if (result.issues.length > 0) {
+    if (y > 220) { doc.addPage(); y = 16 }
+    doc.setTextColor(15, 23, 42)
+    doc.setFontSize(11)
+    doc.setFont('helvetica', 'bold')
+    doc.text(`Issues Detected (${result.issues.length})`, M, y)
+    doc.setDrawColor(220, 38, 38)
+    doc.setLineWidth(0.7)
+    doc.line(M, y + 2, M + 55, y + 2)
+    doc.setLineWidth(0.2)
+    y += 5
+
+    doc.autoTable({
+      startY: y,
+      margin: { left: M, right: M },
+      head: [['Severity', 'Issue', 'Description', 'Regulation']],
+      body: result.issues.map(iss => [iss.sev, iss.title, iss.desc, iss.reg]),
+      headStyles: { fillColor: [241, 245, 249], textColor: [100, 116, 139], fontSize: 7.5, fontStyle: 'bold' },
+      bodyStyles: { fontSize: 7.5, textColor: [51, 65, 85] },
+      columnStyles: {
+        0: { cellWidth: 20, halign: 'center', fontStyle: 'bold' },
+        1: { cellWidth: 42, fontStyle: 'bold' },
+        2: { cellWidth: 78 },
+        3: { cellWidth: 32 },
+      },
+      didParseCell: (d) => {
+        if (d.column.index === 0 && d.section === 'body') {
+          const c = { High:[220,38,38], Medium:[217,119,6], Low:[22,163,74], Info:[37,99,235] }
+          d.cell.styles.textColor = c[d.cell.raw] || [100,116,139]
+        }
+      },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
+      tableLineColor: [226, 232, 240],
+      tableLineWidth: 0.2,
+    })
+    y = doc.lastAutoTable.finalY + 10
+  }
+
+  // ── NEXT STEPS BOX ──────────────────────────────────────────────
+  if (y > 245) { doc.addPage(); y = 16 }
+  const steps = []
+  if (high.length > 0) steps.push(`1. Fix ${high.length} critical issue${high.length>1?'s':''} immediately: ${high.map(i=>i.title).join(', ')}`)
+  if (medium.length > 0) steps.push(`${steps.length+1}. Address ${medium.length} medium-priority issue${medium.length>1?'s':''} within 30 days`)
+  steps.push(`${steps.length+1}. Re-scan your website to verify the compliance score improves`)
+  steps.push(`${steps.length+1}. Visit algograss.co.uk for DSAR tools, DPIAs, and full GRC platform`)
+
+  const boxH = 12 + steps.length * 6
+  doc.setFillColor(240, 253, 249)
+  doc.setDrawColor(167, 243, 208)
+  doc.setLineWidth(0.3)
+  doc.roundedRect(M, y, CW, boxH, 3, 3, 'FD')
+  doc.setTextColor(6, 95, 70)
+  doc.setFontSize(9)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Recommended Next Steps', M + 5, y + 8)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(7.5)
+  doc.setTextColor(55, 65, 81)
+  steps.forEach((s, i) => {
+    const lines = doc.splitTextToSize(s, CW - 10)
+    doc.text(lines, M + 5, y + 15 + i * 6)
+  })
+
+  // ── FOOTER ON EVERY PAGE ────────────────────────────────────────
+  const pages = doc.internal.getNumberOfPages()
+  for (let p = 1; p <= pages; p++) {
+    doc.setPage(p)
+    const pH = doc.internal.pageSize.height
+    doc.setFillColor(6, 11, 20)
+    doc.rect(0, pH - 16, W, 16, 'F')
+    doc.setTextColor(0, 212, 170)
+    doc.setFontSize(8)
+    doc.setFont('helvetica', 'bold')
+    doc.text('AlgoGrass', M, pH - 8)
+    doc.setTextColor(130, 130, 130)
+    doc.setFontSize(6.5)
+    doc.setFont('helvetica', 'normal')
+    doc.text('algograss.co.uk · Expert GDPR Compliance Platform', M + 22, pH - 8)
+    doc.text(`Page ${p} of ${pages}  ·  Generated: ${date}`, W - M, pH - 8, { align: 'right' })
+    doc.text('This report is for informational purposes only and does not constitute legal advice.', W / 2, pH - 3, { align: 'center' })
+  }
+
+  // ── SAVE ────────────────────────────────────────────────────────
+  const slug = result.url.replace(/https?:\/\//, '').replace(/[^a-z0-9]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+  doc.save(`algograss-gdpr-report-${slug}.pdf`)
 }
 
 function buildReportText(result) {
