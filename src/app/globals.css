@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Grotesk:wght@300;400;500;600&display=swap');
+/* Fonts are self-hosted via next/font/google (see layout.jsx) — no Google requests */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -44,7 +44,7 @@ html{scroll-behavior:smooth}
 }
 
 body{
-  font-family:'Space Grotesk',sans-serif;
+  font-family:var(--font-space-grotesk,'Space Grotesk'),sans-serif;
   background:var(--bg);
   color:var(--ink);
   line-height:1.6;
@@ -63,8 +63,8 @@ body::before{
 }
 
 a{text-decoration:none;color:inherit}
-button{font-family:'Space Grotesk',sans-serif;cursor:pointer}
-input,textarea,select{font-family:'Space Grotesk',sans-serif}
+button{font-family:var(--font-space-grotesk,'Space Grotesk'),sans-serif;cursor:pointer}
+input,textarea,select{font-family:var(--font-space-grotesk,'Space Grotesk'),sans-serif}
 
 /* ── BUTTONS ─────────────────────────────────────────── */
 .btn{
@@ -107,11 +107,11 @@ input,textarea,select{font-family:'Space Grotesk',sans-serif}
   color:var(--accent);margin-bottom:12px;display:block;
 }
 .display{
-  font-family:'Syne',sans-serif;font-weight:800;letter-spacing:-2px;
+  font-family:var(--font-syne,'Syne'),sans-serif;font-weight:800;letter-spacing:-2px;
   line-height:1.0;color:var(--ink);
 }
 .heading{
-  font-family:'Syne',sans-serif;font-weight:700;letter-spacing:-0.5px;
+  font-family:var(--font-syne,'Syne'),sans-serif;font-weight:700;letter-spacing:-0.5px;
   line-height:1.1;color:var(--ink);
 }
 .subtext{font-size:16px;color:var(--ink2);font-weight:300;line-height:1.75}
@@ -168,7 +168,7 @@ input,textarea,select{font-family:'Space Grotesk',sans-serif}
   border-bottom:1px solid rgba(255,255,255,0.06);
 }
 .nav-logo{
-  font-family:'Syne',sans-serif;font-weight:800;font-size:20px;
+  font-family:var(--font-syne,'Syne'),sans-serif;font-weight:800;font-size:20px;
   background:linear-gradient(135deg,var(--accent),#7C9EFF);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   display:flex;align-items:center;gap:8px;
@@ -190,7 +190,7 @@ input,textarea,select{font-family:'Space Grotesk',sans-serif}
 .tab{
   padding:0 20px;height:48px;border:none;background:none;
   font-size:14px;color:var(--ink2);border-bottom:2px solid transparent;
-  cursor:pointer;transition:all .2s;font-family:'Space Grotesk',sans-serif;
+  cursor:pointer;transition:all .2s;font-family:var(--font-space-grotesk,'Space Grotesk'),sans-serif;
 }
 .tab.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:500}
 

@@ -10,12 +10,14 @@ export function middleware(request) {
     // strict-dynamic lets nonce-allowed scripts load their own chunks (Next.js code splitting)
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://js.stripe.com https://hooks.stripe.com`,
     // style unsafe-inline needed by Next.js SSR — penalised less than script unsafe-inline
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com data:",
+    // No Google Fonts needed — fonts are self-hosted via next/font/google at build time
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self' data:",
     "img-src 'self' data: https:",
     "connect-src 'self' https://api.stripe.com https://vitals.vercel-insights.com",
     "frame-src https://js.stripe.com https://hooks.stripe.com",
     "frame-ancestors 'none'",
+    "base-uri 'none'",
     "form-action 'self'",
     "upgrade-insecure-requests",
   ].join('; ')

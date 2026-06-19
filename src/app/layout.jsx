@@ -1,8 +1,24 @@
 import { headers } from 'next/headers'
+import { Syne, Space_Grotesk } from 'next/font/google'
 import './globals.css'
 import Nav from './nav'
 import Footer from './footer'
 import CookieBanner from '@/components/CookieBanner'
+
+// next/font/google downloads fonts at BUILD TIME and self-hosts them
+// from _next/static/media/ — no runtime requests to Google (GDPR safe)
+const syne = Syne({
+  subsets: ['latin'],
+  weight: ['400', '600', '700', '800'],
+  variable: '--font-syne',
+  display: 'swap',
+})
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  variable: '--font-space-grotesk',
+  display: 'swap',
+})
 
 export const metadata = {
   title: 'AlgoGrass — GDPR Compliance Tools for UK & EU SMEs',
@@ -16,7 +32,7 @@ export default function RootLayout({ children }) {
   const nonce = headers().get('x-nonce') || ''
 
   return (
-    <html lang="en">
+    <html lang="en" className={`${syne.variable} ${spaceGrotesk.variable}`}>
       <body>
         <div style={{background:'linear-gradient(90deg,rgba(0,212,170,0.12),rgba(124,58,237,0.12))',borderBottom:'1px solid rgba(0,212,170,0.12)',padding:'7px 0',textAlign:'center'}}>
           <p style={{fontSize:11,color:'rgba(232,240,254,0.4)',letterSpacing:'.02em'}}>
