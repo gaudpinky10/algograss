@@ -249,6 +249,20 @@ const COLLECTIONS = [
     ],
     description: 'Raw webhook payloads (email, WhatsApp, social — 30d TTL)',
   },
+
+  // ── AlgoGrass AI Knowledge Base (RAG) ────────────────────
+  {
+    name: 'knowledge_base',
+    indexes: [
+      // Full-text search across title + content + tags
+      { key: { title: 'text', content: 'text', tags: 'text' }, unique: false, name: 'fulltext_search' },
+      { key: { category: 1, publishedAt: -1 }, unique: false, name: 'category_date' },
+      { key: { source: 1 },                    unique: false, name: 'source_idx' },
+      { key: { publishedAt: -1 },              unique: false, name: 'latest_first' },
+      { key: { slug: 1 },                      unique: true,  name: 'slug_unique' },
+    ],
+    description: 'GDPR regulatory knowledge base for RAG — ICO decisions, EDPB opinions, EU AI Act updates',
+  },
 ]
 
 // ─────────────────────────────────────────────────────────────

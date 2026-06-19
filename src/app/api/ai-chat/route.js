@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import { getCollection, parseUserCookie, trackActivity } from '@/lib/dbHelpers'
 
-const SYSTEM_PROMPT = `You are AlgoGrass AI — an expert GDPR, UK Data Protection, and GRC compliance assistant built exclusively for AlgoGrass (algograss.co.uk).
+const BASE_SYSTEM_PROMPT = `You are AlgoGrass AI — an expert GDPR, UK Data Protection, and GRC compliance assistant built exclusively for AlgoGrass (algograss.co.uk).
 
 ## Your Identity
 - You are AlgoGrass AI, created by AlgoGrass Ltd
@@ -14,28 +14,44 @@ You are a world-class specialist in:
 - **UK GDPR** (retained EU law post-Brexit, UK Data Protection Act 2018)
 - **EU GDPR** (Regulation 2016/679)
 - **PECR** (Privacy and Electronic Communications Regulations 2003)
-- **ICO Guidance** — all published ICO codes, guidance notes, and enforcement decisions
-- **EU AI Act** (Regulation 2024/1689) — risk classification, obligations, prohibited practices
+- **Data (Use and Access) Act 2025** — major 2025 UK law amending UK GDPR, including mandatory complaints process from 19 June 2026, increased PECR fines to £17.5m, new automated decision-making rules, codified legitimate interests
+- **ICO Guidance** — all published ICO codes, guidance notes, and enforcement decisions up to June 2026
+- **EU AI Act** (Regulation 2024/1689) — full implementation timeline: prohibited practices (Feb 2025), GPAI obligations (Aug 2025), high-risk AI (Aug 2026)
 - **ISO 27001 / ISO 27701** — information security and privacy management
-- **NIS2 Directive** — network and information security
+- **NIS2 Directive** — EU (in force Oct 2024); UK Cyber Security and Resilience Bill (introduced Nov 2025)
 - **UK Cyber Essentials** scheme
 - **DSAR handling** (Data Subject Access Requests, Art. 15–22)
 - **Data breach notification** (72-hour ICO rule, Art. 33–34)
 - **Lawful basis** for processing (Art. 6, Art. 9 special categories)
 - **Privacy by design and default** (Art. 25)
 - **Data Protection Impact Assessments** (Art. 35)
-- **International transfers** (Art. 44–49, SCCs, UK IDTA, adequacy decisions)
-- **Children's data** (COPPA, ICO Age Appropriate Design Code)
-- **Cookies and consent** (PECR, ICO 2023 cookie guidance)
-- **Employment data** (special category, monitoring, CCTV)
+- **International transfers** (Art. 44–49, IDTA, UK-US Data Bridge, adequacy decisions)
+- **Children's data** (ICO Age Appropriate Design Code / Children's Code, age assurance requirements)
+- **Cookies and consent** (PECR, ICO cookie guidance, dark patterns enforcement)
+- **Employment data** (special category, monitoring, CCTV, remote working surveillance)
 - **Marketing and consent** (soft opt-in, legitimate interests, email/SMS rules)
+- **Adtech and real-time bidding** (ICO RTB guidance)
+- **EDPB guidelines** including December 2024 Opinion on AI model training data
 
-## Key Legal References You Know Deeply
+## Latest Key Developments You Know About
+- ICO fined Capita £14m (Oct 2025) — UK's largest ever ICO fine, cybersecurity failure
+- ICO fined Reddit £14.47m (Feb 2026) — children's data age assurance failure
+- ICO fined Advanced Computer Software £3.07m (2025) — NHS ransomware attack
+- UK Data (Use and Access) Act 2025 — mandatory data protection complaints process from 19 June 2026
+- PECR fines increased to £17.5m or 4% global turnover under DUAA 2025
+- EU AI Act GPAI obligations commenced August 2, 2025
+- EU AI Act high-risk AI obligations from August 2, 2026
+- ICO investigating TikTok recommender systems (Mar 2025), Meta Instagram (Dec 2025)
+- EDPB Opinion 28/2024 on AI model training — legitimate interest can be used but requires 3-step test
+- UK Cyber Security and Resilience Bill introduced November 2025 (replaces NIS Regulations)
+- EU NIS2 in force October 2024 for EU member states
+
+## Key Legal References
 - GDPR Articles 1–99 and all Recitals
 - UK DPA 2018 schedules and exemptions
-- ICO enforcement actions and fines (British Airways, Marriott, WhatsApp etc)
+- ICO enforcement actions and fines
 - ICO Accountability Framework
-- Article 29 Working Party / EDPB guidelines
+- EDPB guidelines
 - All ICO codes: Direct Marketing, Children's, Data Sharing, CCTV, Employment Practices
 
 ## How You Respond
@@ -52,8 +68,7 @@ Professional but approachable. You're the compliance expert the user wishes they
 
 ## What You Don't Do
 - Give advice outside GDPR/data protection/privacy/GRC scope
-- Provide legal advice that constitutes solicitor-client relationship
-- Discuss topics unrelated to compliance, data protection, or business governance
+- Provide advice that constitutes a solicitor-client relationship
 - If asked about anything off-topic, politely redirect: "I'm specialised in GDPR and compliance — let me help you with that instead."
 
 ## AlgoGrass Platform
@@ -69,6 +84,42 @@ You are part of the AlgoGrass platform which includes:
 
 When relevant, suggest the user tries these tools on algograss.co.uk.`
 
+// ─────────────────────────────────────────────────────────────────────────────
+// RAG: Search knowledge base for relevant documents
+// ─────────────────────────────────────────────────────────────────────────────
+async function searchKnowledge(query, limit = 4) {
+  try {
+    const col = await getCollection('knowledge_base')
+    if (!col) return []
+
+    // MongoDB text search across title + content + tags
+    const results = await col
+      .find(
+        { $text: { $search: query } },
+        { score: { $meta: 'textScore' }, projection: { content: 1, title: 1, category: 1, source: 1, publishedAt: 1, score: { $meta: 'textScore' } } }
+      )
+      .sort({ score: { $meta: 'textScore' } })
+      .limit(limit)
+      .toArray()
+
+    return results
+  } catch {
+    return []
+  }
+}
+
+function buildRagContext(docs) {
+  if (!docs.length) return ''
+  const entries = docs.map(d => {
+    const date = d.publishedAt ? new Date(d.publishedAt).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) : ''
+    return `### ${d.title}${date ? ` (${date})` : ''}\nSource: ${d.source || 'ICO/GDPR'}\n\n${d.content}`
+  })
+  return `\n\n## CURRENT KNOWLEDGE BASE — USE THIS FOR UP-TO-DATE INFORMATION\n\nThe following entries from your knowledge base are directly relevant to this query. Prioritise this information over general training knowledge:\n\n${entries.join('\n\n---\n\n')}\n\n---\nEnd of knowledge base context.`
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST handler
+// ─────────────────────────────────────────────────────────────────────────────
 export async function POST(request) {
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
@@ -81,8 +132,14 @@ export async function POST(request) {
   const { messages, sessionId } = await request.json()
   if (!messages?.length) return Response.json({ error: 'Messages required' }, { status: 400 })
 
-  // Save user message to DB
   const lastUserMsg = messages[messages.length - 1]
+
+  // ── RAG: fetch relevant knowledge base docs ───────────────────
+  const ragDocs    = await searchKnowledge(lastUserMsg.content)
+  const ragContext = buildRagContext(ragDocs)
+  const systemPrompt = BASE_SYSTEM_PROMPT + ragContext
+
+  // ── Save user message to DB ───────────────────────────────────
   ;(async () => {
     try {
       const col = await getCollection('ai_chats')
@@ -100,7 +157,7 @@ export async function POST(request) {
     } catch {}
   })()
 
-  // Stream from Anthropic
+  // ── Stream from Anthropic ─────────────────────────────────────
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -113,7 +170,7 @@ export async function POST(request) {
       body: JSON.stringify({
         model:      'claude-haiku-4-5-20251001',
         max_tokens: 2048,
-        system:     SYSTEM_PROMPT,
+        system:     systemPrompt,
         stream:     true,
         messages:   messages.map(m => ({ role: m.role, content: m.content })),
       }),
@@ -124,13 +181,12 @@ export async function POST(request) {
       return Response.json({ error: err.error?.message || 'AI error' }, { status: 500 })
     }
 
-    // Pass the stream through, collecting full response for DB
     const encoder = new TextEncoder()
     let fullResponse = ''
 
     const stream = new ReadableStream({
       async start(controller) {
-        const reader = res.body.getReader()
+        const reader  = res.body.getReader()
         const decoder = new TextDecoder()
 
         try {
@@ -162,7 +218,7 @@ export async function POST(request) {
           controller.close()
           reader.cancel()
 
-          // Save AI response to DB
+          // ── Save AI response to DB ────────────────────────────
           ;(async () => {
             try {
               const col = await getCollection('ai_chats')
@@ -171,7 +227,7 @@ export async function POST(request) {
                   { sessionId },
                   {
                     $push: { messages: { role: 'assistant', content: fullResponse, timestamp: new Date() } },
-                    $set:  { updatedAt: new Date() },
+                    $set:  { updatedAt: new Date(), ragDocsUsed: ragDocs.length },
                   }
                 )
               }
