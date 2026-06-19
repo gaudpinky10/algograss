@@ -1,4 +1,4 @@
-import { trackActivity } from '@/lib/dbHelpers'
+import { trackActivity, getCollection } from '@/lib/dbHelpers'
 
 // Stripe helper — throws on API errors instead of silently returning them
 async function stripeReq(path, method = 'GET', body = null, key) {
@@ -115,7 +115,58 @@ export async function GET(request) {
       console.log('Subscription created:', subscription.id, subscription.status)
     }
 
-    // ── Step 6: Track ──
+    // ── Step 6: Save subscription + billing event to MongoDB ──
+    const subsCol   = await getCollection('subscriptions').catch(() => null)
+    const eventsCol = await getCollection('billing_events').catch(() => null)
+
+    if (subsCol && customerEmail) {
+      // upsert — one row per user/plan combination
+      await subsCol.updateOne(
+        { userEmail: customerEmail.toLowerCase() },
+        {
+          $set: {
+            userEmail:            customerEmail.toLowerCase(),
+            stripeCustomerId:     customerId,
+            plan,
+            status:               trial ? 'trialing' : 'active',
+            trial,
+            trialEndsAt:          trial ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) : null,
+            paymentMethodId,
+            refundStatus,
+            updatedAt:            new Date(),
+          },
+          $setOnInsert: { createdAt: new Date() },
+        },
+        { upsert: true }
+      ).catch(() => {})
+    }
+
+    if (eventsCol) {
+      await eventsCol.insertOne({
+        stripeEventId: `activate_${sessionId}`, // idempotent key
+        userEmail:     customerEmail?.toLowerCase() || 'unknown',
+        event:         trial ? 'trial_started' : 'subscription_created',
+        plan,
+        trial,
+        refundStatus,
+        customerId,
+        amount:        100, // £1.00 in pence (verification charge)
+        currency:      'gbp',
+        createdAt:     new Date(),
+      }).catch(() => {})
+    }
+
+    // Also update the user record with their plan
+    if (customerEmail) {
+      const usersCol = await getCollection('users').catch(() => null)
+      if (usersCol) {
+        await usersCol.updateOne(
+          { email: customerEmail.toLowerCase() },
+          { $set: { plan, stripeCustomerId: customerId, updatedAt: new Date() } }
+        ).catch(() => {})
+      }
+    }
+
     await trackActivity({
       userEmail: customerEmail,
       tool:   'billing',

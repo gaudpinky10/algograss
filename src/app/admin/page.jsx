@@ -22,11 +22,12 @@ export default function AdminHub() {
   return (
     <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:28}}>
       <h1 style={{fontFamily:'Syne,sans-serif',fontSize:24,fontWeight:800,color:'var(--ink)'}}>AlgoGrass Admin</h1>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:16,maxWidth:700,width:'100%',padding:'0 20px'}}>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:16,maxWidth:700,width:'100%',padding:'0 20px',gridAutoRows:'1fr'}}>
         {[
           {href:'/admin/developer',  label:'Developer',  icon:'⚙️',desc:'DB health, errors, API logs, env vars',color:'#818CF8'},
           {href:'/admin/founder',    label:'Founder',    icon:'📈',desc:'User growth, revenue, tool usage, KPIs',color:'#F59E0B'},
           {href:'/admin/co-founder', label:'Co-Founder', icon:'🤝',desc:'Business overview, users, activity',color:'#EC4899'},
+          {href:'/admin/database',   label:'Database',   icon:'🗄️',desc:'Collections, indexes, schema, initialize DB',color:'#34D399'},
           {href:'/dashboard',        label:'User',       icon:'🛡️',desc:'Personal compliance tools and history',color:'var(--accent)'},
         ].map(p=>(
           <a key={p.href} href={p.href} style={{background:'var(--bg2)',border:`1px solid ${p.color}30`,borderRadius:16,padding:'24px 20px',textDecoration:'none',textAlign:'center',transition:'border-color .2s'}}>
