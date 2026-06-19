@@ -1,0 +1,96 @@
+export const metadata = { title: 'Terms of Service — AlgoGrass', description: 'Terms and conditions for using the AlgoGrass compliance platform.' }
+
+const Section = ({ title, children }) => (
+  <div style={{ marginBottom: 40 }}>
+    <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 700, color: 'var(--ink)', marginBottom: 14, paddingBottom: 10, borderBottom: '1px solid var(--border)' }}>{title}</h2>
+    <div style={{ fontSize: 14, color: 'var(--ink2)', lineHeight: 1.9 }}>{children}</div>
+  </div>
+)
+const P = ({ children }) => <p style={{ marginBottom: 12 }}>{children}</p>
+
+export default function TermsPage() {
+  return (
+    <section style={{ padding: '60px 0 100px' }}>
+      <div className="wrap" style={{ maxWidth: 780 }}>
+
+        <div style={{ marginBottom: 48 }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--green)', textTransform: 'uppercase', letterSpacing: '.1em' }}>Legal</span>
+          <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 36, fontWeight: 800, color: 'var(--ink)', margin: '8px 0 12px' }}>Terms of Service</h1>
+          <p style={{ fontSize: 13, color: 'var(--ink2)' }}>Last updated: 19 June 2026 · Effective: 19 June 2026</p>
+          <div style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 10, padding: '14px 18px', marginTop: 20 }}>
+            <p style={{ margin: 0, fontSize: 13, color: '#F59E0B' }}>Please read these terms carefully before using AlgoGrass. By creating an account or using the platform, you agree to be bound by these terms.</p>
+          </div>
+        </div>
+
+        <Section title="1. About AlgoGrass">
+          <P>AlgoGrass Ltd ("AlgoGrass", "we", "us", "our") is a company registered in England and Wales, providing an AI-powered GDPR and GRC compliance platform at algograss.co.uk ("the Platform").</P>
+          <P><strong style={{ color: 'var(--ink)' }}>Important:</strong> AlgoGrass is a compliance guidance tool, not a law firm. Nothing on this platform constitutes legal advice. Always review compliance outputs with a qualified solicitor before relying on them commercially.</P>
+        </Section>
+
+        <Section title="2. Eligibility">
+          <P>You must be at least 18 years old and have authority to bind your business to these terms. By using AlgoGrass, you confirm you meet these requirements.</P>
+        </Section>
+
+        <Section title="3. Your account">
+          <P>You are responsible for maintaining the confidentiality of your login credentials. You must notify us immediately at <a href="mailto:hello@algograss.co.uk" style={{ color: 'var(--green)' }}>hello@algograss.co.uk</a> if you suspect unauthorised access.</P>
+          <P>You must not share your account, create multiple accounts for the same business, or use the platform for any unlawful purpose.</P>
+        </Section>
+
+        <Section title="4. Subscription plans & billing">
+          <P><strong style={{ color: 'var(--ink)' }}>Free trial:</strong> Paid plans include a 30-day free trial. A valid payment card is required. Nothing is charged during the trial period.</P>
+          <P><strong style={{ color: 'var(--ink)' }}>Card verification:</strong> We charge £1 to verify your card is valid. This is refunded automatically within minutes.</P>
+          <P><strong style={{ color: 'var(--ink)' }}>Billing:</strong> After the free trial, your plan renews automatically monthly at the rate shown at signup. You will receive an email reminder 7 days before the first charge.</P>
+          <P><strong style={{ color: 'var(--ink)' }}>Cancellation:</strong> Cancel any time from your dashboard. You retain access until the end of the current billing period. No refunds for partial months.</P>
+          <P><strong style={{ color: 'var(--ink)' }}>Price changes:</strong> We will give 30 days' notice of any price increase. Continued use after the notice period constitutes acceptance.</P>
+        </Section>
+
+        <Section title="5. Acceptable use">
+          <P>You agree not to:</P>
+          {[
+            'Use the platform to scan websites without authorisation',
+            'Attempt to reverse engineer, copy, or resell the platform',
+            'Upload malicious content or attempt to compromise platform security',
+            'Use the platform in any way that violates applicable law',
+            'Misrepresent AlgoGrass output as formal legal advice',
+            'Share your account credentials with third parties',
+          ].map(item => (
+            <div key={item} style={{ paddingLeft: 14, borderLeft: '2px solid rgba(239,68,68,0.3)', marginBottom: 8, fontSize: 13, color: 'var(--ink2)' }}>❌ {item}</div>
+          ))}
+        </Section>
+
+        <Section title="6. Intellectual property">
+          <P>All content, software, algorithms, designs, and trademarks on the AlgoGrass platform are owned by AlgoGrass Ltd or licensed to us. You may not copy, reproduce, or distribute any part of the platform without written permission.</P>
+          <P>Documents generated by the platform (privacy policies, cookie policies, etc.) are licensed to you for use in your own business. You may not resell or redistribute them.</P>
+        </Section>
+
+        <Section title="7. Disclaimer of warranties">
+          <P>AlgoGrass is provided "as is" and "as available". We do not warrant that the platform will be error-free, uninterrupted, or that compliance scan results will be 100% accurate or complete.</P>
+          <P>Compliance scan results are indicative only. They are not a substitute for a professional legal or compliance audit. AlgoGrass is not liable for any regulatory action, fine, or loss arising from reliance on platform outputs without independent legal review.</P>
+        </Section>
+
+        <Section title="8. Limitation of liability">
+          <P>To the fullest extent permitted by law, AlgoGrass's total liability to you for any claim arising under these terms shall not exceed the amount you paid to us in the 3 months prior to the claim.</P>
+          <P>We are not liable for indirect, consequential, or special damages including loss of profits, data, or business opportunities.</P>
+        </Section>
+
+        <Section title="9. Termination">
+          <P>We may suspend or terminate your account immediately if you breach these terms, engage in fraudulent activity, or fail to pay amounts due. You may terminate your account at any time from your dashboard settings.</P>
+          <P>On termination, your data will be retained for the periods specified in our <a href="/privacy-policy" style={{ color: 'var(--green)' }}>Privacy Policy</a>, then deleted.</P>
+        </Section>
+
+        <Section title="10. Governing law">
+          <P>These terms are governed by the laws of England and Wales. Any disputes shall be subject to the exclusive jurisdiction of the courts of England and Wales.</P>
+        </Section>
+
+        <Section title="11. Changes to these terms">
+          <P>We may update these terms from time to time. We will notify you by email at least 14 days before material changes take effect. Continued use of the platform after that date constitutes acceptance.</P>
+        </Section>
+
+        <Section title="12. Contact us">
+          <P>Questions about these terms? Contact us at <a href="mailto:hello@algograss.co.uk" style={{ color: 'var(--green)' }}>hello@algograss.co.uk</a> or write to: AlgoGrass Ltd, 5 Jupp Road West, London, E15 2HS.</P>
+        </Section>
+
+      </div>
+    </section>
+  )
+}

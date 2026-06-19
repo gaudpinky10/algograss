@@ -82,12 +82,13 @@ export default function Footer() {
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 22, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
           <span style={{ fontSize: 12, color: 'rgba(232,240,254,0.2)' }}>© 2026 AlgoGrass Ltd · Registered in England & Wales · algograss.co.uk</span>
           <div style={{ display: 'flex', gap: 22 }}>
-            {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map(item => (
-              <a key={item} href="#" style={{ fontSize: 12, color: 'rgba(232,240,254,0.2)', textDecoration: 'none', transition: 'color .2s' }}
+            {[['Privacy Policy','/privacy-policy'],['Terms of Service','/terms'],['Cookie Policy','/cookie-policy']].map(([item,href]) => (
+              <a key={item} href={href} style={{ fontSize: 12, color: 'rgba(232,240,254,0.2)', textDecoration: 'none', transition: 'color .2s' }}
                 onMouseEnter={e => e.currentTarget.style.color = 'rgba(232,240,254,0.55)'}
                 onMouseLeave={e => e.currentTarget.style.color = 'rgba(232,240,254,0.2)'}>
                 {item}
               </a>
+
             ))}
           </div>
         </div>

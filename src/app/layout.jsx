@@ -1,6 +1,7 @@
 import './globals.css'
 import Nav from './nav'
 import Footer from './footer'
+import CookieBanner from '@/components/CookieBanner'
 
 export const metadata = {
   title: 'AlgoGrass — GDPR Compliance Tools for UK & EU SMEs',
@@ -20,6 +21,7 @@ export default function RootLayout({ children }) {
         <Nav />
         <div style={{paddingTop:64}}>{children}</div>
         <Footer />
+        <CookieBanner />
       </body>
     </html>
   )
