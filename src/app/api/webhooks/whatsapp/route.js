@@ -28,9 +28,7 @@ async function classifyComplaint(text, apiKey) {
   const data = await res.json()
   if (data.error) throw new Error(data.error.message)
   let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || ''
-  rawText = rawText.replace(/```json
-?/g, '').replace(/```
-?/g, '').trim()
+  rawText = rawText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
   return JSON.parse(rawText)
 }
 
