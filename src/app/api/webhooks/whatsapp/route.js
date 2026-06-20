@@ -13,20 +13,25 @@
  */
 
 async function classifyComplaint(text, apiKey) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1200,
-      system: `You are a GDPR complaint classification AI. Return ONLY valid JSON:
-{"isGdprComplaint":true,"category":"Subject Access Request|Erasure Request|Marketing Consent|Data Breach|Cookie Complaint|Data Portability|Rectification Request|Restriction Request|Objection to Processing|Employee/HR Data|Vendor Compliance|General Privacy|Not GDPR Related","urgency":"High|Medium|Low","responseDays":number,"regulationRef":"string","summary":"string","recommendedAction":"string","templateResponse":"string"}`,
-      messages: [{ role: 'user', content: text }],
-    }),
-  })
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: 'You are a GDPR complaint classification AI. Return ONLY valid JSON with no markdown: {"isGdprComplaint":true,"category":"Subject Access Request|Erasure Request|Marketing Consent|Data Breach|Cookie Complaint|Data Portability|Rectification Request|Restriction Request|Objection to Processing|Employee/HR Data|Vendor Compliance|General Privacy|Not GDPR Related","urgency":"High|Medium|Low","responseDays":30,"regulationRef":"string","summary":"string","recommendedAction":"string","templateResponse":"string"}' }] },
+        contents: [{ role: 'user', parts: [{ text }] }],
+        generationConfig: { maxOutputTokens: 1200, temperature: 0.1 },
+      }),
+    }
+  )
   const data = await res.json()
   if (data.error) throw new Error(data.error.message)
-  return JSON.parse(data.content[0].text)
+  let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || ''
+  rawText = rawText.replace(/```json
+?/g, '').replace(/```
+?/g, '').trim()
+  return JSON.parse(rawText)
 }
 
 async function notifyAdmin(from, message, classification, formspreeId) {
@@ -71,7 +76,7 @@ export async function GET(request) {
 
 // POST — inbound messages
 export async function POST(request) {
-  const apiKey = process.env.ANTHROPIC_API_KEY
+  const apiKey = process.env.GOOGLE_GEMINI_API_KEY
   const formspreeId = process.env.FORMSPREE_ID
   const whatsappToken = process.env.WHATSAPP_TOKEN
 
@@ -96,7 +101,7 @@ export async function POST(request) {
   const complaintText = `[Received via: WHATSAPP]\nFrom: ${from}\n\n${text}`
 
   try {
-    if (!apiKey || apiKey === 'your-key-here') {
+    if (!apiKey) {
       await notifyAdmin(from, text, { category: 'Unclassified', urgency: 'Medium', responseDays: 30, regulationRef: 'N/A', summary: text.slice(0, 200), recommendedAction: 'Review manually', templateResponse: '' }, formspreeId)
       return Response.json({ ok: true })
     }

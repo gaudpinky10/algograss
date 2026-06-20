@@ -8,28 +8,26 @@ export async function POST(request) {
   const userCookie = cookies().get('algograss_user')
   const user = userCookie ? parseUserCookie(userCookie.value) : null
 
-  if (!process.env.ANTHROPIC_API_KEY) {
+  const apiKey = process.env.GOOGLE_GEMINI_API_KEY
+  if (!apiKey) {
     return Response.json({ suggestion: getFallbackSuggestion(controlId, controlName, status) })
   }
 
   try {
-    const { Anthropic } = await import('@anthropic-ai/sdk')
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-    const msg = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 600,
-      messages: [{
-        role: 'user',
-        content: `You are a UK GDPR and GRC compliance expert. A user's compliance control is "${status}".
-
-Control: ${controlName}
-Category: ${category}
-Status: ${status}
-
-Give a practical, concise action plan (3-5 bullet points) for what they should do RIGHT NOW to fix or improve this control. Focus on UK GDPR, ICO guidance, and UK government standards. Each bullet should be one concrete action. Keep it under 200 words. Format as plain bullet points starting with •`
-      }]
-    })
-    const suggestion = msg.content[0]?.text || getFallbackSuggestion(controlId, controlName, status)
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: 'You are a UK GDPR and GRC compliance expert. Give practical, concise action plans.' }] },
+          contents: [{ role: 'user', parts: [{ text: `A user's compliance control is "${status}".\n\nControl: ${controlName}\nCategory: ${category}\nStatus: ${status}\n\nGive a practical, concise action plan (3-5 bullet points) for what they should do RIGHT NOW to fix or improve this control. Focus on UK GDPR, ICO guidance, and UK government standards. Each bullet should be one concrete action. Keep it under 200 words. Format as plain bullet points starting with •` }] }],
+          generationConfig: { maxOutputTokens: 600, temperature: 0.3 },
+        }),
+      }
+    )
+    const data = await res.json()
+    const suggestion = data.candidates?.[0]?.content?.parts?.[0]?.text || getFallbackSuggestion(controlId, controlName, status)
     await trackActivity({ userEmail: user?.email, tool: 'grc', action: 'ai_suggestion', detail: controlName, meta: { status, category } })
     return Response.json({ suggestion })
   } catch (err) {

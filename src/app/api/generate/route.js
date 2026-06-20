@@ -2,9 +2,9 @@ export async function POST(request) {
   const { docType, scanData } = await request.json()
   if (!docType || !scanData) return Response.json({ error: 'Missing docType or scanData' }, { status: 400 })
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
+  const apiKey = process.env.GOOGLE_GEMINI_API_KEY
   if (!apiKey || apiKey === 'your-key-here') {
-    return Response.json({ error: 'ANTHROPIC_API_KEY not configured in Vercel Environment Variables.' }, { status: 500 })
+    return Response.json({ error: 'AI not configured. Please add GOOGLE_GEMINI_API_KEY in Vercel settings.' }, { status: 500 })
   }
 
   const { url, trackers, checks, isHttps, issues } = scanData
@@ -69,19 +69,22 @@ Use [INSERT: ...] tags throughout for business-specific details.`
   if (!prompt) return Response.json({ error: 'Invalid docType. Use: privacy, cookie, or dpa' }, { status: 400 })
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 4000,
-        system: `You are AlgoGrass — an expert GDPR compliance platform. Draft complete, professional, legally structured compliance documents for UK and EU businesses. Write with authority and precision. Use clear headings, structured sections, and professional language. Include [INSERT: specific detail needed] tags where the business must add their specific information. Documents must be comprehensive, accurate, and ready to use.`,
-        messages: [{ role: 'user', content: prompt }],
-      }),
-    })
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: 'You are AlgoGrass — an expert GDPR compliance platform. Draft complete, professional, legally structured compliance documents for UK and EU businesses. Write with authority and precision. Use clear headings, structured sections, and professional language. Include [INSERT: specific detail needed] tags where the business must add their specific information. Documents must be comprehensive, accurate, and ready to use.' }] },
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 4000, temperature: 0.3 },
+        }),
+      }
+    )
     const data = await res.json()
     if (data.error) return Response.json({ error: data.error.message }, { status: 500 })
-    return Response.json({ document: data.content[0].text, docType, domain, generatedAt: new Date().toISOString() })
+    const document = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Document generation failed.'
+    return Response.json({ document, docType, domain, generatedAt: new Date().toISOString() })
   } catch (err) {
     return Response.json({ error: 'Generation failed: ' + err.message }, { status: 500 })
   }

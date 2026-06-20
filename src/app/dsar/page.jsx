@@ -39,16 +39,16 @@ export default function DsarPage() {
           <div style={{ display: 'grid', gridTemplateColumns: result ? '1fr 1.4fr' : '1fr', gap: 24 }}>
             <div className="card" style={{ padding: 28 }}>
               <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 17, fontWeight: 600, marginBottom: 20 }}>Enter SAR details</h2>
-              <div className="field-wrap"><label className="field-label">Your business name</label><input className="field-input" placeholder="e.g. Acme Ltd" value={form.businessName} onChange={set('businessName')} /></div>
+              <div className="field-wrap"><label className="field-label">Your business name</label><input className="field-input" placeholder="e.g. Acme Ltd" value={form.businessName} onChange={set('businessName')} style={{ color: '#111827', background: '#fff' }} /></div>
               <div className="field-wrap">
                 <label className="field-label">Types of data you hold about customers</label>
-                <input className="field-input" placeholder="e.g. name, email, purchase history, IP address" value={form.dataTypes} onChange={set('dataTypes')} />
+                <input className="field-input" placeholder="e.g. name, email, purchase history, IP address" value={form.dataTypes} onChange={set('dataTypes')} style={{ color: '#111827', background: '#fff' }} />
               </div>
               <div style={{ marginBottom: 20 }}>
                 <label className="field-label">The SAR request text *</label>
                 <textarea value={form.requestText} onChange={set('requestText')}
                   placeholder={`Example:\n"I am writing to request all personal data you hold about me under Article 15 of GDPR. Please provide copies of all data, who you share it with, and how long you keep it. My name is John Smith and my email is john@email.com"`}
-                  style={{ width: '100%', minHeight: 160, border: '1.5px solid var(--border)', borderRadius: 10, padding: '12px 14px', fontSize: 14, color: 'var(--ink)', outline: 'none', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6, boxSizing: 'border-box' }} />
+                  style={{ width: '100%', minHeight: 160, border: '1.5px solid #d1d5db', borderRadius: 10, padding: '12px 14px', fontSize: 14, color: '#111827', background: '#ffffff', outline: 'none', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6, boxSizing: 'border-box' }} />
               </div>
               {error && <p style={{ fontSize: 13, color: 'var(--red-text)', marginBottom: 12 }}>{error}</p>}
               <button onClick={handle} disabled={loading || !form.requestText.trim()} className="btn btn-primary btn-full">

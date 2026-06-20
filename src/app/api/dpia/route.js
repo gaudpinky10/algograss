@@ -22,25 +22,28 @@ export async function POST(request) {
     } catch {}
   })()
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey || apiKey === 'your-key-here') {
-    return Response.json({ error: 'ANTHROPIC_API_KEY not configured. Your DPIA data has been saved. Please add the API key in Vercel to generate the document.' }, { status: 503 })
+  const apiKey = process.env.GOOGLE_GEMINI_API_KEY
+  if (!apiKey) {
+    return Response.json({ error: 'AI not configured. Your DPIA data has been saved. Please add GOOGLE_GEMINI_API_KEY in Vercel to generate the document.' }, { status: 503 })
   }
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 3000,
-        system: 'You are a GDPR DPIA specialist. Generate complete, structured DPIAs for UK/EU businesses under GDPR Article 35. Use clear headings and [PLACEHOLDER] tags where business-specific details are needed. End with a disclaimer.',
-        messages: [{ role: 'user', content: `Generate a complete DPIA for:\nBusiness: ${businessName || '[BUSINESS NAME]'}\nProject/System: ${project}\nPurpose: ${purpose}\nPersonal data types: ${dataTypes}\nLegal basis: ${legalBasis}\nData recipients/processors: ${recipients}\nRetention period: ${retention}\nKnown risks: ${risks}\n\nInclude: 1) Project description 2) Data flows 3) Necessity & proportionality 4) Risk identification (likelihood × impact) 5) Risk mitigation 6) DPO consultation 7) Approval sign-off 8) Review schedule` }],
-      }),
-    })
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: 'You are a GDPR DPIA specialist. Generate complete, structured DPIAs for UK/EU businesses under GDPR Article 35. Use clear headings and [PLACEHOLDER] tags where business-specific details are needed. End with a disclaimer.' }] },
+          contents: [{ role: 'user', parts: [{ text: `Generate a complete DPIA for:\nBusiness: ${businessName || '[BUSINESS NAME]'}\nProject/System: ${project}\nPurpose: ${purpose}\nPersonal data types: ${dataTypes}\nLegal basis: ${legalBasis}\nData recipients/processors: ${recipients}\nRetention period: ${retention}\nKnown risks: ${risks}\n\nInclude: 1) Project description 2) Data flows 3) Necessity & proportionality 4) Risk identification (likelihood × impact) 5) Risk mitigation 6) DPO consultation 7) Approval sign-off 8) Review schedule` }] }],
+          generationConfig: { maxOutputTokens: 3000, temperature: 0.3 },
+        }),
+      }
+    )
     const data = await res.json()
     if (data.error) return Response.json({ error: data.error.message }, { status: 500 })
-    return Response.json({ dpia: data.content[0].text, generatedAt: new Date().toISOString() })
+    const dpia = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Generation failed.'
+    return Response.json({ dpia, generatedAt: new Date().toISOString() })
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 })
   }

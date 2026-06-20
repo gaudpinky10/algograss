@@ -106,8 +106,8 @@ export default function AboutPage() {
             <AnimateOnScroll direction="left">
               <TiltCard intensity={7}>
                 <div style={{ background: 'linear-gradient(135deg,rgba(0,212,170,0.07),rgba(124,58,237,0.05))', border: '1px solid rgba(0,212,170,0.2)', borderRadius: 20, padding: '40px 32px', textAlign: 'center', backdropFilter: 'blur(16px)', height: '100%' }}>
-                  <div style={{ width: 110, height: 140, borderRadius: 12, overflow: 'hidden', margin: '0 auto 22px', border: '2px solid rgba(0,212,170,0.4)', boxShadow: '0 0 24px rgba(0,212,170,0.2)', background: 'rgba(0,212,170,0.05)' }} className="animate-pulse-glow">
-                    <img src="/team/pinki.jpg" alt="Pinki Gaud" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
+                  <div style={{ width: 110, height: 140, borderRadius: 12, overflow: 'hidden', margin: '0 auto 22px', border: '2px solid rgba(0,212,170,0.4)', boxShadow: '0 0 24px rgba(0,212,170,0.2)', background: 'linear-gradient(135deg,rgba(0,212,170,0.3),rgba(0,168,130,0.2))', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="animate-pulse-glow">
+                    <img src="/team/pinki.jpg" alt="Pinki Gaud" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} onError={e => { e.currentTarget.style.display='none'; e.currentTarget.parentElement.innerHTML='<span style="font-size:36px;font-weight:800;color:#00D4AA;font-family:Syne,sans-serif">PG</span>' }} />
                   </div>
                   <div style={{ display: 'inline-block', padding: '4px 14px', borderRadius: 100, background: 'linear-gradient(135deg,#00D4AA,#00A882)', color: '#06111E', fontSize: 10, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 14 }}>Founder</div>
                   <h3 style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 700, color: 'var(--ink)', marginBottom: 8 }}>Pinki Gaud</h3>
@@ -127,8 +127,8 @@ export default function AboutPage() {
             <AnimateOnScroll direction="right">
               <TiltCard intensity={7}>
                 <div style={{ background: 'linear-gradient(135deg,rgba(124,58,237,0.07),rgba(0,212,170,0.04))', border: '1px solid rgba(124,58,237,0.2)', borderRadius: 20, padding: '40px 32px', textAlign: 'center', backdropFilter: 'blur(16px)', height: '100%' }}>
-                  <div style={{ width: 110, height: 140, borderRadius: 12, overflow: 'hidden', margin: '0 auto 22px', border: '2px solid rgba(124,58,237,0.4)', boxShadow: '0 0 24px rgba(124,58,237,0.2)', background: 'rgba(124,58,237,0.05)' }} className="animate-pulse-purple">
-                    <img src="/team/kumar.jpg" alt="Kumar Kuppusamy" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} />
+                  <div style={{ width: 110, height: 140, borderRadius: 12, overflow: 'hidden', margin: '0 auto 22px', border: '2px solid rgba(124,58,237,0.4)', boxShadow: '0 0 24px rgba(124,58,237,0.2)', background: 'linear-gradient(135deg,rgba(124,58,237,0.3),rgba(155,94,255,0.2))', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="animate-pulse-purple">
+                    <img src="/team/kumar.jpg" alt="Kumar Kuppusamy" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} onError={e => { e.currentTarget.style.display='none'; e.currentTarget.parentElement.innerHTML='<span style="font-size:36px;font-weight:800;color:#9B5EFF;font-family:Syne,sans-serif">KK</span>' }} />
                   </div>
                   <div style={{ display: 'inline-block', padding: '4px 14px', borderRadius: 100, background: 'linear-gradient(135deg,#7C3AED,#9B5EFF)', color: '#fff', fontSize: 10, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 14 }}>Co-Founder</div>
                   <h3 style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 700, color: 'var(--ink)', marginBottom: 8 }}>Kumar Kuppusamy</h3>
