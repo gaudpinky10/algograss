@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/scan-monitor",
+      "schedule": "0 8 * * 1"
+    },
+    {
+      "path": "/api/cron/trial-check",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/regulatory-alerts",
+      "schedule": "0 9 * * 5"
+    }
+  ]
+}

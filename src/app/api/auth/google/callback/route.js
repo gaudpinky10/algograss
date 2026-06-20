@@ -81,6 +81,11 @@ export async function GET(request) {
           })
           userData = { id: result.insertedId.toString(), name, email, plan: 'free', isAdmin, avatar }
           await trackActivity({ userEmail: email, tool: 'auth', action: 'signup', detail: 'New signup via Google', meta: { method: 'google' } })
+          // Send welcome email (non-blocking)
+          if (process.env.RESEND_API_KEY) {
+            const { sendWelcomeEmail } = await import('@/lib/emails')
+            sendWelcomeEmail(name, email, 'free').catch(e => console.error('Welcome email failed:', e.message))
+          }
         }
       }
     } catch (dbErr) {
