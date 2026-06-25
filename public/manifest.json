@@ -1,0 +1,26 @@
+{
+  "name": "AlgoGrass",
+  "short_name": "AlgoGrass",
+  "description": "Automated GDPR Compliance Platform — scan, generate documents, handle DSARs and stay compliant.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#060B14",
+  "theme_color": "#00D4AA",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-GB",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    { "name": "Scan Website", "url": "/scan", "description": "Run a GDPR compliance scan" },
+    { "name": "Ask AI", "url": "/ai-chat", "description": "Ask AlgoGrass AI a GDPR question" },
+    { "name": "Dashboard", "url": "/dashboard", "description": "View your compliance dashboard" }
+  ]
+}

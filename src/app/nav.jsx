@@ -13,13 +13,18 @@ const TOOLS = [
   { href: '/data-audit',           label: 'Data Audit',             icon: '🗂️', desc: 'CRM, HR, email & vendor compliance' },
   { href: '/complaint',            label: 'Complaint Classifier',   icon: '📨', desc: 'Email, WhatsApp, social — any channel' },
   { href: '/reminders',            label: 'Review Reminders',       icon: '🔔', desc: 'Never miss a compliance deadline' },
+  { href: '/breach',               label: 'Breach Notification',    icon: '🚨', desc: '72-hour ICO breach notification tool' },
+  { href: '/training',             label: 'GDPR Training',          icon: '🎓', desc: 'Staff awareness training & certificates' },
+  { href: '/integrations',         label: 'Integrations',           icon: '🔗', desc: 'Slack, Zapier & third-party connections' },
+  { href: '/api-access',           label: 'Developer API',          icon: '🔌', desc: 'API keys & documentation for developers' },
 ]
 const NAV_LINKS = [
-  { href: '/ai',      label: '✦ AI Assistant', highlight: true },
-  { href: '/pricing', label: 'Pricing' },
-  { href: '/about',   label: 'About' },
-  { href: '/blog',    label: 'Blog' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/ai',          label: '✦ AI Assistant', highlight: true },
+  { href: '/pricing',     label: 'Pricing' },
+  { href: '/about',       label: 'About' },
+  { href: '/blog',        label: 'Blog' },
+  { href: '/contact',     label: 'Contact' },
+  { href: '/settings',    label: 'Settings' },
 ]
 
 export default function Nav() {
