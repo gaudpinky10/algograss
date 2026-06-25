@@ -1,22 +1,32 @@
 import { headers } from 'next/headers'
-import { Syne, Space_Grotesk } from 'next/font/google'
+import { Plus_Jakarta_Sans, Lora, Barlow_Condensed } from 'next/font/google'
 import './globals.css'
 import Nav from './nav'
 import Footer from './footer'
 import CookieBanner from '@/components/CookieBanner'
+import VisitorTracker from '@/components/VisitorTracker'
 
-// next/font/google downloads fonts at BUILD TIME and self-hosts them
-// from _next/static/media/ — no runtime requests to Google (GDPR safe)
-const syne = Syne({
+// ── Fonts (self-hosted at build time via next/font — zero runtime Google requests) ──
+// Plus Jakarta Sans: headings, UI labels, buttons
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['400', '600', '700', '800'],
-  variable: '--font-syne',
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-jakarta',
   display: 'swap',
 })
-const spaceGrotesk = Space_Grotesk({
+// Lora: body text, subtext — editorial serif for credibility
+const lora = Lora({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
-  variable: '--font-space-grotesk',
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-lora',
+  display: 'swap',
+})
+// Barlow Condensed: numbers, stats, amounts, countdown timers
+const barlowCondensed = Barlow_Condensed({
+  subsets: ['latin'],
+  weight: ['400', '600', '700', '800'],
+  variable: '--font-barlow',
   display: 'swap',
 })
 
@@ -35,7 +45,7 @@ export default function RootLayout({ children }) {
   const nonce = headers().get('x-nonce') || ''
 
   return (
-    <html lang="en" className={`${syne.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" className={`${plusJakarta.variable} ${lora.variable} ${barlowCondensed.variable}`}>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#00D4AA" />
@@ -52,6 +62,7 @@ export default function RootLayout({ children }) {
           </p>
         </div>
         <Nav />
+        <VisitorTracker />
         {/* Static cookie-consent marker — detectable by GDPR scanners without JS; actual interactive banner is client-rendered below */}
         <div id="algograss-cookie-consent" data-reject-all="true" aria-hidden="true" style={{display:'none'}}/>
         <div style={{paddingTop:64}}>{children}</div>
