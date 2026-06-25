@@ -45,9 +45,10 @@ export default function RootLayout({ children }) {
         <script dangerouslySetInnerHTML={{ __html: `if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}` }} />
       </head>
       <body>
-        <div style={{background:'linear-gradient(90deg,rgba(0,212,170,0.12),rgba(124,58,237,0.12))',borderBottom:'1px solid rgba(0,212,170,0.12)',padding:'7px 0',textAlign:'center'}}>
-          <p style={{fontSize:11,color:'rgba(232,240,254,0.4)',letterSpacing:'.02em'}}>
-            ✦ AlgoGrass is a compliance guidance platform — not a law firm. Always review outputs with a qualified solicitor. ✦
+        <div style={{background:'linear-gradient(90deg,rgba(0,212,170,0.15),rgba(124,158,255,0.1))',borderBottom:'1px solid rgba(0,212,170,0.2)',padding:'9px 0',textAlign:'center'}}>
+          <p style={{fontSize:12,color:'#E8F0FE',letterSpacing:'.01em',margin:0,fontWeight:500}}>
+            🚀 <span style={{color:'#00D4AA',fontWeight:700}}>Launch offer:</span> Sign up free and get <strong>60 days full Pro access</strong> — no credit card needed.{' '}
+            <a href="/signup" style={{color:'#7C9EFF',fontWeight:700,textDecoration:'none'}}>Claim it →</a>
           </p>
         </div>
         <Nav />

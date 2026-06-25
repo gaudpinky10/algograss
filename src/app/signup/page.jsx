@@ -71,8 +71,12 @@ export default function SignupPage() {
           <h1 style={{ fontFamily: 'var(--font-syne,"Syne"),sans-serif', fontWeight: 800, fontSize: 28, color: '#E8F0FE', marginBottom: 8 }}>
             Start for free
           </h1>
-          <p style={{ fontSize: 14, color: 'rgba(232,240,254,0.45)' }}>
-            No credit card required · Upgrade any time
+          <div style={{ display:'inline-flex', alignItems:'center', gap:7, background:'rgba(0,212,170,0.1)', border:'1px solid rgba(0,212,170,0.25)', borderRadius:100, padding:'6px 14px', marginBottom:4 }}>
+            <span style={{ fontSize:13 }}>🚀</span>
+            <span style={{ fontSize:13, color:'#00D4AA', fontWeight:700 }}>60 days free Pro — no credit card needed</span>
+          </div>
+          <p style={{ fontSize: 13, color: 'rgba(232,240,254,0.35)', marginTop:8 }}>
+            Full access to every feature. Upgrade or stay free after 60 days.
           </p>
         </div>
 

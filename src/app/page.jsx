@@ -31,7 +31,7 @@ function Hero() {
           {/* Badge */}
           <div className="animate-fade-up" style={{animationDelay:'0.1s',display:'inline-flex',alignItems:'center',gap:7,background:'var(--green-p)',border:'1px solid var(--green-m)',padding:'5px 13px',borderRadius:100,marginBottom:28,fontSize:11,fontWeight:600,color:'var(--green)',letterSpacing:'.06em',textTransform:'uppercase'}}>
             <span className="ping" style={{width:6,height:6,background:'var(--accent)',borderRadius:'50%',display:'inline-block'}}/>
-            AI compliance tools for UK & EU SMEs — Live now
+            🚀 Launch offer — 60 days free Pro, no card needed
           </div>
 
           {/* Headline */}
@@ -54,7 +54,9 @@ function Hero() {
               <button type="submit" className="btn btn-primary btn-sm animate-pulse-glow">Scan free →</button>
             </div>
           </form>
-          <p className="animate-fade-up" style={{animationDelay:'0.5s',fontSize:12,color:'var(--ink2)'}}>No credit card · No account needed · GDPR + UK DPA 2018 + ePrivacy</p>
+          <p className="animate-fade-up" style={{animationDelay:'0.5s',fontSize:12,color:'var(--ink2)'}}>
+            No credit card · <span style={{color:'#00D4AA',fontWeight:600}}>60 days free Pro when you sign up</span> · GDPR + UK DPA 2018 + ePrivacy
+          </p>
 
           {/* Animated stats */}
           <div className="animate-fade-up stats-row" style={{animationDelay:'0.65s',marginTop:44}}>

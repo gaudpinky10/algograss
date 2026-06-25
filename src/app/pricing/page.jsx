@@ -13,8 +13,8 @@ const PLANS = [
 ]
 
 const FAQS = [
-  { q:'Do I need to enter card details for the free trial?', a:'Yes — we collect your card details upfront to start the 1-month free trial. You will NOT be charged anything for 30 days. After your trial ends, your card is charged automatically at the plan rate. You can cancel any time during the trial and pay nothing.' },
-  { q:'What happens after the free trial?', a:'After 30 days your subscription starts automatically. You\'ll receive an email reminder 7 days before the trial ends. Cancel any time from your dashboard — no charge if you cancel before trial ends.' },
+  { q:'Do I need a credit card to get started?', a:'No — during our launch promotion every new account gets 60 days of full Pro access completely free, no card required. After 60 days you can choose a paid plan to keep Pro features, or continue on the free tier at no cost.' },
+  { q:'What happens after the 60-day free trial?', a:'After 60 days your account moves to the free tier. You\'ll receive an email reminder 3 days before your trial ends. If you want to keep Pro features, simply pick a plan — no pressure.' },
   { q:'Can I cancel at any time?', a:'Yes. No contracts, no lock-in. Cancel any time from your dashboard. You keep access until the end of your billing period.' },
   { q:'Are the generated documents legally binding?', a:'AlgoGrass generates AI-powered documents based on current GDPR and UK DPA 2018. They are comprehensive, legally structured, and built to meet ICO requirements. Ready to publish — review with your legal team before using commercially.' },
   { q:'How accurate is the compliance scanner?', a:'Our scanner checks HTTPS, cookie consent, trackers, privacy policy, lawful basis, data rights, retention, DSAR contact, security headers, and more. It catches the vast majority of GDPR issues SMEs face.' },
@@ -58,12 +58,19 @@ export default function PricingPage() {
   return (
     <>
       {/* ── HERO ── */}
+      {/* 60-day launch promo banner */}
+      <div style={{ background:'linear-gradient(90deg,rgba(0,212,170,0.12),rgba(124,158,255,0.12))', borderBottom:'1px solid rgba(0,212,170,0.2)', padding:'14px 0', textAlign:'center' }}>
+        <p style={{ margin:0, fontSize:14, color:'#E8F0FE', fontWeight:600 }}>
+          🚀 <span style={{ color:'#00D4AA' }}>Launch Offer:</span> Sign up free and get <span style={{ color:'#00D4AA', fontWeight:800 }}>60 days full Pro access</span> — no credit card required. Ends soon.
+        </p>
+      </div>
+
       <section className="section" style={{ textAlign:'center', paddingBottom:56 }}>
         <div className="wrap" style={{ maxWidth:640, margin:'0 auto' }}>
           <span className="eyebrow" style={{ textAlign:'center' }}>Pricing</span>
           <h1 className="heading" style={{ fontSize:'clamp(30px,3.5vw,48px)', marginBottom:12 }}>Simple, honest pricing</h1>
           <p className="subtext" style={{ textAlign:'center', margin:'0 auto 8px' }}>No setup fees. No hidden charges. Cancel any time.</p>
-          <p style={{ textAlign:'center', fontSize:14, color:'var(--green)', fontWeight:600, marginBottom:28 }}>🎁 All paid plans include a 1-month free trial — card required, nothing charged for 30 days</p>
+          <p style={{ textAlign:'center', fontSize:14, color:'var(--green)', fontWeight:600, marginBottom:28 }}>🎁 Every new account gets <strong>60 days free Pro</strong> — no card needed to start</p>
           <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'var(--white)', border:'1px solid var(--border)', borderRadius:100, padding:'5px 6px' }}>
             <button onClick={()=>setAnnual(false)} style={{ padding:'8px 18px', borderRadius:100, border:'none', cursor:'pointer', fontSize:13, fontWeight:500, background:!annual?'var(--green)':'transparent', color:!annual?'#fff':'var(--ink2)', transition:'all .2s' }}>Monthly</button>
             <button onClick={()=>setAnnual(true)}  style={{ padding:'8px 18px', borderRadius:100, border:'none', cursor:'pointer', fontSize:13, fontWeight:500, background:annual?'var(--green)':'transparent',  color:annual?'#fff':'var(--ink2)',  transition:'all .2s', display:'flex', alignItems:'center', gap:7 }}>

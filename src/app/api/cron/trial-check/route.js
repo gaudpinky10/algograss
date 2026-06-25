@@ -60,10 +60,11 @@ export async function GET(request) {
 
     for (const user of justExpired) {
       try {
-        // Downgrade to free
+        // Restore to their original plan (trialPlan) or free
+        const restoredPlan = user.trialPlan || 'free';
         await users.updateOne(
           { _id: user._id },
-          { $set: { plan: 'free', trialExpiredAt: new Date() } }
+          { $set: { plan: restoredPlan, trialExpiredAt: new Date() } }
         );
         if (process.env.RESEND_API_KEY) {
           await sendTrialExpiredEmail(user.name || 'there', user.email);

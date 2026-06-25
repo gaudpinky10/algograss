@@ -5,18 +5,16 @@ import { sendWelcomeEmail } from '@/lib/emails';
 
 export async function POST(request) {
   try {
-    const { name, email, password, plan, website } = await request.json();
+    const { name, email, password, plan, website, refCode } = await request.json();
     if (!name || !email || !password) return NextResponse.json({ error: 'Name, email and password required' }, { status: 400 });
     if (password.length < 8) return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 400 });
 
     const isAdmin = email.toLowerCase() === (process.env.ADMIN_EMAIL || '').toLowerCase();
 
-    // Set trial end date for pro/starter signups (30 days from now)
-    const trialEndsAt = (plan && plan !== 'free')
-      ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-      : null;
+    // 60-day free Pro trial for ALL signups (launch promotion)
+    const trialEndsAt = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000);
 
-    const userData = { name, email: email.toLowerCase(), plan: plan || 'free', website: website || '', isAdmin };
+    const userData = { name, email: email.toLowerCase(), plan: 'pro', website: website || '', isAdmin };
 
     const users = await getCollection('users');
     if (users) {
@@ -26,7 +24,9 @@ export async function POST(request) {
         ...userData,
         password: hashPassword(password),
         createdAt: new Date(),
-        ...(trialEndsAt && { trialEndsAt }),
+        trialEndsAt,
+        trialPlan: plan || 'free', // original plan they chose; restore after trial
+        launchPromo: true,
       });
       userData.id = result.insertedId.toString();
     }
@@ -42,6 +42,15 @@ export async function POST(request) {
       sendWelcomeEmail(name, email.toLowerCase(), plan || 'free').catch(err =>
         console.error('Welcome email failed:', err.message)
       );
+    }
+
+    // Apply referral code (non-blocking)
+    if (refCode) {
+      fetch(new URL('/api/referral', request.url).toString(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newUserEmail: email.toLowerCase(), refCode }),
+      }).catch(() => {})
     }
 
     return NextResponse.json({ success: true, user: userData });
