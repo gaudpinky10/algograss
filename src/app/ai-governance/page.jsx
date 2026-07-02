@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const RISK_TIERS = {
   unacceptable: { label:'Unacceptable Risk — PROHIBITED', color:'#EF4444', bg:'rgba(239,68,68,0.1)', border:'rgba(239,68,68,0.3)', icon:'🚫', summary:'Your AI system falls under Article 5 prohibited practices. These are banned in the EU from 2 February 2025.', requirements:['This system CANNOT be placed on the EU market or used in the EU','No conformity assessment can make a prohibited system compliant','Prohibited: subliminal manipulation, exploitation of vulnerabilities, social scoring by public authorities, real-time remote biometric identification in public spaces','Review your system architecture — redesign or withdraw from EU market immediately'] },
@@ -36,6 +37,15 @@ const TIMELINE = [
   { date:'Aug 2027', label:'High-risk AI (Annex I) obligations', status:'future', color:'rgba(255,255,255,.3)' },
 ]
 
+
+function getUser() {
+  try {
+    const cookies = document.cookie.split(';').map(c => c.trim())
+    const cookie = cookies.find(c => c.startsWith('algograss_user='))
+    if (!cookie) return null
+    return JSON.parse(atob(cookie.split('=')[1]))
+  } catch { return null }
+}
 export default function AIGovernancePage() {
   const [tab, setTab]           = useState('classifier')
   const [step, setStep]         = useState(0)
@@ -43,6 +53,12 @@ export default function AIGovernancePage() {
   const [tier, setTier]         = useState(null)
   const [checks, setChecks]     = useState({})
   const [systemName, setSystemName] = useState('')
+  const router = useRouter()
+  useEffect(() => {
+    const u = getUser()
+    if (!u) { router.push('/login'); return }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function answer(qId, value) {
     const newAnswers = { ...answers, [qId]: value }

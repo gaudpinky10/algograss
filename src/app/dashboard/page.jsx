@@ -503,12 +503,12 @@ function Dashboard() {
               {toast.isTrial ? 'Free trial activated!' : 'Welcome to AlgoGrass!'}
             </h2>
             <p style={{ margin:'0 0 20px', fontSize:14, color:'#94A3B8' }}>
-              {toast.isTrial ? `Your ${toast.plan} plan is free for the next 30 days. No charge until day 31.` : `Your ${toast.plan} plan is now active.`}
+              {toast.isTrial ? `Your ${toast.plan} plan is free for the next 60 days. Enjoy full Pro access!` : `Your ${toast.plan} plan is now active.`}
             </p>
             {toast.isVerified && (
               <div style={{ background:'rgba(0,212,170,0.08)', border:'1px solid rgba(0,212,170,0.2)', borderRadius:10, padding:'12px 16px', marginBottom:20 }}>
-                <p style={{ margin:0, fontSize:13, color:'#00D4AA', fontWeight:600 }}>💳 £1 verification charge refunded</p>
-                <p style={{ margin:'4px 0 0', fontSize:12, color:'#64748B' }}>The £1 has been returned to your card — it will appear and disappear on your statement.</p>
+                <p style={{ margin:0, fontSize:13, color:'#00D4AA', fontWeight:600 }}>🎉 60-day Pro trial activated</p>
+                <p style={{ margin:'4px 0 0', fontSize:12, color:'#64748B' }}>You have full access to all Pro features for 60 days, completely free.</p>
               </div>
             )}
             <button onClick={()=>setToast(null)}
@@ -1014,11 +1014,4 @@ function Dashboard() {
                   )
                 })}
               </div>
-            )}
-          </div>
-        )}
-
-      </div>
-    </div>
-  )
-}
+            

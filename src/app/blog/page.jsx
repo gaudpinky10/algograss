@@ -10,6 +10,17 @@ const POSTS=[
   {slug:'uk-gdpr-vs-eu-gdpr',cat:'UK Law',date:'10 Feb 2026',read:'9 min',title:'UK GDPR vs EU GDPR: Key Differences for UK Businesses',excerpt:'Post-Brexit, UK businesses serving EU customers must comply with both UK GDPR and EU GDPR. We explain the differences.'},
 ]
 const CAT={GDPR:['#EAF2EC','#3D6B52'],Cookies:['#FEF6E4','#B7770D'],Compliance:['#EEF2FF','#4B5CB8'],'UK Law':['#FDF2F8','#9B3FAF']}
+export const metadata = {
+  title: 'Blog — GDPR Guides & Compliance Resources',
+  description: 'Free GDPR guides, ICO enforcement analysis, UK DPA 2018 explainers, and practical compliance resources for UK and EU businesses.',
+  alternates: { canonical: '/blog' },
+  openGraph: {
+    title: 'Blog — GDPR Guides & Compliance Resources | AlgoGrass',
+    description: 'Free GDPR guides and compliance resources for UK and EU businesses.',
+    url: 'https://algograss.co.uk/blog',
+  },
+}
+
 export default function BlogPage() {
   const [featured,...rest]=POSTS
   return (

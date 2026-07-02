@@ -112,8 +112,8 @@ export default function PricingPage() {
             </div>
             {emailFor.trial && (
               <div style={{ background:'rgba(0,212,170,0.06)', border:'1px solid rgba(0,212,170,0.15)', borderRadius:10, padding:'10px 14px', marginBottom:20 }}>
-                <p style={{ margin:0, fontSize:12, color:'#00D4AA', fontWeight:600 }}>🎁 After verification — 1 month free</p>
-                <p style={{ margin:'3px 0 0', fontSize:12, color:'#94A3B8' }}>Your plan starts free for 30 days once your card is verified. Nothing else charged until day 31.</p>
+                <p style={{ margin:0, fontSize:12, color:'#00D4AA', fontWeight:600 }}>🎁 60 days free — no card needed</p>
+                <p style={{ margin:'3px 0 0', fontSize:12, color:'#94A3B8' }}>Start your 60-day free Pro trial instantly. No card required. No charges at all.</p>
               </div>
             )}
             {!emailFor.trial && <div style={{ marginBottom:4 }} />}
@@ -228,13 +228,13 @@ export default function PricingPage() {
       <section style={{ background:'var(--white)', padding:'64px 0', borderTop:'1px solid var(--border)' }}>
         <div className="wrap" style={{ maxWidth:700, margin:'0 auto', textAlign:'center' }}>
           <span className="eyebrow" style={{ textAlign:'center' }}>Free trial</span>
-          <h2 className="heading" style={{ fontSize:'clamp(22px,3vw,36px)', marginBottom:40 }}>How the 1-month free trial works</h2>
+          <h2 className="heading" style={{ fontSize:'clamp(22px,3vw,36px)', marginBottom:40 }}>How the 60-day free trial works</h2>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))', gap:24, textAlign:'left' }}>
             {[
-              { step:'1', icon:'📋', title:'Choose your plan', desc:'Pick the plan that fits your business. All paid plans include a 1-month free trial.' },
-              { step:'2', icon:'💳', title:'Enter card details', desc:'Stripe securely stores your card. Nothing is charged now — your card is only saved for after the trial.' },
-              { step:'3', icon:'🎁', title:'Use AlgoGrass free for 30 days', desc:'Full access to all features. Cancel any time before day 30 and pay absolutely nothing.' },
-              { step:'4', icon:'🔄', title:'Auto-renews after trial', desc:'On day 31, your subscription starts at the plan price. You\'ll get a reminder email 7 days before.' },
+              { step:'1', icon:'📋', title:'Choose your plan', desc:'Pick the plan that fits your business. All paid plans include a 60-day free trial — no card needed.' },
+              { step:'2', icon:'✉️', title:'Create your account', desc:'Sign up with your email in seconds. No card details required at any point during your 60-day trial.' },
+              { step:'3', icon:'🎁', title:'Use AlgoGrass free for 60 days', desc:'Full access to all Pro features. If you choose not to upgrade after 60 days, you stay on the free tier.' },
+              { step:'4', icon:'🔄', title:'Upgrade when ready', desc:'After 60 days you can choose a paid plan to keep Pro features, or continue on the free tier. No surprise charges.' },
             ].map(s=>(
               <div key={s.step} style={{ background:'var(--bg)', borderRadius:12, padding:20 }}>
                 <div style={{ fontSize:24, marginBottom:8 }}>{s.icon}</div>

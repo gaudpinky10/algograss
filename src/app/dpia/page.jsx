@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const STEPS = [
   { id:1, title:'Project Details',       icon:'📋', desc:'Describe the processing activity' },
@@ -59,9 +60,24 @@ const select = (label, val, onChange, options) => (
   </div>
 )
 
+
+function getUser() {
+  try {
+    const cookies = document.cookie.split(';').map(c => c.trim())
+    const cookie = cookies.find(c => c.startsWith('algograss_user='))
+    if (!cookie) return null
+    return JSON.parse(atob(cookie.split('=')[1]))
+  } catch { return null }
+}
 export default function DpiaPage() {
   const [step, setStep]   = useState(1)
   const [form, setForm]   = useState({
+  const router = useRouter()
+  useEffect(() => {
+    const u = getUser()
+    if (!u) { router.push('/login'); return }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
     businessName:'', projectName:'', description:'', dataController:'', dpo:'',
     dataTypes:[], otherDataType:'',
     legalBasis:'Consent', purpose:'', recipients:'', retention:'',

@@ -159,7 +159,7 @@ export default function SettingsPage() {
             <div style={S.card}>
               <h3 style={{ color: '#EF4444', fontWeight: 700, fontSize: 16, margin: '0 0 10px' }}>Danger Zone</h3>
               <p style={{ color: '#94A3B8', fontSize: 13, margin: '0 0 16px' }}>Permanently delete your account and all associated data. This cannot be undone.</p>
-              <button style={S.btnDanger} onClick={() => confirm('Are you absolutely sure? All your data will be deleted.') && alert('Please contact hello@algograss.com to delete your account.')}>Delete My Account</button>
+              <button style={S.btnDanger} onClick={() => confirm('Are you absolutely sure? All your data will be deleted.') && alert('Please contact hello@algograss.co.uk to delete your account.')}>Delete My Account</button>
             </div>
           </>
         )}

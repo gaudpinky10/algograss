@@ -1,11 +1,27 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
+
+function getUser() {
+  try {
+    const cookies = document.cookie.split(';').map(c => c.trim())
+    const cookie = cookies.find(c => c.startsWith('algograss_user='))
+    if (!cookie) return null
+    return JSON.parse(atob(cookie.split('=')[1]))
+  } catch { return null }
+}
 export default function DsarPage() {
   const [form, setForm] = useState({ requestText: '', businessName: '', dataTypes: '' })
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
+  const router = useRouter()
+  useEffect(() => {
+    const u = getUser()
+    if (!u) { router.push('/login'); return }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }))
 
   async function handle() {

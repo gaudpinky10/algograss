@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const S = {
   bg:'#060B14', surface:'#0D1525', border:'#1e2d45',
@@ -9,11 +10,27 @@ const S = {
 
 const FLAG = c => c ? `https://flagcdn.com/16x12/${c.toLowerCase()}.png` : null
 
+
+function getUser() {
+  try {
+    const cookies = document.cookie.split(';').map(c => c.trim())
+    const cookie = cookies.find(c => c.startsWith('algograss_user='))
+    if (!cookie) return null
+    return JSON.parse(atob(cookie.split('=')[1]))
+  } catch { return null }
+}
 export default function VisitorsDashboard() {
   const [data,    setData]    = useState(null)
   const [loading, setLoading] = useState(true)
   const [page,    setPage]    = useState(1)
   const [filter,  setFilter]  = useState({ device:'', country:'', page:'' })
+  const router = useRouter()
+  useEffect(() => {
+    const u = getUser()
+    if (!u) { router.push('/login'); return }
+    if (!u.isAdmin && u.role !== 'founder' && u.role !== 'developer') { router.push('/dashboard'); return }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const PER = 50
 
   useEffect(() => { load() }, [page, filter])

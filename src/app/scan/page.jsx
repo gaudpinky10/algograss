@@ -1,9 +1,10 @@
 'use client'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function ScanPage() {
+function ScanPageInner() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [url, setUrl]       = useState('')
   const [status, setStatus] = useState('idle')
   const [result, setResult] = useState(null)
@@ -11,6 +12,16 @@ export default function ScanPage() {
   const [email, setEmail]   = useState('')
   const [emailStatus, setEmailStatus] = useState('idle') // idle|sending|sent|error
   const [emailError, setEmailError]   = useState('')
+
+  // Auto-populate and run scan if URL came from homepage or another page
+  useEffect(() => {
+    const param = searchParams.get('url')
+    if (param && param.trim()) {
+      setUrl(param.trim())
+      runScan(param.trim())
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function runScan(target) {
     const u = target || url
@@ -382,14 +393,25 @@ export default function ScanPage() {
               ].map(({icon,title,desc})=>(
                 <div key={title} className="card card-hover" style={{padding:'18px 16px'}}>
                   <div style={{fontSize:24,marginBottom:10}}>{icon}</div>
-                  <div style={{fontFamily:'Syne,sans-serif',fontSize:13,fontWeight:600,color:'var(--ink)',marginBottom:6}}>{title}</div>
-                  <p style={{fontSize:12,color:'var(--ink2)',lineHeight:1.6}}>{desc}</p>
+                  <div style={{fontFamily:'Syne,sans-serif',fontSize:13,fontWeight:700,color:'var(--ink)',marginBottom:6}}>{title}</div>
+                  <div style={{fontSize:12,color:'var(--ink2)',lineHeight:1.6}}>{desc}</div>
                 </div>
               ))}
             </div>
           </div>
         </section>
       )}
+
     </div>
+  )
+}
+
+import { Suspense } from 'react'
+
+export default function ScanPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: 48, color: 'var(--ink2)', textAlign: 'center' }}>Loading…</div>}>
+      <ScanPageInner />
+    </Suspense>
   )
 }

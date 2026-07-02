@@ -31,12 +31,38 @@ const barlowCondensed = Barlow_Condensed({
 })
 
 export const metadata = {
-  title: 'AlgoGrass — GDPR Compliance Tools for UK & EU SMEs',
-  description: 'Scan your website for GDPR compliance risks and generate privacy documents automatically.',
-  icons: { icon: '/favicon.svg' },
+  metadataBase: new URL('https://algograss.co.uk'),
+  title: {
+    default: 'AlgoGrass — GDPR Compliance Tools for UK & EU Businesses',
+    template: '%s | AlgoGrass',
+  },
+  description: 'Free GDPR website scanner + compliance tools for UK and EU SMEs. Generate privacy policies, handle DSARs, manage data audits, and stay ICO-compliant — no legal background needed.',
+  keywords: ['GDPR compliance', 'UK GDPR', 'ICO compliance', 'privacy policy generator', 'DSAR handler', 'data protection', 'GDPR scanner', 'SME compliance', 'cookie consent', 'data audit'],
+  authors: [{ name: 'AlgoGrass', url: 'https://algograss.co.uk' }],
+  creator: 'AlgoGrass',
+  publisher: 'AlgoGrass',
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
+  icons: { icon: '/favicon.svg', apple: '/favicon.svg' },
   manifest: '/manifest.json',
   themeColor: '#00D4AA',
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'AlgoGrass' },
+  openGraph: {
+    type: 'website',
+    locale: 'en_GB',
+    url: 'https://algograss.co.uk',
+    siteName: 'AlgoGrass',
+    title: 'AlgoGrass — GDPR Compliance Tools for UK & EU Businesses',
+    description: 'Free GDPR website scanner + compliance tools for UK and EU SMEs. 60 days free, no card required.',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'AlgoGrass — GDPR Compliance Made Simple' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AlgoGrass — GDPR Compliance Tools for UK & EU Businesses',
+    description: 'Free GDPR website scanner + privacy tools for UK SMEs. Scan your site, generate documents, stay ICO-compliant.',
+    images: ['/og-image.png'],
+    creator: '@algograss',
+  },
+  alternates: { canonical: 'https://algograss.co.uk' },
 }
 
 export default function RootLayout({ children }) {

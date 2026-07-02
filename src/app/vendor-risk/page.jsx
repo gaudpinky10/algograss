@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const DATA_CATEGORIES = ['Names','Contact details','Financial/payment','Health/medical','Children\'s data','Biometric','Criminal records','Location','Special category','Business data']
 const VENDOR_TYPES    = ['Cloud hosting','Email/marketing','CRM','Analytics','HR/payroll','Accounting','Customer support','Payment processing','Security','Legal','Other']
@@ -16,6 +17,15 @@ const DpaBadge = ({ status }) => {
 
 const EMPTY = { name:'',type:'Cloud hosting',website:'',dataCategories:[],transfersOutsideUK:'No',dpaSigned:'No',dpaSignedDate:'',lastAudit:'',isoOrSoc2:'Neither',notes:'' }
 
+
+function getUser() {
+  try {
+    const cookies = document.cookie.split(';').map(c => c.trim())
+    const cookie = cookies.find(c => c.startsWith('algograss_user='))
+    if (!cookie) return null
+    return JSON.parse(atob(cookie.split('=')[1]))
+  } catch { return null }
+}
 export default function VendorRiskPage() {
   const [vendors, setVendors]   = useState([])
   const [showForm, setShowForm] = useState(false)
@@ -23,6 +33,12 @@ export default function VendorRiskPage() {
   const [saving, setSaving]     = useState(false)
   const [filter, setFilter]     = useState('All')
   const [search, setSearch]     = useState('')
+  const router = useRouter()
+  useEffect(() => {
+    const u = getUser()
+    if (!u) { router.push('/login'); return }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(()=>{ load() }, [])
 

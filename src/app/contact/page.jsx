@@ -13,7 +13,7 @@ export default function ContactPage() {
           <h1 className="heading" style={{fontSize:'clamp(28px,3vw,44px)',marginBottom:14}}>Get in touch</h1>
           <p className="subtext" style={{marginBottom:40}}>Have a question about compliance, our product, or pricing? We respond within one business day.</p>
           <div style={{display:'flex',flexDirection:'column',gap:20,marginBottom:36}}>
-            {[{icon:'✉',label:'Email',val:'hello@algograss.ltd',href:'mailto:hello@algograss.ltd'},{icon:'📍',label:'Location',val:'United Kingdom'},{icon:'🕐',label:'Support hours',val:'Mon–Fri, 9am–6pm GMT'}].map(({icon,label,val,href})=>(
+            {[{icon:'✉',label:'Email',val:'hello@algograss.co.uk',href:'mailto:hello@algograss.co.uk'},{icon:'📍',label:'Location',val:'United Kingdom'},{icon:'🕐',label:'Support hours',val:'Mon–Fri, 9am–6pm GMT'}].map(({icon,label,val,href})=>(
               <div key={label} style={{display:'flex',gap:14,alignItems:'flex-start'}}>
                 <div style={{width:40,height:40,borderRadius:10,background:'var(--green-p)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,flexShrink:0}}>{icon}</div>
                 <div>

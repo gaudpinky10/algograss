@@ -45,7 +45,7 @@ function Hero() {
           </p>
 
           {/* Scan form */}
-          <form className="animate-fade-up" style={{animationDelay:'0.45s'}} onSubmit={e=>{e.preventDefault();router.push('/scan')}}>
+          <form className="animate-fade-up" style={{animationDelay:'0.45s'}} onSubmit={e=>{e.preventDefault();router.push('/scan'+(url.trim()?'?url='+encodeURIComponent(url.trim()):''))}}>
             <div style={{display:'flex',background:'rgba(255,255,255,0.05)',border:'1.5px solid rgba(0,212,170,0.3)',borderRadius:12,padding:'5px 5px 5px 16px',maxWidth:470,marginBottom:14,gap:8,backdropFilter:'blur(8px)',transition:'border-color 0.3s'}}
               onFocus={e=>e.currentTarget.style.borderColor='rgba(0,212,170,0.7)'}
               onBlur={e=>e.currentTarget.style.borderColor='rgba(0,212,170,0.3)'}>

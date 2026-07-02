@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /settings/
+Disallow: /ai/
+Disallow: /grc/
+Disallow: /data-audit/
+Disallow: /dsar/
+Disallow: /reminders/
+Disallow: /training/
+Disallow: /vendor-risk/
+Disallow: /dpia/
+Disallow: /breach/
+Disallow: /complaint/
+Disallow: /share/
+
+Sitemap: https://algograss.co.uk/sitemap.xml

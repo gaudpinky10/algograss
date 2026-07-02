@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const UPDATES = [
   { id:1,  date:'Jun 2026', title:'Data (Use and Access) Act — Mandatory complaints process live', body:'From 19 June 2026, UK GDPR controllers must have a documented internal data protection complaints process. Individuals must be able to complain directly to the controller before escalating to the ICO. Failure to provide this process is now a separate breach under the DUAA 2025. Businesses must update their privacy notices to include the complaints procedure.', source:'DUAA 2025 s.4', severity:'critical', category:'UK GDPR', url:'https://www.legislation.gov.uk/ukpga/2025/9' },
@@ -31,6 +32,15 @@ const SEV = {
 }
 const CAT_ICONS = { 'UK GDPR':'🇬🇧','EU GDPR':'🇪🇺','EU AI Act':'🤖','ICO Guidance':'📘','Enforcement':'⚖️','PECR / Cookies':'🍪','Cybersecurity':'🔐','International Transfers':'🌍' }
 
+
+function getUser() {
+  try {
+    const cookies = document.cookie.split(';').map(c => c.trim())
+    const cookie = cookies.find(c => c.startsWith('algograss_user='))
+    if (!cookie) return null
+    return JSON.parse(atob(cookie.split('=')[1]))
+  } catch { return null }
+}
 export default function RegulatoryMonitorPage() {
   const [cat, setCat]       = useState('All')
   const [sev, setSev]       = useState('All')
@@ -38,6 +48,12 @@ export default function RegulatoryMonitorPage() {
   const [open, setOpen]     = useState(null)
   const [email, setEmail]   = useState('')
   const [subscribed, setSubscribed] = useState(false)
+  const router = useRouter()
+  useEffect(() => {
+    const u = getUser()
+    if (!u) { router.push('/login'); return }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const filtered = UPDATES.filter(u =>
     (cat === 'All' || u.category === cat) &&

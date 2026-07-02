@@ -61,7 +61,7 @@ export default function ReferralPage() {
         <div style={{maxWidth:800,margin:'0 auto'}}>
           <div style={{fontSize:13,color:S.teal,fontWeight:700,textTransform:'uppercase',letterSpacing:'1.5px',marginBottom:12}}>Referral Programme</div>
           <h1 style={{fontSize:40,fontWeight:800,color:S.text,margin:'0 0 12px',letterSpacing:-1}}>Earn free Pro for referring friends</h1>
-          <p style={{color:S.muted,fontSize:16,maxWidth:520,marginBottom:32}}>Share AlgoGrass with a colleague. When they sign up, they get 30 days free Pro — and so do you. No limit on how many people you can refer.</p>
+          <p style={{color:S.muted,fontSize:16,maxWidth:520,marginBottom:32}}>Share AlgoGrass with a colleague. When they sign up, they get 60 days free Pro — and so do you. No limit on how many people you can refer.</p>
 
           {/* Stats */}
           <div style={{display:'flex',gap:20,flexWrap:'wrap',marginBottom:36}}>
@@ -104,7 +104,7 @@ export default function ReferralPage() {
           {[
             { step:'1', icon:'🔗', title:'Share your link', desc:'Send your unique referral link to any business that needs GDPR compliance tools.' },
             { step:'2', icon:'✍️', title:'They sign up', desc:'When they create an AlgoGrass account using your link, you\'re automatically credited.' },
-            { step:'3', icon:'🎁', title:'Both get free Pro', desc:'They get 30 days free Pro. You get 30 days free Pro added to your account. No limit.' },
+            { step:'3', icon:'🎁', title:'Both get free Pro', desc:'They get 60 days free Pro. You get 60 days free Pro added to your account. No limit.' },
           ].map(s => (
             <div key={s.step} style={{background:S.surface,border:`1px solid ${S.border}`,borderRadius:14,padding:'24px 20px',textAlign:'center'}}>
               <div style={{fontSize:32,marginBottom:12}}>{s.icon}</div>
@@ -139,7 +139,7 @@ export default function ReferralPage() {
               <div key={i} style={{display:'grid',gridTemplateColumns:'1fr 1fr auto',padding:'14px 20px',borderBottom:i<stats.referrals.length-1?`1px solid ${S.border}`:'none',alignItems:'center'}}>
                 <span style={{fontSize:13,color:S.text,fontWeight:600}}>{r.email.split('@')[0].slice(0,3) + '***@' + r.email.split('@')[1]}</span>
                 <span style={{fontSize:12,color:S.muted}}>{new Date(r.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>
-                <span style={{fontSize:12,background:'rgba(0,212,170,0.1)',color:S.teal,padding:'3px 10px',borderRadius:20,fontWeight:700}}>+30 days</span>
+                <span style={{fontSize:12,background:'rgba(0,212,170,0.1)',color:S.teal,padding:'3px 10px',borderRadius:20,fontWeight:700}}>+60 days</span>
               </div>
             ))}
           </div>

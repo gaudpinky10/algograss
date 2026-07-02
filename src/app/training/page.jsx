@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const S = {
   page: { minHeight: '100vh', background: '#060B14', padding: '40px 20px', fontFamily: "'Segoe UI', sans-serif" },
@@ -227,10 +228,25 @@ function Certificate({ name, date }) {
   )
 }
 
+
+function getUser() {
+  try {
+    const cookies = document.cookie.split(';').map(c => c.trim())
+    const cookie = cookies.find(c => c.startsWith('algograss_user='))
+    if (!cookie) return null
+    return JSON.parse(atob(cookie.split('=')[1]))
+  } catch { return null }
+}
 export default function TrainingPage() {
   const [completed, setCompleted] = useState(new Set())
   const [certName, setCertName] = useState('')
   const [showCert, setShowCert] = useState(false)
+  const router = useRouter()
+  useEffect(() => {
+    const u = getUser()
+    if (!u) { router.push('/login'); return }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const complete = id => setCompleted(s => new Set([...s, id]))
   const allDone = completed.size === MODULES.length

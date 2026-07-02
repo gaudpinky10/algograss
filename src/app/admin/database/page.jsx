@@ -1,15 +1,32 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 const A = '#00D4AA'
 const P = '#818CF8'
 
+
+function getUser() {
+  try {
+    const cookies = document.cookie.split(';').map(c => c.trim())
+    const cookie = cookies.find(c => c.startsWith('algograss_user='))
+    if (!cookie) return null
+    return JSON.parse(atob(cookie.split('=')[1]))
+  } catch { return null }
+}
 export default function AdminDatabase() {
   const [health, setHealth]   = useState(null)
   const [loading, setLoading] = useState(true)
   const [initing, setIniting] = useState(false)
   const [initResult, setInitResult] = useState(null)
   const [error, setError]     = useState('')
+  const router = useRouter()
+  useEffect(() => {
+    const u = getUser()
+    if (!u) { router.push('/login'); return }
+    if (!u.isAdmin && u.role !== 'founder' && u.role !== 'developer') { router.push('/dashboard'); return }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function loadHealth() {
     setLoading(true)

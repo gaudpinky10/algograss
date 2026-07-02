@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const CHANNELS = [
   { id: 'email', icon: '📧', label: 'Email', placeholder: 'Paste the email you received...' },
@@ -26,6 +27,15 @@ const CATEGORY_COLORS = {
   'Not GDPR Related': '#9CA3AF',
 }
 
+
+function getUser() {
+  try {
+    const cookies = document.cookie.split(';').map(c => c.trim())
+    const cookie = cookies.find(c => c.startsWith('algograss_user='))
+    if (!cookie) return null
+    return JSON.parse(atob(cookie.split('=')[1]))
+  } catch { return null }
+}
 export default function ComplaintPage() {
   const [channel, setChannel] = useState('email')
   const [complaint, setComplaint] = useState('')
@@ -36,6 +46,12 @@ export default function ComplaintPage() {
   const [tab, setTab] = useState('classify')
   const [log, setLog] = useState([])
   const [logLoading, setLogLoading] = useState(false)
+  const router = useRouter()
+  useEffect(() => {
+    const u = getUser()
+    if (!u) { router.push('/login'); return }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => { if (tab === 'log') loadLog() }, [tab])
 

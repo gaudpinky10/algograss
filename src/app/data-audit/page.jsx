@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const AREAS = [
   { id: 'crm', icon: '🗂️', title: 'CRM & Customer Data', desc: 'Salesforce, HubSpot, spreadsheets, contact databases' },
@@ -53,6 +54,15 @@ const PRIORITY_COLORS = {
   'Within 90 days': { bg: '#F0FDF4', text: '#16A34A', border: 'var(--green-m)' },
 }
 
+
+function getUser() {
+  try {
+    const cookies = document.cookie.split(';').map(c => c.trim())
+    const cookie = cookies.find(c => c.startsWith('algograss_user='))
+    if (!cookie) return null
+    return JSON.parse(atob(cookie.split('=')[1]))
+  } catch { return null }
+}
 export default function DataAuditPage() {
   const [selectedArea, setSelectedArea] = useState(null)
   const [answers, setAnswers] = useState({})
@@ -61,6 +71,12 @@ export default function DataAuditPage() {
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
   const [step, setStep] = useState('select')
+  const router = useRouter()
+  useEffect(() => {
+    const u = getUser()
+    if (!u) { router.push('/login'); return }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function runAudit() {
     setLoading(true); setError(''); setResult(null)

@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -167,6 +168,15 @@ const S = {
 
 const STATUS_OPTIONS = ['Not Started','In Progress','Compliant','N/A']
 
+
+function getUser() {
+  try {
+    const cookies = document.cookie.split(';').map(c => c.trim())
+    const cookie = cookies.find(c => c.startsWith('algograss_user='))
+    if (!cookie) return null
+    return JSON.parse(atob(cookie.split('=')[1]))
+  } catch { return null }
+}
 export default function GRCPage() {
   const [activeTab,    setActiveTab]    = useState('gdpr')
   const [gdprStatus,   setGdprStatus]   = useState({})
@@ -178,6 +188,12 @@ export default function GRCPage() {
   const [openAudit,    setOpenAudit]    = useState(null)
   const [auditChecked, setAuditChecked] = useState({})
   const [exportMsg,    setExportMsg]    = useState('')
+  const router = useRouter()
+  useEffect(() => {
+    const u = getUser()
+    if (!u) { router.push('/login'); return }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const getStatus  = (id, g=true) => g ? (gdprStatus[id]||'Not Started')  : (cyberStatus[id]||'Not Started')
   const setStatus  = (id, v, g=true) => g ? setGdprStatus(p=>({...p,[id]:v})) : setCyberStatus(p=>({...p,[id]:v}))

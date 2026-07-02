@@ -107,7 +107,7 @@ export default function SecurityPage() {
           <P>We keep your data only as long as necessary. Here is exactly what we store and for how long:</P>
           <div style={{ marginTop: 24 }}>
             <Row label="Scan results" value="Retained for 30 days, then automatically deleted" note="You can download your report at any time. Re-scanning creates a fresh record." />
-            <Row label="Account data" value="Retained while your account is active" note="Deletion request: email privacy@algograss.com — we'll delete your account and all associated data within 30 days." />
+            <Row label="Account data" value="Retained while your account is active" note="Deletion request: email privacy@algograss.co.uk — we'll delete your account and all associated data within 30 days." />
             <Row label="Compliance documents" value="Retained in your account until you delete them" note="Documents you generate (privacy policy, DPA, etc.) are stored linked to your account." />
             <Row label="Audit logs" value="Retained for 90 days for security and debugging" note="Logs contain request metadata (IP, timestamp, endpoint). Logs are not used for marketing." />
             <Row label="Payment data" value="Retained as required by UK financial regulations (7 years)" note="Stripe retains full payment records. We store only subscription status and amount." />
@@ -205,7 +205,7 @@ export default function SecurityPage() {
           </div>
           <div style={{ marginTop: 28, padding: '18px 22px', background: 'rgba(0,212,170,0.06)', border: '1px solid rgba(0,212,170,0.2)', borderRadius: 12 }}>
             <p style={{ fontSize: 14, color: 'var(--ink2)', margin: 0, lineHeight: 1.75 }}>
-              To exercise any of these rights, email <a href="mailto:privacy@algograss.com" style={{ color: 'var(--accent)' }}>privacy@algograss.com</a>. We'll respond within 30 days as required by UK GDPR Article 12. If you're not satisfied with our response, you can lodge a complaint with the <a href="https://ico.org.uk/make-a-complaint/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>Information Commissioner's Office (ICO)</a>.
+              To exercise any of these rights, email <a href="mailto:privacy@algograss.co.uk" style={{ color: 'var(--accent)' }}>privacy@algograss.co.uk</a>. We'll respond within 30 days as required by UK GDPR Article 12. If you're not satisfied with our response, you can lodge a complaint with the <a href="https://ico.org.uk/make-a-complaint/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>Information Commissioner's Office (ICO)</a>.
             </p>
           </div>
         </AnimateOnScroll>
@@ -219,7 +219,7 @@ export default function SecurityPage() {
             <h2 style={{ fontFamily: 'var(--f-head)', fontSize: 'clamp(22px,3vw,36px)', fontWeight: 700, color: 'var(--ink)', marginBottom: 14 }}>Security questions or concerns?</h2>
             <p style={{ fontSize: 15, color: 'rgba(232,240,254,0.5)', marginBottom: 28, lineHeight: 1.7 }}>Contact our data protection team. We take every report seriously.</p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <a href="mailto:privacy@algograss.com" className="btn btn-primary">Email privacy@algograss.com →</a>
+              <a href="mailto:privacy@algograss.co.uk" className="btn btn-primary">Email privacy@algograss.co.uk →</a>
               <a href="/privacy-policy" className="btn btn-secondary">Privacy Policy</a>
             </div>
           </AnimateOnScroll>

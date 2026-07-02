@@ -37,9 +37,8 @@ export default function TermsPage() {
         </Section>
 
         <Section title="4. Subscription plans & billing">
-          <P><strong style={{ color: 'var(--ink)' }}>Free trial:</strong> Paid plans include a 30-day free trial. A valid payment card is required. Nothing is charged during the trial period.</P>
-          <P><strong style={{ color: 'var(--ink)' }}>Card verification:</strong> We charge £1 to verify your card is valid. This is refunded automatically within minutes.</P>
-          <P><strong style={{ color: 'var(--ink)' }}>Billing:</strong> After the free trial, your plan renews automatically monthly at the rate shown at signup. You will receive an email reminder 7 days before the first charge.</P>
+          <P><strong style={{ color: 'var(--ink)' }}>Free trial:</strong> All new accounts receive a 60-day free Pro trial. No credit card is required to start your trial.</P>
+          <P><strong style={{ color: 'var(--ink)' }}>Billing:</strong> After the 60-day free trial, you may upgrade to a paid plan. If you do not upgrade, your account moves to the free tier automatically. You will not be charged without choosing to upgrade. Paid plans renew monthly at the rate shown at signup. You will receive an email reminder 7 days before any charge.</P>
           <P><strong style={{ color: 'var(--ink)' }}>Cancellation:</strong> Cancel any time from your dashboard. You retain access until the end of the current billing period. No refunds for partial months.</P>
           <P><strong style={{ color: 'var(--ink)' }}>Price changes:</strong> We will give 30 days' notice of any price increase. Continued use after the notice period constitutes acceptance.</P>
         </Section>
