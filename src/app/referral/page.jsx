@@ -35,7 +35,7 @@ export default function ReferralPage() {
     setLoading(false)
   }
 
-  const referralLink = user ? `${typeof window !== 'undefined' ? window.location.origin : 'https://algograss.co.uk'}/signup?ref=${btoa(user.email).replace(/=/g,'')}` : ''
+  const referralLink = user ? `${typeof window !== 'undefined' ? window.location.origin : 'https://algograss.com'}/signup?ref=${btoa(user.email).replace(/=/g,'')}` : ''
 
   function copyLink() {
     navigator.clipboard.writeText(referralLink).then(() => {

@@ -29,7 +29,7 @@ export default function PrivacyPolicyPage() {
           <P><strong style={{ color: 'var(--ink)' }}>Registered in:</strong> England and Wales</P>
           <P><strong style={{ color: 'var(--ink)' }}>Registered address:</strong> 5 Jupp Road West, London, E15 2HS</P>
           <P><strong style={{ color: 'var(--ink)' }}>Email:</strong> <a href="mailto:privacy@algograss.co.uk" style={{ color: 'var(--green)' }}>privacy@algograss.co.uk</a></P>
-          <P>AlgoGrass Ltd is the data controller for personal data collected through algograss.co.uk and the AlgoGrass compliance platform.</P>
+          <P>AlgoGrass Ltd is the data controller for personal data collected through algograss.com and the AlgoGrass compliance platform.</P>
         </Section>
 
         <Section title="2. What data we collect">

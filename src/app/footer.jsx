@@ -80,7 +80,7 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 22, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
-          <span style={{ fontSize: 12, color: 'rgba(232,240,254,0.2)' }}>© 2026 AlgoGrass Ltd · Registered in England & Wales · algograss.co.uk</span>
+          <span style={{ fontSize: 12, color: 'rgba(232,240,254,0.2)' }}>© 2026 AlgoGrass Ltd · Registered in England & Wales · algograss.com</span>
           <div style={{ display: 'flex', gap: 22 }}>
             {[['Privacy Policy','/privacy-policy'],['Terms of Service','/terms'],['Cookie Policy','/cookie-policy']].map(([item,href]) => (
               <a key={item} href={href} style={{ fontSize: 12, color: 'rgba(232,240,254,0.2)', textDecoration: 'none', transition: 'color .2s' }}

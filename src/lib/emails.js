@@ -40,7 +40,7 @@ function layout(body, previewText = '') {
   <!-- Footer -->
   <div style="padding:20px 40px;border-top:1px solid #1e2d45;text-align:center">
     <p style="color:#475569;font-size:11px;margin:0;line-height:1.7">
-      AlgoGrass · Automated GDPR Compliance · <a href="https://algograss.co.uk" style="color:#00D4AA;text-decoration:none">algograss.co.uk</a><br>
+      AlgoGrass · Automated GDPR Compliance · <a href="https://algograss.com" style="color:#00D4AA;text-decoration:none">algograss.com</a><br>
       You're receiving this because you have an AlgoGrass account.
     </p>
   </div>
@@ -80,10 +80,10 @@ export async function sendWelcomeEmail(name, email, plan = 'free') {
 
       <div style="background:#0D1525;border:1px solid #1e2d45;border-radius:12px;overflow:hidden;margin-bottom:24px">
         ${[
-          ['🔍', 'Scan your website', 'Get your real-time GDPR compliance score — instant results.', 'https://algograss.co.uk/scan'],
-          ['📄', 'Generate documents', 'Auto-generate your Privacy Policy, Cookie Notice & DPA from your scan.', 'https://algograss.co.uk/generate'],
-          ['🤖', 'Ask AlgoGrass AI', 'Get instant answers to any GDPR or UK data protection question.', 'https://algograss.co.uk/ai-chat'],
-          ['📋', 'Set up your GRC', 'Build your GDPR compliance register and track your obligations.', 'https://algograss.co.uk/grc'],
+          ['🔍', 'Scan your website', 'Get your real-time GDPR compliance score — instant results.', 'https://algograss.com/scan'],
+          ['📄', 'Generate documents', 'Auto-generate your Privacy Policy, Cookie Notice & DPA from your scan.', 'https://algograss.com/generate'],
+          ['🤖', 'Ask AlgoGrass AI', 'Get instant answers to any GDPR or UK data protection question.', 'https://algograss.com/ai-chat'],
+          ['📋', 'Set up your GRC', 'Build your GDPR compliance register and track your obligations.', 'https://algograss.com/grc'],
         ].map(([icon, title, desc, link]) => `
           <div style="padding:16px 20px;border-bottom:1px solid #1e2d45">
             <table width="100%" cellpadding="0" cellspacing="0"><tr>
@@ -102,11 +102,11 @@ export async function sendWelcomeEmail(name, email, plan = 'free') {
       <div style="background:linear-gradient(135deg,rgba(0,212,170,0.08),rgba(124,158,255,0.08));border:1px solid rgba(0,212,170,0.2);border-radius:12px;padding:24px;text-align:center">
         <p style="color:#E8F0FE;font-size:14px;font-weight:600;margin:0 0 6px">Upgrade to Pro for full automation</p>
         <p style="color:#94A3B8;font-size:12px;margin:0 0 16px">Weekly scan monitoring, automated alerts, document vault, and more.</p>
-        ${btn('Start 30-day free trial', 'https://algograss.co.uk/pricing')}
+        ${btn('Start 30-day free trial', 'https://algograss.com/pricing')}
       </div>` : `
       <div style="background:linear-gradient(135deg,rgba(0,212,170,0.08),rgba(124,158,255,0.08));border:1px solid rgba(0,212,170,0.2);border-radius:12px;padding:24px;text-align:center">
         <p style="color:#00D4AA;font-size:14px;font-weight:600;margin:0 0 16px">✅ Pro plan active — all automations enabled</p>
-        ${btn('Go to dashboard', 'https://algograss.co.uk/dashboard')}
+        ${btn('Go to dashboard', 'https://algograss.com/dashboard')}
       </div>`}
     </div>
   `, `Welcome to AlgoGrass, ${name.split(' ')[0]}!`);
@@ -170,7 +170,7 @@ export async function sendScanMonitorEmail(name, email, websiteUrl, currentResul
       </div>` : ''}
 
       <div style="text-align:center;margin-top:24px">
-        ${btn('View full report & fix issues', 'https://algograss.co.uk/scan')}
+        ${btn('View full report & fix issues', 'https://algograss.com/scan')}
       </div>
     </div>
   `, `Your GDPR score: ${sc}/100 for ${websiteUrl}`);
@@ -202,7 +202,7 @@ export async function sendTrialWarningEmail(name, email, daysLeft) {
         ${['🔄 Weekly automated compliance scans & alerts', '📄 Unlimited document generation (Privacy Policy, DPA, Cookie Notice)', '📊 Full GRC & risk register', '🤖 Unlimited GDPR AI assistant', '📋 DPIA wizard & AI register', '🏢 Vendor risk management'].map(f => `<p style="color:#CBD5E1;font-size:13px;margin:0 0 8px">${f}</p>`).join('')}
       </div>
       <div style="text-align:center">
-        ${btn('Upgrade now — keep full access', 'https://algograss.co.uk/pricing')}
+        ${btn('Upgrade now — keep full access', 'https://algograss.com/pricing')}
         <p style="color:#475569;font-size:12px;margin:16px 0 0">Cancel anytime. No hidden fees.</p>
       </div>
     </div>
@@ -232,7 +232,7 @@ export async function sendTrialExpiredEmail(name, email) {
         You can still access basic features, but Pro tools are paused until you upgrade.
       </p>
       <div style="text-align:center">
-        ${btn('Reactivate Pro — from £29/mo', 'https://algograss.co.uk/pricing')}
+        ${btn('Reactivate Pro — from £29/mo', 'https://algograss.com/pricing')}
         <p style="color:#475569;font-size:12px;margin:16px 0 0">All your data is safe. Pick up exactly where you left off.</p>
       </div>
     </div>
@@ -275,7 +275,7 @@ export async function sendRegulatoryAlertEmail(name, email, updates) {
       </div>
 
       <div style="text-align:center">
-        ${btn('View full regulatory monitor', 'https://algograss.co.uk/regulatory')}
+        ${btn('View full regulatory monitor', 'https://algograss.com/regulatory')}
       </div>
     </div>
   `, `${updates.length} new GDPR updates this week`);

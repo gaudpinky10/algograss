@@ -4,7 +4,7 @@ export async function GET() {
   const clientId    = process.env.GOOGLE_CLIENT_ID
   const redirectUri = process.env.NEXT_PUBLIC_APP_URL
     ? `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google/callback`
-    : 'https://algograss.co.uk/api/auth/google/callback'
+    : 'https://algograss.com/api/auth/google/callback'
 
   if (!clientId) {
     // Google OAuth not configured — redirect to signup with message

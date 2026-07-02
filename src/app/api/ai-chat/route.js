@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import { getCollection, parseUserCookie, trackActivity } from '@/lib/dbHelpers'
 
-const BASE_SYSTEM_PROMPT = `You are AlgoGrass AI — an expert GDPR, UK Data Protection, and GRC compliance assistant built exclusively for AlgoGrass (algograss.co.uk).
+const BASE_SYSTEM_PROMPT = `You are AlgoGrass AI — an expert GDPR, UK Data Protection, and GRC compliance assistant built exclusively for AlgoGrass (algograss.com).
 
 ## Your Identity
 - You are AlgoGrass AI, created by AlgoGrass Ltd
@@ -74,7 +74,7 @@ You are part of the AlgoGrass platform which includes:
 - AI Governance Register (EU AI Act compliance)
 - Review Reminders (compliance calendar)
 
-When relevant, suggest the user tries these tools on algograss.co.uk.`
+When relevant, suggest the user tries these tools on algograss.com.`
 
 // ─────────────────────────────────────────────────────────────────────────────
 // RAG: Search knowledge base for relevant documents

@@ -15,7 +15,7 @@ export async function POST(request) {
   }
   if (!PRICES[plan]) return Response.json({ error: 'Invalid plan' }, { status: 400 })
 
-  const base = process.env.NEXT_PUBLIC_URL || 'https://www.algograss.co.uk'
+  const base = process.env.NEXT_PUBLIC_URL || 'https://www.algograss.com'
 
   try {
     // Step 1 of 2 — £1 card verification payment

@@ -14,7 +14,7 @@ export async function POST(request) {
       body: JSON.stringify({
         _replyto: email,
         _subject: `AlgoGrass Compliance Reminders Set — ${reminders.length} reminder${reminders.length > 1 ? 's' : ''}`,
-        message: `Your AlgoGrass compliance reminders have been set!\n\nReminders:\n${reminderList}\n\nYou will receive reminder emails at: ${email}\n\nManage your reminders at: https://www.algograss.co.uk/grc\n\n— AlgoGrass Compliance Platform`,
+        message: `Your AlgoGrass compliance reminders have been set!\n\nReminders:\n${reminderList}\n\nYou will receive reminder emails at: ${email}\n\nManage your reminders at: https://www.algograss.com/grc\n\n— AlgoGrass Compliance Platform`,
       }),
     })
 

@@ -17,7 +17,7 @@ const S = {
 
 const CODE_EXAMPLES = {
   JavaScript: `// Install: no dependencies needed — uses native fetch
-const response = await fetch('https://algograss.co.uk/api/scan', {
+const response = await fetch('https://algograss.com/api/scan', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY',
@@ -33,7 +33,7 @@ console.log(\`Issues: \${result.issues.length}\`);`,
   Python: `import requests
 
 response = requests.post(
-    'https://algograss.co.uk/api/scan',
+    'https://algograss.com/api/scan',
     headers={
         'Authorization': 'Bearer YOUR_API_KEY',
         'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ result = response.json()
 print(f"Score: {result['score']}/100")
 print(f"Issues: {len(result['issues'])}")`,
 
-  cURL: `curl -X POST https://algograss.co.uk/api/scan \\
+  cURL: `curl -X POST https://algograss.com/api/scan \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{"url": "https://example.com"}'`,
@@ -168,7 +168,7 @@ export default function ApiAccessPage() {
           <div style={{ marginBottom: 20 }}>
             <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
               <span style={{ background: 'rgba(0,212,170,0.12)', color: '#00D4AA', fontSize: 12, fontWeight: 700, padding: '4px 12px', borderRadius: 6 }}>POST</span>
-              <code style={{ color: '#E8F0FE', fontSize: 14 }}>https://algograss.co.uk/api/scan</code>
+              <code style={{ color: '#E8F0FE', fontSize: 14 }}>https://algograss.com/api/scan</code>
             </div>
             <p style={{ color: '#94A3B8', fontSize: 13, margin: '0 0 14px' }}>Scan any website for GDPR compliance and get a score with detailed issues.</p>
             <p style={{ color: '#E8F0FE', fontSize: 13, fontWeight: 600, margin: '0 0 8px' }}>Request headers:</p>

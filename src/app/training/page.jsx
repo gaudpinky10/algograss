@@ -223,7 +223,7 @@ function Certificate({ name, date }) {
       <p style={{ fontSize: 13, color: '#888', margin: '0 0 4px' }}>All 5 modules completed · 100% quiz pass rate</p>
       <p style={{ fontSize: 13, color: '#888', margin: '0 0 28px' }}>Issued: {date}</p>
       <div style={{ width: 60, height: 3, background: 'linear-gradient(90deg,#00D4AA,#7C9EFF)', margin: '0 auto 16px', borderRadius: 2 }} />
-      <p style={{ fontSize: 11, color: '#aaa', margin: 0 }}>algograss.co.uk · Automated GDPR Compliance</p>
+      <p style={{ fontSize: 11, color: '#aaa', margin: 0 }}>algograss.com · Automated GDPR Compliance</p>
     </div>
   )
 }

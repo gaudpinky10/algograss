@@ -80,7 +80,7 @@ export default function Image() {
         <div style={{
           position: 'absolute', bottom: 48, right: 96,
           fontSize: 22, color: 'rgba(232,240,254,0.3)',
-        }}>algograss.co.uk</div>
+        }}>algograss.com</div>
       </div>
     ),
     { ...size }

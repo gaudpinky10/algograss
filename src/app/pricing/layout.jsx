@@ -5,7 +5,7 @@ export const metadata = {
   openGraph: {
     title: 'Pricing | AlgoGrass',
     description: 'AlgoGrass pricing — start free for 60 days, no credit card required. Pro and Business plans for UK and EU businesses of all sizes.',
-    url: 'https://algograss.co.uk/pricing',
+    url: 'https://algograss.com/pricing',
   },
 }
 

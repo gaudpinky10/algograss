@@ -71,13 +71,13 @@ function getUser() {
 }
 export default function DpiaPage() {
   const [step, setStep]   = useState(1)
-  const [form, setForm]   = useState({
   const router = useRouter()
   useEffect(() => {
     const u = getUser()
     if (!u) { router.push('/login'); return }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+  const [form, setForm]   = useState({
     businessName:'', projectName:'', description:'', dataController:'', dpo:'',
     dataTypes:[], otherDataType:'',
     legalBasis:'Consent', purpose:'', recipients:'', retention:'',

@@ -22,7 +22,7 @@ export async function GET(request) {
   const plan      = searchParams.get('plan')  || 'starter'
   const trial     = searchParams.get('trial') === '1'
   const key       = process.env.STRIPE_SECRET_KEY
-  const base      = process.env.NEXT_PUBLIC_URL || 'https://www.algograss.co.uk'
+  const base      = process.env.NEXT_PUBLIC_URL || 'https://www.algograss.com'
 
   const successUrl = `${base}/dashboard?upgraded=true&plan=${plan}&trial=${trial?'1':'0'}&verified=true`
   const failUrl    = `${base}/pricing?error=activation_failed`

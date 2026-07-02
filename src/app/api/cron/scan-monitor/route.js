@@ -15,7 +15,7 @@ import { NextResponse } from 'next/server';
 import { getCollection } from '@/lib/dbHelpers';
 import { sendScanMonitorEmail } from '@/lib/emails';
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.algograss.co.uk';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.algograss.com';
 
 export const runtime = 'nodejs';
 export const maxDuration = 300; // 5 minutes — plenty for sequential scans

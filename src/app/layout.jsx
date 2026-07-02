@@ -31,14 +31,14 @@ const barlowCondensed = Barlow_Condensed({
 })
 
 export const metadata = {
-  metadataBase: new URL('https://algograss.co.uk'),
+  metadataBase: new URL('https://algograss.com'),
   title: {
     default: 'AlgoGrass — GDPR Compliance Tools for UK & EU Businesses',
     template: '%s | AlgoGrass',
   },
   description: 'Free GDPR website scanner + compliance tools for UK and EU SMEs. Generate privacy policies, handle DSARs, manage data audits, and stay ICO-compliant — no legal background needed.',
   keywords: ['GDPR compliance', 'UK GDPR', 'ICO compliance', 'privacy policy generator', 'DSAR handler', 'data protection', 'GDPR scanner', 'SME compliance', 'cookie consent', 'data audit'],
-  authors: [{ name: 'AlgoGrass', url: 'https://algograss.co.uk' }],
+  authors: [{ name: 'AlgoGrass', url: 'https://algograss.com' }],
   creator: 'AlgoGrass',
   publisher: 'AlgoGrass',
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
@@ -49,7 +49,7 @@ export const metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_GB',
-    url: 'https://algograss.co.uk',
+    url: 'https://algograss.com',
     siteName: 'AlgoGrass',
     title: 'AlgoGrass — GDPR Compliance Tools for UK & EU Businesses',
     description: 'Free GDPR website scanner + compliance tools for UK and EU SMEs. 60 days free, no card required.',
@@ -62,7 +62,7 @@ export const metadata = {
     images: ['/og-image.png'],
     creator: '@algograss',
   },
-  alternates: { canonical: 'https://algograss.co.uk' },
+  alternates: { canonical: 'https://algograss.com' },
 }
 
 export default function RootLayout({ children }) {

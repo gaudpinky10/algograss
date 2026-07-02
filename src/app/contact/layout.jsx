@@ -5,7 +5,7 @@ export const metadata = {
   openGraph: {
     title: 'Contact | AlgoGrass',
     description: 'Get in touch with the AlgoGrass team. We help UK and EU businesses with GDPR compliance questions and support.',
-    url: 'https://algograss.co.uk/contact',
+    url: 'https://algograss.com/contact',
   },
 }
 

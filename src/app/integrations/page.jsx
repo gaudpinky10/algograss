@@ -75,7 +75,7 @@ function SlackSetup() {
 
 export default function IntegrationsPage() {
   const [copied, setCopied] = useState(false)
-  const zapierUrl = 'https://algograss.co.uk/api/webhooks/zapier'
+  const zapierUrl = 'https://algograss.com/api/webhooks/zapier'
 
   return (
     <div style={S.page}>
