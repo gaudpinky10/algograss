@@ -8,6 +8,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError]   = useState('')
   const [notFound, setNotFound] = useState(false)
+  const [showPwd, setShowPwd] = useState(false)
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }))
 
   async function submit(e) {
@@ -154,18 +155,39 @@ export default function LoginPage() {
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(232,240,254,0.6)', marginBottom: 6, letterSpacing: '.04em', textTransform: 'uppercase' }}>
                 Password
               </label>
-              <input
-                type="password" placeholder="••••••••"
-                value={form.password} onChange={set('password')} required
-                style={{
-                  width: '100%', padding: '12px 14px', borderRadius: 10, fontSize: 14,
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#E8F0FE', outline: 'none', boxSizing: 'border-box', transition: 'border-color .2s',
-                  fontFamily: 'var(--font-space-grotesk,"Space Grotesk"),sans-serif',
-                }}
-                onFocus={e => e.target.style.borderColor = 'rgba(0,212,170,0.5)'}
-                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showPwd ? 'text' : 'password'} placeholder="••••••••"
+                  value={form.password} onChange={set('password')} required
+                  style={{
+                    width: '100%', padding: '12px 44px 12px 14px', borderRadius: 10, fontSize: 14,
+                    background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                    color: '#E8F0FE', outline: 'none', boxSizing: 'border-box', transition: 'border-color .2s',
+                    fontFamily: 'var(--f-body,Lora,serif)',
+                  }}
+                  onFocus={e => e.target.style.borderColor = 'rgba(0,212,170,0.5)'}
+                  onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPwd(s => !s)}
+                  tabIndex={-1}
+                  aria-label={showPwd ? 'Hide password' : 'Show password'}
+                  style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(232,240,254,0.4)', padding: 4, display: 'flex', alignItems: 'center' }}>
+                  {showPwd ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+                      <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+                      <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12S5 4 12 4s11 8 11 8-4 8-11 8S1 12 1 12z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
             <div style={{ textAlign: 'right', marginBottom: 20 }}>
               <a href="/forgot-password" style={{ fontSize: 12, color: '#00D4AA', textDecoration: 'none' }}>
