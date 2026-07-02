@@ -25,6 +25,7 @@ const NAV_LINKS = [
   { href: '/blog',        label: 'Blog' },
   { href: '/contact',     label: 'Contact' },
   { href: '/referral',    label: '🎁 Refer & Earn' },
+  { href: '/security',    label: 'Security' },
   { href: '/settings',    label: 'Settings' },
 ]
 

@@ -198,8 +198,13 @@ export default function ScanPage() {
           <span style={{fontSize:11,fontWeight:600,letterSpacing:'.1em',textTransform:'uppercase',color:'var(--accent)',display:'block',marginBottom:12}}>Free compliance scanner</span>
           <h1 style={{fontFamily:'Syne,sans-serif',fontSize:'clamp(26px,3.5vw,44px)',fontWeight:800,color:'var(--ink)',marginBottom:12,lineHeight:1.1}}>Scan your website for GDPR risks</h1>
           <p style={{fontSize:16,color:'var(--ink2)',marginBottom:32,fontWeight:300,lineHeight:1.7}}>Enter your URL. We check for the most common GDPR compliance issues in seconds — free, no account needed.</p>
-          <form onSubmit={e=>{e.preventDefault();runScan()}} className="scan-form" style={{display:'flex',gap:8,background:'rgba(255,255,255,0.05)',border:'1px solid rgba(0,212,170,0.3)',borderRadius:12,padding:'6px 6px 6px 18px',maxWidth:560,margin:'0 auto'}}>
+          <div style={{maxWidth:560,margin:'0 auto 10px',textAlign:'left'}}>
+            <label style={{fontSize:12,fontWeight:600,color:'var(--ink2)',letterSpacing:'.06em',textTransform:'uppercase'}}>Your website URL</label>
+          </div>
+          <form onSubmit={e=>{e.preventDefault();runScan()}} className="scan-form" style={{display:'flex',gap:8,background:'rgba(255,255,255,0.05)',border:'1.5px solid rgba(0,212,170,0.35)',borderRadius:12,padding:'6px 6px 6px 18px',maxWidth:560,margin:'0 auto'}}>
+            <span style={{fontSize:14,color:'var(--ink2)',alignSelf:'center',flexShrink:0,opacity:.5}}>https://</span>
             <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="yourwebsite.co.uk" disabled={status==='scanning'}
+              autoFocus
               style={{flex:1,border:'none',background:'transparent',fontSize:15,color:'var(--ink)',outline:'none',minWidth:0}}/>
             <button type="submit" className="btn btn-primary" style={{padding:'11px 24px',borderRadius:9,flexShrink:0}} disabled={status==='scanning'}>
               {status==='scanning'?'Scanning…':'Scan now →'}

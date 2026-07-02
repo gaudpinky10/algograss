@@ -363,7 +363,9 @@ function Dashboard() {
   const chatRef = useRef(null)
 
   useEffect(() => {
-    setUser(getUser())
+    const u = getUser()
+    if (!u) { router.push('/login'); return }
+    setUser(u)
     // Load scan history from DB, fallback to localStorage
     fetch('/api/scan-history')
       .then(r => r.json())

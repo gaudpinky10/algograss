@@ -111,7 +111,7 @@ export default function AboutPage() {
                   </div>
                   <div style={{ display: 'inline-block', padding: '4px 14px', borderRadius: 100, background: 'linear-gradient(135deg,#00D4AA,#00A882)', color: '#06111E', fontSize: 10, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 14 }}>Founder</div>
                   <h3 style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 700, color: 'var(--ink)', marginBottom: 8 }}>Pinki Gaud</h3>
-                  <p style={{ fontSize: 13, color: 'rgba(232,240,254,0.5)', lineHeight: 1.7, marginBottom: 22, maxWidth: 300, margin: '0 auto 22px' }}>Building AlgoGrass with a background in LegalTech and AI. Passionate about making GDPR compliance practical and affordable for SMEs across the UK and EU.</p>
+                  <p style={{ fontSize: 13, color: 'rgba(232,240,254,0.5)', lineHeight: 1.7, marginBottom: 22, maxWidth: 300, margin: '0 auto 22px' }}>MSc Business Analytics, Queen Mary University London · AI Researcher recognised at a Top-3 university in China · Built AlgoGrass solo — 14 GDPR compliance tools from website scanner to AI document generator, serving UK and EU SMEs.</p>
                   <a href="https://www.linkedin.com/in/pinkigaud/" target="_blank" rel="noopener noreferrer"
                     style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600, color: '#fff', textDecoration: 'none', padding: '9px 20px', borderRadius: 9, background: '#0A66C2', boxShadow: '0 4px 16px rgba(10,102,194,0.3)', transition: 'all .2s' }}
                     onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(10,102,194,0.5)' }}

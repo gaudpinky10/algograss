@@ -172,7 +172,7 @@ export default function PricingPage() {
                       <span style={{ fontFamily:'Syne,sans-serif', fontSize:38, fontWeight:800, color:p.popular?'#fff':'var(--ink)', lineHeight:1 }}>£{annual?p.yr:p.mo}</span>
                       <span style={{ fontSize:12, color:p.popular?'rgba(255,255,255,.55)':'var(--ink2)', marginBottom:5 }}>/mo</span>
                     </div>
-                    <div style={{ fontSize:11, color:p.popular?'rgba(255,255,255,.55)':'var(--green)', fontWeight:600 }}>🎁 First month FREE</div>
+                    <div style={{ fontSize:11, color:p.popular?'rgba(255,255,255,.55)':'var(--green)', fontWeight:600 }}>🎁 60 days FREE — no card needed</div>
                   </div>
                 ) : (
                   <div style={{ fontFamily:'Syne,sans-serif', fontSize:28, fontWeight:800, color:p.popular?'#fff':'var(--ink)', marginBottom:5 }}>Custom</div>
@@ -191,18 +191,18 @@ export default function PricingPage() {
                 {/* FREE TRIAL button */}
                 {p.mo ? (
                   <>
-                    <button onClick={()=>startCheckout(p, true)} disabled={!!loading}
+                    <a href="/signup"
                       style={{ display:'block', width:'100%', padding:'11px', borderRadius:9, fontSize:13, fontWeight:600, cursor:'pointer', marginBottom:8,
-                        background:p.popular?'var(--lime)':'var(--green)', color:p.popular?'var(--ink)':'#fff', border:'none' }}>
-                      {isLoading(p.id, true) ? 'Loading…' : '🎁 Start free trial →'}
-                    </button>
+                        background:p.popular?'var(--lime)':'var(--green)', color:p.popular?'var(--ink)':'#fff', border:'none', textAlign:'center', textDecoration:'none', boxSizing:'border-box' }}>
+                      🎁 Start free — 60 days Pro →
+                    </a>
                     <button onClick={()=>startCheckout(p, false)} disabled={!!loading}
                       style={{ display:'block', width:'100%', padding:'9px', borderRadius:9, fontSize:12, fontWeight:500, cursor:'pointer',
                         background:'transparent', color:p.popular?'rgba(255,255,255,.7)':'var(--ink2)', border:`1px solid ${p.popular?'rgba(255,255,255,.25)':'var(--border)'}` }}>
-                      {isLoading(p.id, false) ? 'Loading…' : 'Pay now — no trial'}
+                      {isLoading(p.id, false) ? 'Loading…' : 'Subscribe now — skip trial'}
                     </button>
                     <p style={{ fontSize:10, color:p.popular?'rgba(255,255,255,.45)':'var(--ink2)', textAlign:'center', marginTop:8, lineHeight:1.4 }}>
-                      Card required for trial · Not charged for 30 days
+                      No credit card · 60 days full Pro access · Cancel anytime
                     </p>
                   </>
                 ) : (
