@@ -25,11 +25,11 @@ export default function IcoEnforcement2025(){
       <P>Based on ICO enforcement notices, reprimands, and public guidance issued in 2024–25, these are the areas under active scrutiny:</P>
       <Ul items={[
         'Cookie consent: banners that pre-tick analytics and marketing cookies, hide reject options, or use dark patterns to nudge acceptance. The ICO sent formal notices to several major news publishers in 2024.',
-        'Marketing emails without valid consent: purchasing lists, using "soft opt-in" without understanding the rules, sending to contacts who haven't consented to email marketing.',
+        'Marketing emails without valid consent: purchasing lists, using "soft opt-in" without understanding the rules, sending to contacts who haven\'t consented to email marketing.',
         'Inadequate security: no MFA on admin accounts, unpatched software, no data encryption at rest, no security incident response plan.',
         'Failure to respond to DSARs (Subject Access Requests): missing the one-month deadline, providing incomplete responses, or charging fees where none are permitted.',
         'Unlawful retention: keeping customer data indefinitely with no deletion schedule or documented retention policy.',
-        'Privacy notices: missing or inadequate notices that don't reflect actual data processing, or using generic templates without customisation.',
+        'Privacy notices: missing or inadequate notices that don\'t reflect actual data processing, or using generic templates without customisation.',
       ]}/>
 
       <H2 n="3">The ICO's approach to SMEs</H2>
@@ -39,8 +39,8 @@ export default function IcoEnforcement2025(){
 
       <H2 n="4">The five most common SME compliance failures</H2>
       <Ul items={[
-        '1. Cookie banners that don't actually block cookies before consent — analytics scripts load before the user clicks anything. Technically illegal, common, and increasingly enforced.',
-        '2. Privacy policies copied from templates that don't reflect actual data processing. Your policy must accurately describe your specific tools, purposes, and lawful bases.',
+        '1. Cookie banners that don\'t actually block cookies before consent — analytics scripts load before the user clicks anything. Technically illegal, common, and increasingly enforced.',
+        '2. Privacy policies copied from templates that don\'t reflect actual data processing. Your policy must accurately describe your specific tools, purposes, and lawful bases.',
         '3. No Data Processing Agreements with processors — if you use Mailchimp, HubSpot, Xero, or any SaaS tool, you need a DPA. Most providers offer one but you must accept it.',
         '4. DSAR requests ignored or delayed past 30 days. Any individual can ask for all data you hold on them — you must respond within one calendar month.',
         '5. No documented retention and deletion schedule. "We keep it forever" is not a lawful retention period. You need a documented schedule and you need to follow it.',
