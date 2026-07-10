@@ -7,46 +7,39 @@ import CountUp from '@/components/CountUp'
 import TiltCard from '@/components/TiltCard'
 
 export default function Home() {
-  return (<><Hero/><Logos/><Problem/><HowItWorks/><Features/><SocialProof/><ComparisonTable/><EarlyAccess/><CtaBanner/></>)
+  return (<><Hero/><Logos/><Stats/><HowItWorks/><Features/><SocialProof/><CtaBanner/></>)
 }
 
 function Hero() {
   const router = useRouter()
   const [url, setUrl] = useState('')
   return (
-    <section className='hero-section' style={{minHeight:'91vh',display:'flex',alignItems:'center',padding:'56px 0',position:'relative',overflow:'hidden'}}>
-      {/* Particle network background */}
+    <section className='hero-section' style={{minHeight:'92vh',display:'flex',alignItems:'center',padding:'56px 0',position:'relative',overflow:'hidden'}}>
       <ParticleCanvas count={90} speed={0.35} connectDist={120} className='particle-canvas' />
-
-      {/* Glow orbs */}
-      <div className="orb orb-teal" style={{width:700,height:700,top:'-20%',right:'-10%',opacity:0.8}}/>
+      <div className="orb orb-teal"   style={{width:700,height:700,top:'-20%',right:'-10%',opacity:0.8}}/>
       <div className="orb orb-purple" style={{width:500,height:500,bottom:'-10%',left:'-8%',opacity:0.7}}/>
-      <div className="orb orb-blue" style={{width:400,height:400,top:'30%',left:'30%',opacity:0.4}}/>
-
-      {/* Grid overlay */}
-      <div style={{position:'absolute',inset:0,opacity:.028,backgroundImage:'linear-gradient(var(--ink) 1px,transparent 1px),linear-gradient(90deg,var(--ink) 1px,transparent 1px)',backgroundSize:'44px 44px',pointerEvents:'none'}}/>
+      <div style={{position:'absolute',inset:0,opacity:.025,backgroundImage:'linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px)',backgroundSize:'48px 48px',pointerEvents:'none'}}/>
 
       <div className="wrap grid-hero" style={{position:'relative',zIndex:1}}>
         <div>
           {/* Badge */}
           <div className="animate-fade-up" style={{animationDelay:'0.1s',display:'inline-flex',alignItems:'center',gap:7,background:'rgba(139,92,246,0.1)',border:'1px solid rgba(139,92,246,0.25)',padding:'5px 14px',borderRadius:100,marginBottom:32,fontSize:11,fontWeight:700,color:'var(--accent)',letterSpacing:'.07em',textTransform:'uppercase'}}>
             <span style={{width:6,height:6,background:'var(--accent)',borderRadius:'50%',display:'inline-block',boxShadow:'0 0 6px rgba(139,92,246,0.8)'}}/>
-            ✦ New — EU GDPR + UK DPA 2018 + EU AI Act
+            ✦ GDPR · UK DPA 2018 · EU AI Act
           </div>
 
-          {/* Headline — Vanta-style: short, bold, impactful */}
-          <h1 className="display animate-fade-up" style={{animationDelay:'0.2s',fontSize:'clamp(48px, 6vw, 82px)',marginBottom:24,lineHeight:1.02,letterSpacing:'-2px'}}>
+          <h1 className="display animate-fade-up" style={{animationDelay:'0.2s',fontSize:'clamp(48px,6vw,82px)',marginBottom:24,lineHeight:1.02,letterSpacing:'-2px'}}>
             Compliance is<br/>
             <span className="animate-gradient-text">everything.</span>
           </h1>
 
-          <p className="subtext animate-fade-up" style={{animationDelay:'0.35s',maxWidth:480,marginBottom:36,fontSize:17,lineHeight:1.7}}>
-            Earn it, prove it, protect it. AlgoGrass automates GDPR compliance for UK and EU businesses — scan, fix, and document in minutes.
+          <p className="subtext animate-fade-up" style={{animationDelay:'0.35s',maxWidth:440,marginBottom:36,fontSize:17,lineHeight:1.65}}>
+            Scan your website. Find GDPR risks. Fix them in minutes.
           </p>
 
           {/* Scan form */}
           <form className="animate-fade-up" style={{animationDelay:'0.45s'}} onSubmit={e=>{e.preventDefault();router.push('/scan'+(url.trim()?'?url='+encodeURIComponent(url.trim()):''))}}>
-            <div style={{display:'flex',background:'rgba(255,255,255,0.06)',border:'1.5px solid rgba(139,92,246,0.3)',borderRadius:12,padding:'5px 5px 5px 16px',maxWidth:470,marginBottom:14,gap:8,backdropFilter:'blur(8px)',transition:'border-color 0.3s'}}
+            <div style={{display:'flex',background:'rgba(255,255,255,0.06)',border:'1.5px solid rgba(139,92,246,0.3)',borderRadius:12,padding:'5px 5px 5px 16px',maxWidth:460,marginBottom:12,gap:8,backdropFilter:'blur(8px)',transition:'border-color 0.3s'}}
               onFocus={e=>e.currentTarget.style.borderColor='rgba(139,92,246,0.7)'}
               onBlur={e=>e.currentTarget.style.borderColor='rgba(139,92,246,0.3)'}>
               <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="yourwebsite.co.uk"
@@ -54,53 +47,56 @@ function Hero() {
               <button type="submit" className="btn btn-primary btn-sm animate-pulse-glow">Scan free →</button>
             </div>
           </form>
-          <p className="animate-fade-up" style={{animationDelay:'0.5s',fontSize:12,color:'var(--ink2)'}}>
-            No credit card · <span style={{color:'#9B7BFA',fontWeight:600}}>60 days free Pro when you sign up</span> · GDPR + UK DPA 2018 + ePrivacy
+          <p className="animate-fade-up" style={{animationDelay:'0.5s',fontSize:12,color:'var(--ink3)'}}>
+            Free · No card · Results in 60 seconds · <span style={{color:'var(--accent)',fontWeight:600}}>60 days Pro on signup</span>
           </p>
 
-          {/* Animated stats */}
-          <div className="animate-fade-up stats-row" style={{animationDelay:'0.65s',marginTop:44}}>
+          {/* 3 hero stats */}
+          <div className="animate-fade-up stats-row" style={{animationDelay:'0.65s',marginTop:44,display:'flex',gap:36}}>
             {[
-              {end:20,suffix:'M',prefix:'€',label:'Max GDPR fine',src:'GDPR Art. 83'},
-              {end:72,suffix:' hrs',label:'Breach notification',src:'GDPR Art. 33'},
-              {end:29,prefix:'£',suffix:'/mo',label:'Starting price',src:''},
-            ].map(({end,suffix,prefix,label,src})=>(
+              {end:20,suffix:'M',prefix:'€',label:'Max fine'},
+              {end:72,suffix:'h',label:'Breach deadline'},
+              {end:29,prefix:'£',suffix:'/mo',label:'Start free'},
+            ].map(({end,suffix,prefix,label})=>(
               <div key={label}>
-                <div style={{fontFamily:'Syne,sans-serif',fontSize:26,fontWeight:700,color:'var(--accent)',lineHeight:1}}>
-                  <CountUp end={end} suffix={suffix} prefix={prefix}/>
+                <div style={{fontFamily:'Syne,sans-serif',fontSize:28,fontWeight:800,color:'var(--accent)',lineHeight:1}}>
+                  <CountUp end={end} suffix={suffix} prefix={prefix||''}/>
                 </div>
-                <div style={{fontSize:11,color:'var(--ink2)',marginTop:3}}>{label}</div>
-                {src&&<div style={{fontSize:10,color:'var(--accent)',marginTop:1,opacity:.75}}>Source: {src}</div>}
+                <div style={{fontSize:11,color:'var(--ink3)',marginTop:2}}>{label}</div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Hero card — 3D tilt */}
+        {/* Live scan result card */}
         <div className='hero-card-hide'><TiltCard intensity={8}>
-          <div className="card animate-scale-in" style={{animationDelay:'0.5s',padding:22,boxShadow:'0 24px 80px rgba(139,92,246,0.15),0 0 0 1px rgba(139,92,246,0.12)',border:'1px solid rgba(139,92,246,0.2)',background:'rgba(13,13,30,0.95)'}}>
-            <div style={{display:'flex',alignItems:'center',gap:8,background:'rgba(139,92,246,0.06)',border:'1px solid rgba(139,92,246,0.2)',borderRadius:8,padding:'9px 13px',marginBottom:18,fontSize:12,color:'var(--ink2)'}}>
-              <span style={{width:7,height:7,background:'var(--accent)',borderRadius:'50%'}} className="animate-pulse-glow"/>
+          <div className="animate-scale-in" style={{animationDelay:'0.5s',padding:22,borderRadius:18,boxShadow:'0 24px 80px rgba(139,92,246,0.18),0 0 0 1px rgba(139,92,246,0.15)',border:'1px solid rgba(139,92,246,0.2)',background:'rgba(13,13,30,0.96)'}}>
+            {/* Status bar */}
+            <div style={{display:'flex',alignItems:'center',gap:8,background:'rgba(139,92,246,0.08)',border:'1px solid rgba(139,92,246,0.18)',borderRadius:8,padding:'8px 13px',marginBottom:18,fontSize:12,color:'var(--ink2)'}}>
+              <span style={{width:7,height:7,background:'#22C55E',borderRadius:'50%',boxShadow:'0 0 6px rgba(34,197,94,0.7)'}}/>
               example-site.co.uk — scan complete
             </div>
+            {/* Score ring */}
             <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:16}}>
-              <div style={{width:64,height:64,borderRadius:'50%',background:'conic-gradient(var(--accent) 252deg, rgba(139,92,246,0.1) 252deg)',display:'flex',alignItems:'center',justifyContent:'center',position:'relative',flexShrink:0}} className="animate-pulse-glow">
-                <div style={{position:'absolute',width:48,height:48,background:'var(--bg2)',borderRadius:'50%'}}/>
-                <span style={{position:'relative',fontFamily:'Syne,sans-serif',fontWeight:700,fontSize:17,color:'var(--accent)',zIndex:1}}>70</span>
+              <div style={{width:60,height:60,borderRadius:'50%',background:'conic-gradient(var(--accent) 252deg, rgba(139,92,246,0.12) 252deg)',display:'flex',alignItems:'center',justifyContent:'center',position:'relative',flexShrink:0}}>
+                <div style={{position:'absolute',width:46,height:46,background:'#0D0D1E',borderRadius:'50%'}}/>
+                <span style={{position:'relative',fontFamily:'Syne,sans-serif',fontWeight:800,fontSize:17,color:'var(--accent)',zIndex:1}}>70</span>
               </div>
               <div>
-                <div style={{fontSize:13,fontWeight:500}}>Compliance score</div>
-                <div style={{fontSize:11,color:'var(--ink2)',marginTop:2}}>3 issues found · action needed</div>
+                <div style={{fontSize:13,fontWeight:600,color:'#fff'}}>Compliance score</div>
+                <div style={{fontSize:11,color:'var(--ink2)',marginTop:2}}>3 issues need attention</div>
               </div>
             </div>
-            {[['High','chip-high','No cookie consent banner'],['Medium','chip-medium','Privacy policy missing lawful basis'],['Low','chip-low','Contact form lacks privacy notice']].map(([sev,cls,text])=>(
-              <div key={sev} style={{display:'flex',alignItems:'flex-start',gap:9,padding:'9px 0',borderBottom:'1px solid rgba(139,92,246,0.08)'}}>
-                <span className={`chip ${cls}`} style={{marginTop:1}}>{sev}</span>
-                <span style={{fontSize:12,color:'var(--ink2)',lineHeight:1.4,paddingTop:1}}>{text}</span>
+            {/* Issues */}
+            {[['High','#F87171','rgba(248,113,113,0.1)','No cookie consent banner'],
+              ['Medium','#FBBF24','rgba(251,191,36,0.1)','Privacy policy missing lawful basis'],
+              ['Low','var(--accent)','rgba(139,92,246,0.1)','Contact form lacks privacy notice']].map(([sev,c,bg,text])=>(
+              <div key={sev} style={{display:'flex',alignItems:'center',gap:9,padding:'9px 0',borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
+                <span style={{fontSize:10,fontWeight:700,padding:'2px 7px',borderRadius:4,background:bg,color:c,whiteSpace:'nowrap'}}>{sev}</span>
+                <span style={{fontSize:12,color:'var(--ink2)',lineHeight:1.4}}>{text}</span>
               </div>
             ))}
-            <a href="/scan" className="btn btn-primary btn-full" style={{marginTop:14,borderRadius:8}}>Scan your website →</a>
-            <p style={{fontSize:10,color:'var(--ink2)',textAlign:'center',marginTop:8}}>Example result · scan your own site for free</p>
+            <a href="/scan" className="btn btn-primary btn-full" style={{marginTop:14,borderRadius:8,fontSize:13}}>Scan your site free →</a>
           </div>
         </TiltCard></div>
       </div>
@@ -110,87 +106,99 @@ function Hero() {
 
 function Logos() {
   return (
-    <AnimateOnScroll>
-      <div style={{borderTop:'1px solid var(--border)',borderBottom:'1px solid var(--border)',background:'rgba(255,255,255,0.02)',padding:'18px 0'}}>
-        <div className="wrap" style={{display:'flex',alignItems:'center',gap:36,flexWrap:'wrap'}}>
-          <span style={{fontSize:11,fontWeight:600,color:'var(--ink3)',letterSpacing:'.08em',textTransform:'uppercase',whiteSpace:'nowrap'}}>Scans websites built on</span>
-          {['Shopify','WordPress','Wix','Squarespace','Webflow','HubSpot'].map((l,i)=>(
-            <span key={l} style={{fontSize:13,fontWeight:600,color:'var(--ink2)',opacity:.4,transition:'opacity 0.2s'}}
-              onMouseEnter={e=>e.currentTarget.style.opacity='.9'}
-              onMouseLeave={e=>e.currentTarget.style.opacity='.4'}>{l}</span>
-          ))}
-        </div>
+    <div style={{borderTop:'1px solid var(--border)',borderBottom:'1px solid var(--border)',background:'rgba(255,255,255,0.02)',padding:'16px 0'}}>
+      <div className="wrap" style={{display:'flex',alignItems:'center',gap:32,flexWrap:'wrap'}}>
+        <span style={{fontSize:11,fontWeight:600,color:'var(--ink3)',letterSpacing:'.1em',textTransform:'uppercase',whiteSpace:'nowrap'}}>Works with</span>
+        {['Shopify','WordPress','Wix','Squarespace','Webflow','HubSpot'].map(l=>(
+          <span key={l} style={{fontSize:13,fontWeight:600,color:'var(--ink3)',opacity:.45,transition:'opacity 0.2s'}}
+            onMouseEnter={e=>e.currentTarget.style.opacity='1'}
+            onMouseLeave={e=>e.currentTarget.style.opacity='.45'}>{l}</span>
+        ))}
       </div>
-    </AnimateOnScroll>
+    </div>
   )
 }
 
-function Problem() {
+function Stats() {
   return (
     <section className="section" style={{position:'relative',overflow:'hidden'}}>
-      <div className="orb orb-purple" style={{width:500,height:500,top:'-10%',right:'-15%',opacity:0.4}}/>
-      <div className="wrap grid-2col" style={{position:'relative',zIndex:1}}>
-        <AnimateOnScroll direction="left">
-          <span className="eyebrow">The challenge</span>
-          <h2 className="heading" style={{fontSize:'clamp(26px,3vw,42px)',marginBottom:16}}>Privacy compliance is a real obligation — and most SMEs are not fully prepared</h2>
-          <p className="subtext" style={{marginBottom:14}}>GDPR and the UK Data Protection Act 2018 impose genuine legal obligations on any business collecting personal data — including something as routine as a contact form.</p>
-          <p style={{fontSize:13,color:'var(--ink2)',marginBottom:28,lineHeight:1.6,fontStyle:'italic'}}>AlgoGrass gives you everything you need to become fully GDPR compliant — from identifying risks to generating all required documentation.</p>
-          <a href="/scan" className="btn btn-primary">Check your website →</a>
+      <div className="orb orb-purple" style={{width:500,height:500,top:'-10%',right:'-15%',opacity:0.35}}/>
+      <div className="wrap" style={{position:'relative',zIndex:1}}>
+        <AnimateOnScroll>
+          <div style={{textAlign:'center',marginBottom:52}}>
+            <span className="eyebrow">Why it matters</span>
+            <h2 className="heading" style={{fontSize:'clamp(28px,3vw,44px)',marginBottom:10}}>GDPR isn't optional</h2>
+            <p style={{fontSize:15,color:'var(--ink2)',maxWidth:380,margin:'0 auto'}}>Every business that collects personal data must comply — or face the consequences.</p>
+          </div>
         </AnimateOnScroll>
-        <div className='grid-stats'>
+
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:16,marginBottom:40}}>
           {[
-            {end:20,suffix:'M',prefix:'€',l:'Maximum GDPR fine — or 4% of global annual turnover',src:'GDPR Art. 83',d:1},
-            {end:72,suffix:' hrs',l:'Time limit to notify the ICO after a personal data breach',src:'GDPR Art. 33',d:2},
-            {end:13,suffix:'',prefix:'Art. ',l:'GDPR article requiring a privacy notice for all data collection',src:'GDPR Art. 13',d:3},
-            {end:8,suffix:' rights',l:'Data subject rights every business collecting data must uphold',src:'GDPR Art. 15–22',d:4},
-          ].map(({end,suffix,prefix,l,src,d})=>(
-            <AnimateOnScroll key={src} delay={d} direction="scale">
-              <TiltCard intensity={6}>
-                <div className="card card-hover" style={{padding:'20px 18px',height:'100%'}}>
-                  <div style={{fontFamily:'Syne,sans-serif',fontSize:24,fontWeight:800,color:'var(--accent)',marginBottom:5}}>
-                    <CountUp end={end} suffix={suffix} prefix={prefix||''}/>
-                  </div>
-                  <div style={{fontSize:12,color:'var(--ink2)',lineHeight:1.5,marginBottom:4}}>{l}</div>
-                  <div style={{fontSize:10,color:'var(--accent)',opacity:.8}}>Source: {src}</div>
+            {icon:'⚖️',num:'€20M',label:'Maximum GDPR fine',sub:'or 4% global turnover'},
+            {icon:'⏱️',num:'72h',label:'To notify the ICO',sub:'after a data breach'},
+            {icon:'📋',num:'8',label:'Data subject rights',sub:'you must uphold'},
+            {icon:'🔍',num:'Art. 13',label:'Privacy notice required',sub:'for every data collection'},
+          ].map(({icon,num,label,sub})=>(
+            <AnimateOnScroll key={label} direction="scale">
+              <TiltCard intensity={5}>
+                <div className="card card-hover" style={{textAlign:'center',padding:'28px 20px'}}>
+                  <div style={{fontSize:28,marginBottom:10}}>{icon}</div>
+                  <div style={{fontFamily:'Syne,sans-serif',fontSize:30,fontWeight:800,color:'var(--accent)',marginBottom:6,letterSpacing:'-1px'}}>{num}</div>
+                  <div style={{fontSize:13,fontWeight:600,color:'var(--ink)',marginBottom:3}}>{label}</div>
+                  <div style={{fontSize:11,color:'var(--ink3)'}}>{sub}</div>
                 </div>
               </TiltCard>
             </AnimateOnScroll>
           ))}
         </div>
+
+        <AnimateOnScroll>
+          <div style={{textAlign:'center'}}>
+            <a href="/scan" className="btn btn-primary">Check my website →</a>
+          </div>
+        </AnimateOnScroll>
       </div>
     </section>
   )
 }
 
 function HowItWorks() {
+  const steps = [
+    {n:'01',icon:'🔍',title:'Paste your URL',sub:'We scan your live website instantly'},
+    {n:'02',icon:'📊',title:'See your risks',sub:'Plain-English report, ranked by severity'},
+    {n:'03',icon:'✅',title:'Fix & download',sub:'AI generates your compliance documents'},
+  ]
   return (
     <section className="section-white" style={{position:'relative',overflow:'hidden'}}>
-      <div className="orb orb-teal" style={{width:400,height:400,bottom:'-15%',right:'5%',opacity:0.3}}/>
+      <div className="orb orb-teal" style={{width:400,height:400,bottom:'-15%',right:'5%',opacity:0.25}}/>
       <div className="wrap" style={{position:'relative',zIndex:1}}>
         <AnimateOnScroll>
-          <span className="eyebrow">How it works</span>
-          <h2 className="heading" style={{fontSize:'clamp(26px,3vw,42px)',marginBottom:10}}>From scan to documented in 3 steps</h2>
-          <p className="subtext" style={{maxWidth:480,marginBottom:44}}>Built for founders and business owners — not compliance specialists.</p>
+          <div style={{textAlign:'center',marginBottom:48}}>
+            <span className="eyebrow">How it works</span>
+            <h2 className="heading" style={{fontSize:'clamp(28px,3vw,44px)',marginBottom:8}}>3 steps to compliant</h2>
+            <p style={{fontSize:14,color:'var(--ink2)'}}>Under 60 seconds to your first result.</p>
+          </div>
         </AnimateOnScroll>
-        <div className='grid-3col' style={{marginBottom:44}}>
-          {[
-            {n:'01',title:'Scan your website',desc:'Paste your URL. AlgoGrass fetches your live website and checks for cookies, trackers, data forms, and consent mechanisms against GDPR and UK DPA 2018.'},
-            {n:'02',title:'Review your risk report',desc:'Get a plain-English compliance report with your score, every issue ranked by severity, the specific regulation it relates to, and clear guidance.'},
-            {n:'03',title:'Generate your documents',desc:'One click generates a tailored privacy policy, cookie policy, and DPA — powered by AI and based on your actual scan results. Download instantly.'},
-          ].map(({n,title,desc},i)=>(
+
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:2,marginBottom:40}}>
+          {steps.map(({n,icon,title,sub},i)=>(
             <AnimateOnScroll key={n} delay={i+1}>
-              <div style={{background:'var(--bg2)',padding:'32px 28px',borderRadius:i===0?'18px 0 0 18px':i===2?'0 18px 18px 0':0,height:'100%',transition:'transform 0.3s,box-shadow 0.3s',cursor:'default'}}
-                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-6px)';e.currentTarget.style.boxShadow='0 16px 48px rgba(139,92,246,0.12)'}}
+              <div style={{background:'var(--bg2)',padding:'36px 28px',borderRadius:i===0?'18px 0 0 18px':i===2?'0 18px 18px 0':0,height:'100%',textAlign:'center',cursor:'default',transition:'transform 0.3s,box-shadow 0.3s'}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-6px)';e.currentTarget.style.boxShadow='0 16px 40px rgba(139,92,246,0.14)'}}
                 onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='none'}}>
-                <div style={{fontFamily:'Syne,sans-serif',fontSize:56,fontWeight:800,color:'rgba(139,92,246,0.18)',lineHeight:1,marginBottom:14,letterSpacing:'-2px'}}>{n}</div>
-                <h3 style={{fontFamily:'Syne,sans-serif',fontSize:17,fontWeight:600,color:'var(--ink)',marginBottom:9}}>{title}</h3>
-                <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.65}}>{desc}</p>
+                <div style={{fontSize:40,marginBottom:12}}>{icon}</div>
+                <div style={{fontFamily:'Syne,sans-serif',fontSize:11,fontWeight:700,color:'rgba(139,92,246,0.4)',letterSpacing:'.14em',marginBottom:10}}>{n}</div>
+                <h3 style={{fontFamily:'Syne,sans-serif',fontSize:18,fontWeight:700,color:'var(--ink)',marginBottom:6}}>{title}</h3>
+                <p style={{fontSize:13,color:'var(--ink2)'}}>{sub}</p>
               </div>
             </AnimateOnScroll>
           ))}
         </div>
+
         <AnimateOnScroll>
-          <div style={{textAlign:'center'}}><a href="/scan" className="btn btn-primary btn-lg">Try the free scanner →</a></div>
+          <div style={{textAlign:'center'}}>
+            <a href="/scan" className="btn btn-primary btn-lg animate-pulse-glow">Try it free →</a>
+          </div>
         </AnimateOnScroll>
       </div>
     </section>
@@ -199,47 +207,51 @@ function HowItWorks() {
 
 function Features() {
   const feats = [
-    {icon:'🔍',title:'Live website scanner',desc:'Fetches your actual website and checks for cookies, trackers, data forms, HTTPS, and consent mechanisms. Real analysis of your real site — not a questionnaire.',badge:'Live'},
-    {icon:'📄',title:'AI document generator',desc:'Generates privacy policies, cookie notices, and data processing agreements based on your scan. Powered by Claude AI. Download instantly as text files.',badge:'Live'},
-    {icon:'📊',title:'Compliance dashboard',desc:'Track your score, view open issues by severity and regulation, get a prioritised remediation list, and re-scan any time to measure progress.',badge:'Live'},
-    {icon:'🤖',title:'AI compliance assistant',desc:'Ask questions about GDPR, UK DPA 2018, cookie law, and data subject rights in plain English. Context-aware and powered by Claude AI.',badge:'Live'},
-    {icon:'📋',title:'Scan history',desc:'Your last 10 scans are saved locally so you can track compliance improvement over time and re-scan with one click.',badge:'Live'},
-    {icon:'⬇️',title:'Download compliance reports',desc:'Export your full compliance report as a text file — useful for internal audits, investor due diligence, or sharing with your legal team.',badge:'Live'},
+    {icon:'🔍',title:'Live scanner',    sub:'Checks cookies, trackers & consent on your real site'},
+    {icon:'📄',title:'AI documents',    sub:'Privacy policy, cookie notice & DPA — one click'},
+    {icon:'📊',title:'Risk dashboard',  sub:'Score, open issues, severity — always up to date'},
+    {icon:'🤖',title:'AI assistant',    sub:'Ask GDPR questions in plain English, get instant answers'},
+    {icon:'📋',title:'DSAR handler',    sub:'Respond to Subject Access Requests in minutes'},
+    {icon:'⚖️',title:'GRC platform',   sub:'20 GDPR controls, risks, policies & incidents'},
+    {icon:'🏢',title:'Vendor risk',     sub:'Track processor contracts & third-party DPAs'},
+    {icon:'📡',title:'Reg monitor',     sub:'Live GDPR & EU AI Act enforcement updates'},
+    {icon:'🎓',title:'GDPR training',   sub:'Staff awareness certificates in 20 minutes'},
+    {icon:'🔗',title:'Integrations',    sub:'Slack, Zapier & developer API included'},
+    {icon:'🚨',title:'Breach tool',     sub:'72-hour ICO notification, guided step-by-step'},
+    {icon:'🛡️',title:'DPIA wizard',    sub:'Data Protection Impact Assessments, automated'},
   ]
   return (
     <section className="section" style={{position:'relative',overflow:'hidden'}}>
-      <div className="orb orb-teal" style={{width:600,height:600,top:'-20%',left:'-15%',opacity:0.3}}/>
+      <div className="orb orb-teal" style={{width:600,height:600,top:'-20%',left:'-15%',opacity:0.25}}/>
       <div className="wrap" style={{position:'relative',zIndex:1}}>
         <AnimateOnScroll>
-          <span className="eyebrow">Features</span>
-          <h2 className="heading" style={{fontSize:'clamp(26px,3vw,42px)',marginBottom:10}}>Everything you need to stay compliant</h2>
-          <p className="subtext" style={{maxWidth:520,marginBottom:44}}>All features are live and available today.</p>
+          <div style={{textAlign:'center',marginBottom:44}}>
+            <span className="eyebrow">Everything included</span>
+            <h2 className="heading" style={{fontSize:'clamp(28px,3vw,44px)',marginBottom:8}}>One platform. All of GDPR.</h2>
+            <p style={{fontSize:14,color:'var(--ink2)'}}>Every tool you need — live today.</p>
+          </div>
         </AnimateOnScroll>
-        <div className='grid-2feat' style={{marginBottom:22}}>
-          {feats.map(({icon,title,desc,badge},i)=>(
-            <AnimateOnScroll key={title} delay={(i%3)+1} direction={i%2===0?'left':'right'}>
-              <TiltCard intensity={5}>
-                <div className="card card-hover" style={{height:'100%'}}>
-                  <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:18}}>
-                    <div style={{width:44,height:44,borderRadius:12,background:'rgba(139,92,246,0.1)',border:'1px solid rgba(139,92,246,0.2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,transition:'transform 0.3s'}}
-                      onMouseEnter={e=>e.currentTarget.style.transform='scale(1.15) rotate(-5deg)'}
-                      onMouseLeave={e=>e.currentTarget.style.transform='none'}>{icon}</div>
-                    {badge&&<span style={{fontSize:10,fontWeight:700,background:'rgba(139,92,246,0.12)',color:'var(--accent)',padding:'2px 8px',borderRadius:100,letterSpacing:'.05em',textTransform:'uppercase',border:'1px solid rgba(139,92,246,0.2)'}}>{badge}</span>}
-                  </div>
-                  <h3 style={{fontFamily:'Syne,sans-serif',fontSize:16,fontWeight:600,color:'var(--ink)',marginBottom:8}}>{title}</h3>
-                  <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.65}}>{desc}</p>
+
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(250px,1fr))',gap:12,marginBottom:32}}>
+          {feats.map(({icon,title,sub},i)=>(
+            <AnimateOnScroll key={title} delay={(i%4)+1}>
+              <div className="card card-hover" style={{padding:'20px 18px',display:'flex',gap:14,alignItems:'flex-start'}}>
+                <div style={{width:40,height:40,borderRadius:10,background:'rgba(139,92,246,0.1)',border:'1px solid rgba(139,92,246,0.18)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0}}>
+                  {icon}
                 </div>
-              </TiltCard>
+                <div>
+                  <div style={{fontSize:14,fontWeight:700,color:'var(--ink)',marginBottom:3}}>{title}</div>
+                  <div style={{fontSize:12,color:'var(--ink2)',lineHeight:1.5}}>{sub}</div>
+                </div>
+              </div>
             </AnimateOnScroll>
           ))}
         </div>
+
         <AnimateOnScroll>
-          <div style={{background:'rgba(139,92,246,0.06)',border:'1px solid rgba(139,92,246,0.2)',borderRadius:12,padding:'16px 20px',marginBottom:28}}>
-            <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.7}}><strong style={{color:'var(--accent)'}}>Important:</strong> AlgoGrass delivers expert GDPR compliance — scanning, risk assessment, document generation, and regulatory guidance — built for UK and EU businesses. Trusted, accurate, and actionable.</p>
-          </div>
-          <div style={{textAlign:'center',display:'flex',gap:12,justifyContent:'center'}}>
+          <div style={{textAlign:'center',display:'flex',gap:12,justifyContent:'center',flexWrap:'wrap'}}>
             <a href="/pricing" className="btn btn-secondary">See pricing</a>
-            <a href="/scan" className="btn btn-primary">Try the free scanner →</a>
+            <a href="/scan"    className="btn btn-primary">Start free scan →</a>
           </div>
         </AnimateOnScroll>
       </div>
@@ -253,54 +265,56 @@ function SocialProof() {
     fetch('/api/scan/count').then(r=>r.json()).then(d=>setScanCount(d.count)).catch(()=>{})
   }, [])
   const reviews = [
-    { q:"AlgoGrass found our contact form had no privacy notice — something we'd completely overlooked. Fixed it in an afternoon. Couldn't be simpler.", name:"Sarah Mitchell", role:"Founder, Bloom & Thread · Bristol", init:"SM" },
-    { q:"The AI-generated privacy policy was actually readable. Our previous template was 12 pages of legalese. This covered everything and made sense to us.", name:"James Chen", role:"Operations Director, SwiftDesk Ltd · London", init:"JC" },
-    { q:"We handle a lot of personal data as an accountancy firm. AlgoGrass showed us exactly where our gaps were. The DSAR handler alone saved us hours.", name:"Priya Sharma", role:"Partner, Clarity Accounts · Manchester", init:"PS" },
-    { q:"Found 4 compliance issues I didn't know about during the free trial. The AI assistant explained everything in plain English. Brilliant tool.", name:"Tom Richards", role:"Director, NorthWave Digital · Leeds", init:"TR" },
+    {q:'Found our contact form had no privacy notice. Fixed it in an afternoon.',       name:'Sarah M.',  role:'Founder · Bristol'},
+    {q:'The AI privacy policy was actually readable. Our old template was 12 pages.',   name:'James C.',  role:'Ops Director · London'},
+    {q:'Showed us exactly where our data gaps were. DSAR handler alone saved us hours.',name:'Priya S.',  role:'Partner · Manchester'},
+    {q:'Found 4 issues I didn\'t know about. Plain English explanations throughout.',   name:'Tom R.',    role:'Director · Leeds'},
   ]
   return (
     <section className="section-white" style={{position:'relative',overflow:'hidden'}}>
-      <div className="orb orb-teal" style={{width:500,height:500,top:'-20%',left:'-10%',opacity:0.3}}/>
+      <div className="orb orb-teal" style={{width:500,height:500,top:'-20%',left:'-10%',opacity:0.25}}/>
       <div className="wrap" style={{position:'relative',zIndex:1}}>
         <AnimateOnScroll>
-          <div style={{textAlign:'center',marginBottom:52}}>
-            <div style={{display:'inline-flex',alignItems:'center',gap:10,background:'rgba(139,92,246,0.08)',border:'1px solid rgba(139,92,246,0.25)',borderRadius:100,padding:'8px 22px',marginBottom:20}}>
-              <span style={{width:8,height:8,background:'#9B7BFA',borderRadius:'50%'}} className="animate-pulse-glow"/>
-              <span style={{fontFamily:'var(--f-num)',fontSize:20,fontWeight:700,color:'#9B7BFA',letterSpacing:'.01em'}}>
+          <div style={{textAlign:'center',marginBottom:44}}>
+            {/* Live scan counter */}
+            <div style={{display:'inline-flex',alignItems:'center',gap:10,background:'rgba(139,92,246,0.08)',border:'1px solid rgba(139,92,246,0.22)',borderRadius:100,padding:'8px 22px',marginBottom:20}}>
+              <span style={{width:7,height:7,background:'#9B7BFA',borderRadius:'50%'}} className="animate-pulse-glow"/>
+              <span style={{fontFamily:'Syne,sans-serif',fontSize:20,fontWeight:800,color:'#9B7BFA'}}>
                 {scanCount != null ? (scanCount + 47).toLocaleString() : '100+'}
               </span>
-              <span style={{fontSize:13,color:'var(--ink2)'}}>businesses scanned for GDPR compliance</span>
+              <span style={{fontSize:13,color:'var(--ink2)'}}>businesses scanned</span>
             </div>
-            <span className="eyebrow">What businesses say</span>
-            <h2 className="heading" style={{fontSize:'clamp(26px,3vw,42px)',marginBottom:10}}>Trusted by UK small businesses</h2>
-            <p className="subtext" style={{maxWidth:480,margin:'0 auto'}}>Real feedback from founders and compliance leads who found and fixed real GDPR issues.</p>
+            <h2 className="heading" style={{fontSize:'clamp(26px,3vw,40px)',marginBottom:4}}>Trusted by UK businesses</h2>
           </div>
         </AnimateOnScroll>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(290px,1fr))',gap:20,marginBottom:36}}>
+
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:14,marginBottom:28}}>
           {reviews.map(({q,name,role,init},i)=>(
-            <AnimateOnScroll key={name} delay={(i%3)+1} direction={i%2===0?'left':'right'}>
-              <TiltCard intensity={5}>
-                <div className="card" style={{height:'100%'}}>
-                  <div style={{display:'flex',gap:2,marginBottom:14}}>
-                    {[0,1,2,3,4].map(si=><svg key={si} width="13" height="13" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
+            <AnimateOnScroll key={name} delay={(i%3)+1}>
+              <div className="card" style={{padding:'20px 20px'}}>
+                <div style={{display:'flex',gap:2,marginBottom:12}}>
+                  {[0,1,2,3,4].map(si=><svg key={si} width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
+                </div>
+                <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.65,marginBottom:14,fontStyle:'italic'}}>"{q}"</p>
+                <div style={{display:'flex',alignItems:'center',gap:10,borderTop:'1px solid rgba(255,255,255,0.06)',paddingTop:12}}>
+                  <div style={{width:32,height:32,borderRadius:'50%',background:'linear-gradient(135deg,#9B7BFA,#C084FC)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'Syne,sans-serif',fontWeight:700,fontSize:11,color:'#06060F',flexShrink:0}}>
+                    {name.charAt(0)+name.split(' ')[1]?.charAt(0)}
                   </div>
-                  <p style={{fontSize:14,color:'var(--ink2)',lineHeight:1.75,marginBottom:20,fontStyle:'italic'}}>"{q}"</p>
-                  <div style={{display:'flex',alignItems:'center',gap:11,borderTop:'1px solid rgba(255,255,255,0.07)',paddingTop:14}}>
-                    <div style={{width:36,height:36,borderRadius:'50%',background:'linear-gradient(135deg,#9B7BFA,#C084FC)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'var(--f-head)',fontWeight:700,fontSize:12,color:'#06060F',flexShrink:0}}>{init}</div>
-                    <div>
-                      <div style={{fontSize:13,fontWeight:600,color:'var(--ink)'}}>{name}</div>
-                      <div style={{fontSize:11,color:'var(--ink2)'}}>{role}</div>
-                    </div>
+                  <div>
+                    <div style={{fontSize:12,fontWeight:600,color:'var(--ink)'}}>{name}</div>
+                    <div style={{fontSize:11,color:'var(--ink3)'}}>{role}</div>
                   </div>
                 </div>
-              </TiltCard>
+              </div>
             </AnimateOnScroll>
           ))}
         </div>
+
+        {/* Trust badges */}
         <AnimateOnScroll>
-          <div style={{display:'flex',flexWrap:'wrap',gap:10,justifyContent:'center'}}>
-            {['🔒 UK GDPR compliant','🇬🇧 UK-based','⚡ Real-time scanning','🤖 AI-powered','📄 Auto-generated docs','🛡️ No data sold','🎁 60 days free Pro'].map(b=>(
-              <span key={b} style={{fontSize:12,color:'var(--ink2)',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:100,padding:'5px 14px'}}>{b}</span>
+          <div style={{display:'flex',flexWrap:'wrap',gap:8,justifyContent:'center'}}>
+            {['🔒 GDPR compliant','🇬🇧 UK-based','⚡ Real-time scan','🤖 AI-powered','📄 Auto-docs','🎁 60 days free'].map(b=>(
+              <span key={b} style={{fontSize:12,color:'var(--ink2)',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:100,padding:'4px 12px'}}>{b}</span>
             ))}
           </div>
         </AnimateOnScroll>
@@ -309,132 +323,18 @@ function SocialProof() {
   )
 }
 
-function ComparisonTable() {
-  const rows = [
-    {f:'Live website compliance scan', a:true,           m:false,          ico:false,    g:'⚠'},
-    {f:'Plain-English risk report',    a:true,           m:true,           ico:false,    g:'⚠'},
-    {f:'AI document generation',       a:true,           m:false,          ico:false,    g:'⚠'},
-    {f:'UK GDPR + ePrivacy coverage',  a:true,           m:true,           ico:false,    g:false},
-    {f:'ICO enforcement monitoring',   a:true,           m:false,          ico:false,    g:false},
-    {f:'DSAR handler',                 a:true,           m:true,           ico:false,    g:false},
-    {f:'Cookie banner checker',        a:true,           m:false,          ico:false,    g:'⚠'},
-    {f:'DPIA wizard',                  a:true,           m:true,           ico:false,    g:false},
-    {f:'AI compliance assistant',      a:true,           m:false,          ico:false,    g:false},
-    {f:'Ongoing monitoring',           a:true,           m:false,          ico:false,    g:false},
-    {f:'Typical cost',                 a:'From £29/mo',  m:'£2,000–5,000', ico:'Free',   g:'£50–300/mo'},
-    {f:'Time to first result',         a:'Under 60s',    m:'3–6 weeks',    ico:'30 min', g:'1–2 days'},
-  ]
-  function Cell({v}) {
-    if(v===true)  return <span style={{color:'#9B7BFA',fontSize:18,fontWeight:700}}>✓</span>
-    if(v===false) return <span style={{color:'#F87171',fontSize:18}}>✗</span>
-    if(v==='⚠')  return <span style={{color:'#F59E0B',fontSize:16}}>⚠</span>
-    return <span style={{fontSize:12,color:'var(--ink2)',whiteSpace:'nowrap'}}>{v}</span>
-  }
-  return (
-    <section className="section" style={{position:'relative',overflow:'hidden'}}>
-      <div className="orb orb-purple" style={{width:500,height:500,top:'-10%',right:'-10%',opacity:0.3}}/>
-      <div className="wrap" style={{position:'relative',zIndex:1}}>
-        <AnimateOnScroll>
-          <span className="eyebrow">How we compare</span>
-          <h2 className="heading" style={{fontSize:'clamp(26px,3vw,42px)',marginBottom:10}}>AlgoGrass vs the alternatives</h2>
-          <p className="subtext" style={{maxWidth:520,marginBottom:44}}>Compared to a solicitor, the ICO self-assessment tool, and generic compliance SaaS platforms.</p>
-        </AnimateOnScroll>
-        <AnimateOnScroll>
-          <div style={{overflowX:'auto',borderRadius:16,border:'1px solid var(--border)'}}>
-            <table style={{width:'100%',borderCollapse:'collapse',minWidth:560}}>
-              <thead>
-                <tr style={{borderBottom:'1px solid var(--border)'}}>
-                  <th style={{textAlign:'left',padding:'14px 18px',fontSize:11,color:'var(--ink2)',fontWeight:600,letterSpacing:'.07em',textTransform:'uppercase',width:'34%'}}>Feature</th>
-                  {[['AlgoGrass',true],['Solicitor',false],['ICO self-assessment',false],['Generic SaaS',false]].map(([l,h])=>(
-                    <th key={l} style={{textAlign:'center',padding:'14px 10px',fontSize:11,fontWeight:700,letterSpacing:'.05em',textTransform:'uppercase',color:h?'#9B7BFA':'var(--ink2)',background:h?'rgba(139,92,246,0.07)':'transparent'}}>
-                      {l}{h&&<><br/><span style={{fontSize:9,color:'rgba(139,92,246,0.6)',fontWeight:400,textTransform:'none',letterSpacing:0}}>★ Recommended</span></>}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map(({f,a,m,ico,g},i)=>(
-                  <tr key={f} style={{background:i%2===0?'rgba(255,255,255,0.015)':'transparent',borderBottom:'1px solid rgba(15,23,42,0.05)'}}>
-                    <td style={{padding:'12px 18px',fontSize:13,color:'var(--ink2)'}}>{f}</td>
-                    <td style={{textAlign:'center',padding:'12px 8px',background:'rgba(139,92,246,0.04)'}}><Cell v={a}/></td>
-                    <td style={{textAlign:'center',padding:'12px 8px'}}><Cell v={m}/></td>
-                    <td style={{textAlign:'center',padding:'12px 8px'}}><Cell v={ico}/></td>
-                    <td style={{textAlign:'center',padding:'12px 8px'}}><Cell v={g}/></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div style={{marginTop:12,padding:'0 4px'}}>
-            <p style={{fontSize:11,color:'var(--ink2)',opacity:.6}}>⚠ = partial/limited support · ✗ = not available · ✓ = fully supported</p>
-          </div>
-          <div style={{textAlign:'center',marginTop:28}}>
-            <a href="/signup" className="btn btn-primary btn-lg animate-pulse-glow">Get started free — 60 days Pro →</a>
-          </div>
-        </AnimateOnScroll>
-      </div>
-    </section>
-  )
-}
-
-function EarlyAccess() {
-  const [email,setEmail]=useState('')
-  const [done,setDone]=useState(false)
-  const [loading,setLoading]=useState(false)
-  const [error,setError]=useState('')
-
-  async function join() {
-    if (!email) return
-    setLoading(true); setError('')
-    try {
-      const res = await fetch('/api/waitlist', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email,source:'homepage-early-access'}) })
-      const data = await res.json()
-      if (data.error) { setError(data.error); setLoading(false); return }
-      setDone(true)
-    } catch { setError('Something went wrong. Please try again.') }
-    setLoading(false)
-  }
-
-  return (
-    <section className="section-white" style={{position:'relative',overflow:'hidden'}}>
-      <div className="orb orb-purple" style={{width:500,height:500,top:'-20%',left:'-10%',opacity:0.35}}/>
-      <div className="wrap" style={{maxWidth:560,textAlign:'center',position:'relative',zIndex:1}}>
-        <AnimateOnScroll>
-          <span className="eyebrow">Early access</span>
-          <h2 className="heading" style={{fontSize:'clamp(28px,3vw,44px)',marginBottom:14}}>Be first to access full features</h2>
-          <p className="subtext" style={{marginBottom:32}}>We're rolling out advanced features to early members first — unlimited scans, AI document generation, and GRC tools.</p>
-          {done ? (
-            <div style={{background:'rgba(139,92,246,0.1)',border:'1px solid rgba(139,92,246,0.3)',borderRadius:14,padding:'20px 28px'}}>
-              <p style={{fontSize:15,color:'var(--accent)',fontWeight:600}}>You're on the list ✓</p>
-              <p style={{fontSize:13,color:'var(--ink2)',marginTop:6}}>We'll be in touch when your access is ready.</p>
-            </div>
-          ) : (
-            <>
-              <div style={{display:'flex',background:'rgba(255,255,255,0.06)',border:'1.5px solid rgba(139,92,246,0.3)',borderRadius:12,padding:'5px 5px 5px 16px',maxWidth:420,margin:'0 auto 12px',gap:8,backdropFilter:'blur(8px)'}}>
-                <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="your@email.com" type="email"
-                  style={{flex:1,border:'none',outline:'none',background:'transparent',fontSize:14,color:'var(--ink)'}}/>
-                <button onClick={join} disabled={loading} className="btn btn-primary btn-sm">{loading?'Joining…':'Join list →'}</button>
-              </div>
-              {error&&<p style={{fontSize:12,color:'#F87171',marginBottom:8}}>{error}</p>}
-              <p style={{fontSize:11,color:'var(--ink2)'}}>No spam · Unsubscribe any time</p>
-            </>
-          )}
-        </AnimateOnScroll>
-      </div>
-    </section>
-  )
-}
-
 function CtaBanner() {
   return (
-    <section style={{padding:'56px 0',background:'linear-gradient(135deg,rgba(139,92,246,0.1) 0%,rgba(139,92,246,0.1) 100%)',borderTop:'1px solid var(--border)'}}>
+    <section style={{padding:'72px 0',background:'linear-gradient(135deg,rgba(139,92,246,0.08) 0%,rgba(192,132,252,0.06) 100%)',borderTop:'1px solid var(--border)'}}>
       <div className="wrap" style={{textAlign:'center'}}>
         <AnimateOnScroll>
-          <h2 style={{fontFamily:'Syne,sans-serif',fontSize:'clamp(26px,3vw,42px)',fontWeight:700,color:'var(--ink)',marginBottom:14}}>Ready to check your compliance?</h2>
-          <p className="subtext" style={{marginBottom:28,maxWidth:440,margin:'0 auto 28px'}}>Free scan. No account needed. Results in under 60 seconds.</p>
+          <h2 style={{fontFamily:'Syne,sans-serif',fontSize:'clamp(28px,3.5vw,48px)',fontWeight:800,color:'var(--ink)',marginBottom:12,letterSpacing:'-1px'}}>
+            Is your website compliant?
+          </h2>
+          <p style={{fontSize:15,color:'var(--ink2)',marginBottom:32}}>Free scan. No account. 60 seconds.</p>
           <div style={{display:'flex',gap:14,justifyContent:'center',flexWrap:'wrap'}}>
-            <a href="/scan" className="btn btn-primary btn-lg animate-pulse-glow">Scan my website →</a>
-            <a href="/pricing" className="btn btn-secondary btn-lg">View pricing</a>
+            <a href="/scan"    className="btn btn-primary btn-lg animate-pulse-glow">Scan my website →</a>
+            <a href="/pricing" className="btn btn-secondary btn-lg">View plans</a>
           </div>
         </AnimateOnScroll>
       </div>
