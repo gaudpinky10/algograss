@@ -71,7 +71,29 @@ export async function POST(request) {
   const { url } = await request.json()
   if (!url) return Response.json({ error: 'URL is required' }, { status: 400 })
   let targetUrl = url.trim()
-  if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) targetUrl = 'https://' + targetUrl
+  // Strip protocol if present, then rebuild cleanly
+  let clean = targetUrl.replace(/^https?:\/\//i,'').replace(/^www\./i,'').split('/')[0]
+  // If bare name with no dots (e.g. "algograss"), try to resolve it
+  if (!clean.includes('.')) {
+    const tlds = ['.com','.co.uk','.co','.org','.net','.io']
+    let resolved = null
+    const UA2 = 'Mozilla/5.0 (compatible; AlgoGrass-Scanner/1.0)'
+    for (const tld of tlds) {
+      try {
+        const ctrl = new AbortController(); setTimeout(()=>ctrl.abort(),4000)
+        const r = await fetch(`https://www.${clean}${tld}`,{method:'HEAD',signal:ctrl.signal,headers:{'User-Agent':UA2},redirect:'follow',cache:'no-store'})
+        if (r.status < 500 && r.status !== 404) { resolved = r.url || `https://www.${clean}${tld}`; break }
+      } catch {}
+      try {
+        const ctrl = new AbortController(); setTimeout(()=>ctrl.abort(),4000)
+        const r = await fetch(`https://${clean}${tld}`,{method:'HEAD',signal:ctrl.signal,headers:{'User-Agent':UA2},redirect:'follow',cache:'no-store'})
+        if (r.status < 500 && r.status !== 404) { resolved = r.url || `https://${clean}${tld}`; break }
+      } catch {}
+    }
+    targetUrl = resolved || `https://www.${clean}.com`
+  } else if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+    targetUrl = 'https://' + targetUrl
+  }
 
   const userCookie = cookies().get('algograss_user')
   const user = userCookie ? parseUserCookie(userCookie.value) : null
