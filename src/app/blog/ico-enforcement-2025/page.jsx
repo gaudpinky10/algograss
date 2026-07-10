@@ -7,13 +7,21 @@ const Callout=({children,type='info'})=>{const s={info:{bg:'rgba(0,212,170,0.07)
 const Case=({org,fine,issue})=><div style={{background:'rgba(248,113,113,0.06)',border:'1px solid rgba(248,113,113,0.2)',borderRadius:12,padding:'18px 20px',marginBottom:16}}><div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',flexWrap:'wrap',gap:8,marginBottom:10}}><span style={{fontSize:14,fontWeight:700,color:'var(--ink)'}}>{org}</span><span style={{fontSize:13,fontWeight:800,color:'#F87171',fontFamily:'var(--f-num)'}}>{fine}</span></div><p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.7,margin:0}}>{issue}</p></div>
 function Layout({meta,children}){return(<><section style={{padding:'56px 0 32px',background:'var(--bg2)',borderBottom:'1px solid var(--border)'}}><div className="wrap" style={{maxWidth:740}}><Link href="/blog" style={{fontSize:13,color:'var(--accent)',display:'inline-flex',alignItems:'center',gap:6,marginBottom:24}}>← Back to blog</Link><div style={{display:'flex',gap:12,alignItems:'center',marginBottom:16}}><span style={{fontSize:10,fontWeight:700,background:'rgba(0,212,170,0.12)',color:'var(--accent)',padding:'3px 10px',borderRadius:100,textTransform:'uppercase',letterSpacing:'.07em',border:'1px solid rgba(0,212,170,0.2)'}}>{meta.cat}</span><span style={{fontSize:12,color:'var(--ink2)'}}>{meta.date} · {meta.read} read</span></div><h1 style={{fontFamily:'var(--f-head)',fontSize:'clamp(26px,3.5vw,42px)',fontWeight:700,color:'var(--ink)',lineHeight:1.2}}>{meta.title}</h1></div></section><section style={{padding:'48px 0 88px',background:'var(--bg)'}}><div className="wrap" style={{maxWidth:740}}>{children}</div></section></>)}
 
+const StatGrid=({stats})=><div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:16,marginBottom:32,marginTop:8}}>{stats.map(s=><div key={s.label} style={{background:'rgba(0,212,170,0.06)',border:'1px solid rgba(0,212,170,0.18)',borderRadius:12,padding:'18px 16px',textAlign:'center'}}><div style={{fontFamily:'var(--f-head)',fontSize:26,fontWeight:800,color:'var(--accent)',letterSpacing:'-0.02em'}}>{s.val}</div><div style={{fontSize:12,color:'var(--ink2)',marginTop:4,lineHeight:1.4}}>{s.label}</div></div>)}</div>
+
 export default function IcoEnforcement2025(){
   return(
-    <Layout meta={{cat:'Compliance',date:'18 Mar 2025',read:'9 min',title:'ICO Enforcement in 2024–25: Key Lessons for UK SMEs'}}>
-      <P>The Information Commissioner's Office (ICO) issued over £9 million in fines during 2024, with actions ranging from household-name corporations to small and mid-sized businesses. The consistent thread: failure to implement basic data protection principles, poor cookie consent, and inadequate security measures. Here's what UK small businesses can learn.</P>
+    <Layout meta={{cat:'Compliance',date:'5 Jun 2026',read:'10 min',title:'ICO Enforcement in 2025–26: Key Lessons for UK SMEs'}}>
+      <P>The Information Commissioner's Office (ICO) continues to fine businesses of all sizes — and size is no defence. Meanwhile, across the EU, regulators have issued over <strong style={{color:'var(--ink)'}}>€6.31 billion in GDPR fines across 3,202 cases</strong> since enforcement began in 2018. The most common failures are consistent: no lawful basis for processing, weak security measures, and inadequate transparency. Here's what UK businesses can learn from both ICO enforcement and the EU-wide picture.</P>
+      <StatGrid stats={[
+        {val:'3,202',label:'Total EU+UK enforcement cases (2018–2026)'},
+        {val:'€6.31B',label:'Total fines issued across 32 countries'},
+        {val:'€1.2B',label:'Largest single fine (Meta, Ireland, 2023)'},
+        {val:'Art. 5 & 6',label:'Most-cited GDPR articles in enforcement'},
+      ]}/>
       <Callout type="danger">The ICO has explicitly stated that size is not a defence. Sole traders and micro-businesses have received enforcement notices and fines. If you collect personal data, GDPR obligations apply to you regardless of company size.</Callout>
 
-      <H2 n="1">Notable ICO enforcement actions 2024–25</H2>
+      <H2 n="1">Notable ICO enforcement actions 2024–26</H2>
       <P>These cases illustrate the patterns in ICO enforcement and the specific failures that trigger action:</P>
       <Case org="Software company (name withheld)" fine="£350,000" issue="Sent 107 million unsolicited marketing emails. The company had no valid consent from recipients and failed to provide an easy opt-out mechanism. Fine issued under PECR (Privacy and Electronic Communications Regulations)." />
       <Case org="NHS Trust" fine="£200,000" issue="Emailed sensitive personal data (patient medical information) to wrong recipients on multiple occasions. ICO cited failure to implement adequate technical measures — a basic access control issue." />
@@ -32,7 +40,19 @@ export default function IcoEnforcement2025(){
         'Privacy notices: missing or inadequate notices that don\'t reflect actual data processing, or using generic templates without customisation.',
       ]}/>
 
-      <H2 n="3">The ICO's approach to SMEs</H2>
+      <H2 n="3">The EU enforcement picture: what 9 years of data tells us</H2>
+      <P>The GDPR Enforcement Tracker (enforcementtracker.com) compiles all publicly disclosed GDPR enforcement actions across 32 European countries. The data since 2018 reveals consistent patterns that apply equally to UK businesses operating under UK GDPR:</P>
+      <Ul items={[
+        'Top violation #1 — Insufficient legal basis for data processing (Art. 6): ~950 cases. Processing personal data without a valid lawful basis is the single most-enforced violation. This means businesses processing data without consent, legitimate interest, or another Art. 6 ground documented in writing.',
+        'Top violation #2 — Non-compliance with data processing principles (Art. 5): ~800 cases. Article 5 covers the core GDPR principles — lawfulness, purpose limitation, data minimisation, accuracy, storage limitation, integrity. Regulators cite Art. 5 in nearly every serious enforcement action.',
+        'Top violation #3 — Insufficient technical & organisational measures (Art. 32): ~600 cases. Security failures — no encryption, no MFA, unpatched systems, inadequate access controls. Art. 32 is the most common route for fines following a data breach.',
+        'Top violation #4 — Transparency failures (Art. 13/14): ~540 cases. Failing to provide adequate privacy information at the point of data collection. Inadequate or missing privacy notices are among the easiest compliance gaps for regulators to identify.',
+        'Most fined sector: Industry & Commerce (~615 cases), followed by Media/Telecoms (~375), Public Sector (~370), Finance/Insurance (~335), and Healthcare (~285). No sector is exempt.',
+        'Most active DPA: Spain (1,078 cases tracked), followed by Italy, Romania, and Germany. The ICO is comparatively less active by case count but issues some of the largest individual fines.',
+      ]}/>
+      <Callout type="warn">The largest single GDPR fine ever issued was €1.2 billion against Meta Platforms Ireland (May 2023) for unlawful data transfers to the US without adequate safeguards. The next largest: TikTok €530 million (2025), Meta €405 million (2023), LinkedIn €310 million (2023), and Uber €290 million (2023). All relate to either data transfers, children's data, or insufficient lawful basis.</Callout>
+
+      <H2 n="4">The ICO's approach to SMEs</H2>
       <P>The ICO has published guidance on its approach to smaller organisations. In practice, the Commissioner uses a range of tools beyond fines — reprimands, enforcement notices, and published case summaries — that damage reputation even without a financial penalty.</P>
       <P>The ICO typically investigates following a complaint from a data subject, a mandatory breach notification, or proactive sweeps (such as cookie compliance audits across specific sectors). You do not need to be the subject of a large breach for an investigation to begin — a single complaint about an unlawful marketing email is sufficient to trigger a case.</P>
       <Callout type="warn">The ICO publishes all enforcement actions on its website, including the name of the organisation and the specific breach. Reputational damage from being named in an ICO enforcement notice often exceeds the financial cost for smaller businesses. Customers, partners, and investors check the register.</Callout>
@@ -46,7 +66,7 @@ export default function IcoEnforcement2025(){
         '5. No documented retention and deletion schedule. "We keep it forever" is not a lawful retention period. You need a documented schedule and you need to follow it.',
       ]}/>
 
-      <H2 n="5">How to reduce your ICO risk</H2>
+      <H2 n="6">How to reduce your ICO risk</H2>
       <Ul items={[
         'Scan your website: use a real scanning tool that checks what scripts load before cookie consent is given. Browser developer tools alone won\'t catch everything.',
         'Review your cookie banner: ensure the reject option is as prominent as accept, and nothing loads before consent is given.',
@@ -58,7 +78,7 @@ export default function IcoEnforcement2025(){
       ]}/>
       <Callout>AlgoGrass performs a live scan of your website to identify the compliance gaps most likely to attract ICO attention — cookie consent failures, missing privacy notices, data form issues, and HTTPS problems. <a href="/scan" style={{color:'var(--accent)'}}>Run a free scan →</a></Callout>
 
-      <H2 n="6">If you receive an ICO complaint or investigation</H2>
+      <H2 n="7">If you receive an ICO complaint or investigation</H2>
       <P>If the ICO contacts you, respond promptly and cooperatively. The ICO's enforcement guidance emphasises that voluntary cooperation and swift remediation are mitigating factors in penalty decisions. A fine that might be £200,000 in an egregious case may be reduced significantly where the organisation demonstrates genuine efforts to comply and remediate.</P>
       <Ul items={[
         'Don\'t ignore communications — the ICO treats non-cooperation seriously',
@@ -74,5 +94,5 @@ export default function IcoEnforcement2025(){
         <a href="/scan" className="btn btn-primary">Scan my website free →</a>
       </div>
     </Layout>
-  )
+    )
 }

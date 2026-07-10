@@ -11,8 +11,8 @@ function Layout({meta,children}){return(<><section style={{padding:'56px 0 32px'
 export default function IcoFinesGuide(){
   return(
     <Layout meta={{cat:'Compliance',date:'12 Feb 2025',read:'7 min',title:'Understanding ICO Fines: What Gets UK Businesses Fined?'}}>
-      <P>The Information Commissioner's Office has fined organisations hundreds of millions of pounds since UK GDPR took effect. While headlines focus on household names, the ICO regularly investigates and fines small and medium businesses. Understanding what triggers an investigation — and how fines are calculated — is essential for any UK business handling personal data.</P>
-      <Callout type="danger">The ICO can fine organisations up to £17.5 million or 4% of global annual turnover (whichever is higher) for serious violations. For less serious breaches, fines can reach £8.7 million or 2% of turnover.</Callout>
+      <P>The Information Commissioner's Office has fined organisations hundreds of millions of pounds since UK GDPR took effect. Across the EU, GDPR enforcement has been even more sweeping: <strong style={{color:'var(--ink)'}}>3,202 enforcement cases and over €6.31 billion in total fines</strong> across 32 countries since 2018. The single largest fine: €1.2 billion against Meta Platforms Ireland. While headlines focus on household names, regulators in both the UK and EU regularly investigate and fine small and medium businesses. Understanding what triggers an investigation — and how fines are calculated — is essential for any business handling personal data.</P>
+      <Callout type="danger">The ICO can fine organisations up to £17.5 million or 4% of global annual turnover (whichever is higher) for serious violations. For less serious breaches, fines can reach £8.7 million or 2% of turnover. EU DPAs can fine up to €20 million or 4% of global annual turnover.</Callout>
 
       <H2>The Two Tiers of ICO Fines</H2>
       <P>UK GDPR establishes two tiers of financial penalties, mirroring the EU GDPR structure:</P>
@@ -27,6 +27,16 @@ export default function IcoFinesGuide(){
       <FineCard company="Clearview AI" fine="£7.5 million (disputed)" reason="ICO fined Clearview for scraping biometric data of UK residents without lawful basis. The fine was initially overturned by the First-tier Tribunal in 2023, but the Upper Tribunal upheld the ICO's appeal in October 2025. Case ongoing." year="2022–2025"/>
       <FineCard company="TikTok" fine="£12.7 million" reason="Processing personal data of children under 13 without parental consent, failing to use children's data transparently." year="2023"/>
       <FineCard company="Advanced Computer Software" fine="£3.07 million" reason="Ransomware attack that disrupted NHS services. Insufficient security controls including MFA not applied consistently." year="2024"/>
+
+      <H2>The EU's Largest GDPR Fines: Global Context</H2>
+      <P>These are the ten largest GDPR fines ever issued globally (source: GDPR Enforcement Tracker, enforcementtracker.com). They illustrate both the scale of potential penalties and the violation types that attract the biggest sanctions:</P>
+      <FineCard company="Meta Platforms Ireland" fine="€1,200,000,000" reason="Unlawful transfer of EU personal data to the US without adequate safeguards (Art. 46). The largest GDPR fine ever issued — found by Ireland's DPC on foot of an EDPB binding decision." year="2023"/>
+      <FineCard company="TikTok Technology Ltd (Ireland)" fine="€530,000,000" reason="Unlawful transfer of EEA user data to China without adequate protection; insufficient transparency about data flows to Chinese employees." year="2025"/>
+      <FineCard company="Meta (Instagram — children's data)" fine="€405,000,000" reason="Processing children's personal data unlawfully under its business accounts feature. Default settings exposed children's accounts publicly." year="2023"/>
+      <FineCard company="Meta Platforms Ireland (Facebook)" fine="€390,000,000" reason="Relying on contractual necessity rather than consent to serve behavioural advertising — unlawful processing basis for targeted ads." year="2023"/>
+      <FineCard company="LinkedIn Ireland" fine="€310,000,000" reason="Unlawful processing of personal data for behavioural analysis and targeted advertising without valid consent or legitimate interest." year="2023"/>
+      <FineCard company="Uber B.V. (Netherlands)" fine="€290,000,000" reason="Transferred EU driver data to the US for over two years without adequate transfer safeguards following the Schrems II ruling." year="2023"/>
+      <P>A clear pattern: the largest fines cluster around three violations — (1) unlawful international data transfers, (2) using behavioural advertising without a valid lawful basis, and (3) failing to protect children's data. These same Article 5, 6, and 44–46 violations appear across EU enforcement at all scales.</P>
 
       <H2>What the ICO Investigates Most Often</H2>
       <P>The ICO publishes its enforcement priorities and case outcomes. The most common triggers for investigation include:</P>
