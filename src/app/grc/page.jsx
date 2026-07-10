@@ -146,24 +146,24 @@ const AUDIT_TEMPLATES = [
 // ─── STYLES ───────────────────────────────────────────────────────────────────
 const S = {
   page:      { minHeight:'100vh', background:'var(--bg)', color:'var(--ink)', fontFamily:'Inter,sans-serif', paddingBottom:60 },
-  hero:      { background:'linear-gradient(135deg,#EFF6FF 0%,#F0F9FF 100%)', padding:'40px 24px 32px', borderBottom:'1px solid rgba(15,23,42,0.07)' },
+  hero:      { background:'linear-gradient(135deg,#0A0A18 0%,#0A0A18 100%)', padding:'40px 24px 32px', borderBottom:'1px solid rgba(255,255,255,0.07)' },
   heroInner: { maxWidth:1100, margin:'0 auto' },
   heroTitle: { fontSize:28, fontWeight:700, margin:'0 0 6px', color:'var(--ink)' },
   heroSub:   { fontSize:14, color:'#94A3B8', margin:'0 0 24px' },
   tabBar:    { display:'flex', gap:8, flexWrap:'wrap' },
-  tab: a => ({ padding:'8px 18px', borderRadius:8, border:`1px solid ${a?'var(--accent)':'rgba(15,23,42,0.1)'}`, background:a?'rgba(14,165,233,0.12)':'transparent', color:a?'var(--accent)':'#94A3B8', cursor:'pointer', fontSize:14, fontWeight:500, transition:'all .15s' }),
+  tab: a => ({ padding:'8px 18px', borderRadius:8, border:`1px solid ${a?'var(--accent)':'rgba(255,255,255,0.09)'}`, background:a?'rgba(139,92,246,0.12)':'transparent', color:a?'var(--accent)':'#94A3B8', cursor:'pointer', fontSize:14, fontWeight:500, transition:'all .15s' }),
   body:      { maxWidth:1100, margin:'0 auto', padding:'28px 24px 0' },
-  card:      { background:'var(--bg2)', border:'1px solid rgba(15,23,42,0.07)', borderRadius:12, padding:20, marginBottom:16 },
+  card:      { background:'var(--bg2)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:12, padding:20, marginBottom:16 },
   label:     { fontSize:11, fontWeight:600, letterSpacing:1, textTransform:'uppercase', color:'#64748B', marginBottom:12 },
   badge: s => { const c={Compliant:'#22C55E','In Progress':'#F59E0B','Not Started':'#EF4444','N/A':'#64748B'}[s]||'#64748B'; return { display:'inline-block', padding:'2px 10px', borderRadius:20, fontSize:11, fontWeight:600, background:`${c}22`, color:c, border:`1px solid ${c}44` } },
-  btn:       { padding:'6px 14px', borderRadius:6, border:'1px solid rgba(14,165,233,0.4)', background:'rgba(14,165,233,0.08)', color:'var(--accent)', fontSize:12, cursor:'pointer', fontWeight:500 },
-  btnSm:     { padding:'4px 10px', borderRadius:6, border:'1px solid rgba(15,23,42,0.1)', background:'transparent', color:'#94A3B8', fontSize:11, cursor:'pointer' },
-  aiBox:     { background:'rgba(14,165,233,0.06)', border:'1px solid rgba(14,165,233,0.2)', borderRadius:8, padding:14, marginTop:12, fontSize:13, lineHeight:1.8, color:'#CBD5E1', whiteSpace:'pre-wrap' },
+  btn:       { padding:'6px 14px', borderRadius:6, border:'1px solid rgba(139,92,246,0.4)', background:'rgba(139,92,246,0.08)', color:'var(--accent)', fontSize:12, cursor:'pointer', fontWeight:500 },
+  btnSm:     { padding:'4px 10px', borderRadius:6, border:'1px solid rgba(255,255,255,0.09)', background:'transparent', color:'#94A3B8', fontSize:11, cursor:'pointer' },
+  aiBox:     { background:'rgba(139,92,246,0.06)', border:'1px solid rgba(139,92,246,0.2)', borderRadius:8, padding:14, marginTop:12, fontSize:13, lineHeight:1.8, color:'#CBD5E1', whiteSpace:'pre-wrap' },
   tag:   c => ({ display:'inline-block', padding:'2px 8px', borderRadius:4, fontSize:11, fontWeight:600, background:`${c}22`, color:c, border:`1px solid ${c}44`, marginRight:4 }),
   link:      { color:'var(--accent)', textDecoration:'none', fontSize:13, fontWeight:500 },
   grid2:     { display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(310px,1fr))', gap:14 },
-  progWrap:  { height:6, borderRadius:3, background:'rgba(15,23,42,0.09)', overflow:'hidden', marginTop:8, position:'relative' },
-  progBar: (p,c='#0EA5E9') => ({ position:'absolute', left:0, top:0, height:'100%', width:`${p}%`, background:c, borderRadius:3, transition:'width .4s' }),
+  progWrap:  { height:6, borderRadius:3, background:'rgba(255,255,255,0.08)', overflow:'hidden', marginTop:8, position:'relative' },
+  progBar: (p,c='#9B7BFA') => ({ position:'absolute', left:0, top:0, height:'100%', width:`${p}%`, background:c, borderRadius:3, transition:'width .4s' }),
 }
 
 const STATUS_OPTIONS = ['Not Started','In Progress','Compliant','N/A']
@@ -257,10 +257,10 @@ export default function GRCPage() {
                     <span style={{color:'#64748B',fontSize:12}}>{isOpen?'▲':'▼'}</span>
                   </div>
                   {isOpen&&(
-                    <div style={{padding:'0 18px 16px', borderTop:'1px solid rgba(15,23,42,0.07)'}}>
+                    <div style={{padding:'0 18px 16px', borderTop:'1px solid rgba(255,255,255,0.07)'}}>
                       <p style={{fontSize:13,color:'#94A3B8',margin:'12px 0'}}>{ctrl.desc}</p>
                       <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:12}}>
-                        {STATUS_OPTIONS.map(s=><button key={s} style={{...S.btnSm,...(status===s?{background:'rgba(14,165,233,0.12)',color:'var(--accent)',borderColor:'var(--accent)'}:{})}} onClick={()=>setStatus(ctrl.id,s,isGdpr)}>{s}</button>)}
+                        {STATUS_OPTIONS.map(s=><button key={s} style={{...S.btnSm,...(status===s?{background:'rgba(139,92,246,0.12)',color:'var(--accent)',borderColor:'var(--accent)'}:{})}} onClick={()=>setStatus(ctrl.id,s,isGdpr)}>{s}</button>)}
                       </div>
                       <button style={S.btn} onClick={()=>getSuggestion(ctrl,isGdpr)}>
                         {loadingAI[ctrl.id]?'⏳ Loading…':suggestions[ctrl.id]?'✕ Hide AI Advice':'🤖 Get AI Advice'}
@@ -288,7 +288,7 @@ export default function GRCPage() {
           {UK_GOV_COMPLAINTS.map(body=>{
             const isOpen = openBody===body.id
             return (
-              <div key={body.id} style={{...S.card, cursor:'pointer', borderColor:isOpen?body.color+'66':'rgba(15,23,42,0.07)'}}>
+              <div key={body.id} style={{...S.card, cursor:'pointer', borderColor:isOpen?body.color+'66':'rgba(255,255,255,0.07)'}}>
                 <div onClick={()=>setOpenBody(isOpen?null:body.id)}>
                   <div style={{display:'flex', alignItems:'center', gap:10, marginBottom:8}}>
                     <span style={{fontSize:24}}>{body.icon}</span>
@@ -304,7 +304,7 @@ export default function GRCPage() {
                   </div>
                 </div>
                 {isOpen&&(
-                  <div style={{marginTop:16, borderTop:'1px solid rgba(15,23,42,0.09)', paddingTop:14}}>
+                  <div style={{marginTop:16, borderTop:'1px solid rgba(255,255,255,0.08)', paddingTop:14}}>
                     {body.complaintTypes.length>0&&<>
                       <div style={S.label}>Complaint Types</div>
                       {body.complaintTypes.map((ct,i)=>(
@@ -375,11 +375,11 @@ export default function GRCPage() {
                 <span style={{color:'#64748B'}}>{isOpen?'▲':'▼'}</span>
               </div>
               {isOpen&&(
-                <div style={{borderTop:'1px solid rgba(15,23,42,0.07)', paddingTop:14}}>
+                <div style={{borderTop:'1px solid rgba(255,255,255,0.07)', paddingTop:14}}>
                   {tmpl.items.map((item,i)=>(
                     <div key={i} style={{display:'flex', alignItems:'flex-start', gap:10, padding:'8px 0', borderBottom:'1px solid rgba(15,23,42,0.05)', cursor:'pointer'}}
                       onClick={()=>setAuditChecked(p=>({...p,[tmpl.id]:{...(p[tmpl.id]||{}),[i]:!(p[tmpl.id]||{})[i]}}))}>
-                      <div style={{width:18,height:18,borderRadius:4,border:`2px solid ${checked[i]?'var(--accent)':'rgba(15,23,42,0.1)'}`,background:checked[i]?'var(--accent)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:2}}>
+                      <div style={{width:18,height:18,borderRadius:4,border:`2px solid ${checked[i]?'var(--accent)':'rgba(255,255,255,0.09)'}`,background:checked[i]?'var(--accent)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:2}}>
                         {checked[i]&&<span style={{color:'#000',fontSize:11,fontWeight:700}}>✓</span>}
                       </div>
                       <span style={{fontSize:13, color:checked[i]?'#64748B':'var(--ink)', textDecoration:checked[i]?'line-through':'none'}}>{item}</span>

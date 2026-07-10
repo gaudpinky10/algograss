@@ -6,13 +6,13 @@ const DATA_CATEGORIES = ['Names','Contact details','Financial/payment','Health/m
 const VENDOR_TYPES    = ['Cloud hosting','Email/marketing','CRM','Analytics','HR/payroll','Accounting','Customer support','Payment processing','Security','Legal','Other']
 
 const RiskBadge = ({ level }) => {
-  const c = level==='High'?{bg:'rgba(239,68,68,0.12)',color:'#EF4444'}:level==='Medium'?{bg:'rgba(245,158,11,0.12)',color:'#F59E0B'}:{bg:'rgba(14,165,233,0.12)',color:'var(--accent)'}
+  const c = level==='High'?{bg:'rgba(239,68,68,0.12)',color:'#EF4444'}:level==='Medium'?{bg:'rgba(245,158,11,0.12)',color:'#F59E0B'}:{bg:'rgba(139,92,246,0.12)',color:'var(--accent)'}
   return <span style={{fontSize:11,fontWeight:700,padding:'3px 10px',borderRadius:20,background:c.bg,color:c.color}}>{level}</span>
 }
 
 const DpaBadge = ({ status }) => {
   const ok = status==='Yes'
-  return <span style={{fontSize:11,fontWeight:600,padding:'3px 10px',borderRadius:20,background:ok?'rgba(14,165,233,0.1)':'rgba(239,68,68,0.1)',color:ok?'var(--accent)':'#EF4444'}}>{ok?'✓ DPA signed':'✗ No DPA'}</span>
+  return <span style={{fontSize:11,fontWeight:600,padding:'3px 10px',borderRadius:20,background:ok?'rgba(139,92,246,0.1)':'rgba(239,68,68,0.1)',color:ok?'var(--accent)':'#EF4444'}}>{ok?'✓ DPA signed':'✗ No DPA'}</span>
 }
 
 const EMPTY = { name:'',type:'Cloud hosting',website:'',dataCategories:[],transfersOutsideUK:'No',dpaSigned:'No',dpaSignedDate:'',lastAudit:'',isoOrSoc2:'Neither',notes:'' }
@@ -104,7 +104,7 @@ export default function VendorRiskPage() {
           <div style={{display:'flex',gap:10,marginBottom:20,flexWrap:'wrap',alignItems:'center'}}>
             <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search vendors..." style={{background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:9,padding:'8px 14px',fontSize:13,color:'var(--ink)',outline:'none',flex:1,minWidth:180}}/>
             {['All','High','Medium','Low'].map(f=>(
-              <button key={f} onClick={()=>setFilter(f)} style={{fontSize:12,fontWeight:600,padding:'7px 16px',borderRadius:20,border:'1px solid',borderColor:filter===f?'var(--accent)':'var(--border)',background:filter===f?'rgba(14,165,233,0.1)':'transparent',color:filter===f?'var(--accent)':'var(--ink2)',cursor:'pointer'}}>{f}</button>
+              <button key={f} onClick={()=>setFilter(f)} style={{fontSize:12,fontWeight:600,padding:'7px 16px',borderRadius:20,border:'1px solid',borderColor:filter===f?'var(--accent)':'var(--border)',background:filter===f?'rgba(139,92,246,0.1)':'transparent',color:filter===f?'var(--accent)':'var(--ink2)',cursor:'pointer'}}>{f}</button>
             ))}
           </div>
 
@@ -121,13 +121,13 @@ export default function VendorRiskPage() {
               {filtered.map(v=>(
                 <div key={v._id||v.name} style={{background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:14,padding:'18px 22px',display:'grid',gridTemplateColumns:'1fr auto',gap:16,alignItems:'center'}}>
                   <div style={{display:'flex',alignItems:'flex-start',gap:16}}>
-                    <div style={{width:42,height:42,borderRadius:10,background:'rgba(14,165,233,0.1)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0}}>🏢</div>
+                    <div style={{width:42,height:42,borderRadius:10,background:'rgba(139,92,246,0.1)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0}}>🏢</div>
                     <div style={{flex:1}}>
                       <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:5,flexWrap:'wrap'}}>
                         <span style={{fontFamily:'Syne,sans-serif',fontSize:15,fontWeight:700,color:'var(--ink)'}}>{v.name}</span>
                         <RiskBadge level={v.level}/>
                         <DpaBadge status={v.dpaSigned}/>
-                        <span style={{fontSize:11,color:'var(--ink2)',background:'rgba(15,23,42,0.05)',padding:'2px 8px',borderRadius:6}}>{v.type}</span>
+                        <span style={{fontSize:11,color:'var(--ink2)',background:'rgba(255,255,255,0.06)',padding:'2px 8px',borderRadius:6}}>{v.type}</span>
                       </div>
                       <div style={{display:'flex',gap:20,flexWrap:'wrap'}}>
                         <span style={{fontSize:12,color:'var(--ink2)'}}>Data: {(v.dataCategories||[]).slice(0,3).join(', ')}{(v.dataCategories||[]).length>3?` +${(v.dataCategories||[]).length-3} more`:''}</span>
@@ -166,7 +166,7 @@ export default function VendorRiskPage() {
             </div>
             <div style={{marginBottom:14}}>
               <label style={{display:'block',fontSize:11,fontWeight:700,color:'var(--ink)',marginBottom:5,textTransform:'uppercase',letterSpacing:'.05em'}}>Vendor name *</label>
-              <input value={form.name} onChange={set('name')} placeholder="e.g. Mailchimp, Google Workspace, Xero" style={{width:'100%',background:'rgba(15,23,42,0.05)',border:'1px solid var(--border)',borderRadius:9,padding:'10px 14px',fontSize:14,color:'var(--ink)',outline:'none'}}/>
+              <input value={form.name} onChange={set('name')} placeholder="e.g. Mailchimp, Google Workspace, Xero" style={{width:'100%',background:'rgba(255,255,255,0.06)',border:'1px solid var(--border)',borderRadius:9,padding:'10px 14px',fontSize:14,color:'var(--ink)',outline:'none'}}/>
             </div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:14}}>
               <div>
@@ -177,14 +177,14 @@ export default function VendorRiskPage() {
               </div>
               <div>
                 <label style={{display:'block',fontSize:11,fontWeight:700,color:'var(--ink)',marginBottom:5,textTransform:'uppercase',letterSpacing:'.05em'}}>Website</label>
-                <input value={form.website} onChange={set('website')} placeholder="vendor.com" style={{width:'100%',background:'rgba(15,23,42,0.05)',border:'1px solid var(--border)',borderRadius:9,padding:'10px 14px',fontSize:14,color:'var(--ink)',outline:'none'}}/>
+                <input value={form.website} onChange={set('website')} placeholder="vendor.com" style={{width:'100%',background:'rgba(255,255,255,0.06)',border:'1px solid var(--border)',borderRadius:9,padding:'10px 14px',fontSize:14,color:'var(--ink)',outline:'none'}}/>
               </div>
             </div>
             <div style={{marginBottom:14}}>
               <label style={{display:'block',fontSize:11,fontWeight:700,color:'var(--ink)',marginBottom:8,textTransform:'uppercase',letterSpacing:'.05em'}}>Personal data categories processed</label>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:6}}>
                 {DATA_CATEGORIES.map(c=>(
-                  <label key={c} style={{display:'flex',alignItems:'center',gap:7,padding:'6px 10px',background:form.dataCategories.includes(c)?'rgba(14,165,233,0.08)':'transparent',border:`1px solid ${form.dataCategories.includes(c)?'rgba(14,165,233,0.3)':'var(--border)'}`,borderRadius:7,cursor:'pointer'}}>
+                  <label key={c} style={{display:'flex',alignItems:'center',gap:7,padding:'6px 10px',background:form.dataCategories.includes(c)?'rgba(139,92,246,0.08)':'transparent',border:`1px solid ${form.dataCategories.includes(c)?'rgba(139,92,246,0.3)':'var(--border)'}`,borderRadius:7,cursor:'pointer'}}>
                     <input type="checkbox" checked={form.dataCategories.includes(c)} onChange={()=>toggle(c)} style={{accentColor:'var(--accent)'}}/>
                     <span style={{fontSize:12,color:'var(--ink)'}}>{c}</span>
                   </label>
@@ -204,12 +204,12 @@ export default function VendorRiskPage() {
             {form.dpaSigned==='Yes'&&(
               <div style={{marginBottom:14}}>
                 <label style={{display:'block',fontSize:11,fontWeight:700,color:'var(--ink)',marginBottom:5,textTransform:'uppercase',letterSpacing:'.05em'}}>DPA signed date</label>
-                <input type="date" value={form.dpaSignedDate} onChange={set('dpaSignedDate')} style={{width:'100%',background:'rgba(15,23,42,0.05)',border:'1px solid var(--border)',borderRadius:9,padding:'10px 14px',fontSize:14,color:'var(--ink)',outline:'none'}}/>
+                <input type="date" value={form.dpaSignedDate} onChange={set('dpaSignedDate')} style={{width:'100%',background:'rgba(255,255,255,0.06)',border:'1px solid var(--border)',borderRadius:9,padding:'10px 14px',fontSize:14,color:'var(--ink)',outline:'none'}}/>
               </div>
             )}
             <div style={{marginBottom:20}}>
               <label style={{display:'block',fontSize:11,fontWeight:700,color:'var(--ink)',marginBottom:5,textTransform:'uppercase',letterSpacing:'.05em'}}>Last audit / review date</label>
-              <input value={form.lastAudit} onChange={set('lastAudit')} placeholder="e.g. Jan 2025, Never" style={{width:'100%',background:'rgba(15,23,42,0.05)',border:'1px solid var(--border)',borderRadius:9,padding:'10px 14px',fontSize:14,color:'var(--ink)',outline:'none'}}/>
+              <input value={form.lastAudit} onChange={set('lastAudit')} placeholder="e.g. Jan 2025, Never" style={{width:'100%',background:'rgba(255,255,255,0.06)',border:'1px solid var(--border)',borderRadius:9,padding:'10px 14px',fontSize:14,color:'var(--ink)',outline:'none'}}/>
             </div>
             <div style={{display:'flex',gap:10}}>
               <button onClick={()=>{setShowForm(false);setForm(EMPTY)}} className="btn btn-secondary" style={{flex:1}}>Cancel</button>

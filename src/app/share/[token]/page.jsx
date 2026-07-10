@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 
-const scoreColor = s => s >= 70 ? '#0EA5E9' : s >= 40 ? '#F59E0B' : '#EF4444'
+const scoreColor = s => s >= 70 ? '#9B7BFA' : s >= 40 ? '#F59E0B' : '#EF4444'
 const scoreLabel = s => s >= 70 ? 'Good' : s >= 40 ? 'Needs Work' : 'At Risk'
 
 export default function SharePage() {
@@ -21,9 +21,9 @@ export default function SharePage() {
 
   const copy = () => { navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 2000) }
 
-  const page = { minHeight: '100vh', background: '#FFFFFF', padding: '40px 20px', fontFamily: "'Segoe UI', sans-serif" }
+  const page = { minHeight: '100vh', background: '#06060F', padding: '40px 20px', fontFamily: "'Segoe UI', sans-serif" }
   const wrap = { maxWidth: 720, margin: '0 auto' }
-  const card = { background: '#F8FAFC', border: '1px solid rgba(15,23,42,0.1)', borderRadius: 16, padding: '28px 32px', marginBottom: 20 }
+  const card = { background: '#0D0D1E', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: '28px 32px', marginBottom: 20 }
 
   if (error) return (
     <div style={page}>
@@ -31,7 +31,7 @@ export default function SharePage() {
         <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
         <h2 style={{ color: '#0F172A', fontSize: 22, fontWeight: 700, margin: '0 0 8px' }}>Report not found</h2>
         <p style={{ color: '#94A3B8' }}>This report link has expired or doesn't exist.</p>
-        <a href="/scan" style={{ display: 'inline-block', marginTop: 20, background: 'linear-gradient(135deg,#0EA5E9,#0284C7)', color: '#FFFFFF', fontWeight: 700, padding: '12px 28px', borderRadius: 10, textDecoration: 'none' }}>Run a free scan →</a>
+        <a href="/scan" style={{ display: 'inline-block', marginTop: 20, background: 'linear-gradient(135deg,#9B7BFA,#7C3AED)', color: '#06060F', fontWeight: 700, padding: '12px 28px', borderRadius: 10, textDecoration: 'none' }}>Run a free scan →</a>
       </div>
     </div>
   )
@@ -61,18 +61,18 @@ export default function SharePage() {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32, flexWrap: 'wrap', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg,#0EA5E9,#7C9EFF)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 14, color: '#FFFFFF' }}>AG</div>
-            <span style={{ fontWeight: 800, fontSize: 18, color: '#0EA5E9' }}>AlgoGrass</span>
-            <span style={{ color: 'rgba(15,23,42,0.1)', fontSize: 16 }}>|</span>
+            <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg,#9B7BFA,#C084FC)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 14, color: '#06060F' }}>AG</div>
+            <span style={{ fontWeight: 800, fontSize: 18, color: '#9B7BFA' }}>AlgoGrass</span>
+            <span style={{ color: 'rgba(255,255,255,0.09)', fontSize: 16 }}>|</span>
             <span style={{ color: '#94A3B8', fontSize: 14 }}>Compliance Report</span>
           </div>
-          <button onClick={copy} style={{ background: 'rgba(14,165,233,0.08)', border: '1px solid rgba(14,165,233,0.2)', color: '#0EA5E9', fontSize: 13, fontWeight: 600, padding: '8px 16px', borderRadius: 8, cursor: 'pointer' }}>
+          <button onClick={copy} style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)', color: '#9B7BFA', fontSize: 13, fontWeight: 600, padding: '8px 16px', borderRadius: 8, cursor: 'pointer' }}>
             {copied ? '✓ Copied!' : '🔗 Share this report'}
           </button>
         </div>
 
         {/* Score */}
-        <div style={{ ...card, textAlign: 'center', background: 'linear-gradient(135deg,#0EA5E9,#0284C7)' }}>
+        <div style={{ ...card, textAlign: 'center', background: 'linear-gradient(135deg,#9B7BFA,#7C3AED)' }}>
           <p style={{ color: '#94A3B8', fontSize: 13, margin: '0 0 8px' }}>{scanResult?.url || 'Website'}</p>
           <p style={{ color: '#475569', fontSize: 12, margin: '0 0 24px' }}>Scanned {scanResult?.scannedAt ? new Date(scanResult.scannedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}</p>
           <div style={{ fontSize: 72, fontWeight: 800, color: col, lineHeight: 1, marginBottom: 12 }}>{sc}</div>
@@ -90,7 +90,7 @@ export default function SharePage() {
                 <div>
                   <div style={{ color: '#0F172A', fontWeight: 600, fontSize: 13, marginBottom: 4 }}>{issue.title}</div>
                   <div style={{ color: '#94A3B8', fontSize: 12, lineHeight: 1.5, marginBottom: 4 }}>{issue.desc}</div>
-                  <span style={{ background: 'rgba(14,165,233,0.08)', color: '#0EA5E9', fontSize: 10, padding: '2px 8px', borderRadius: 4 }}>{issue.reg}</span>
+                  <span style={{ background: 'rgba(139,92,246,0.08)', color: '#9B7BFA', fontSize: 10, padding: '2px 8px', borderRadius: 4 }}>{issue.reg}</span>
                 </div>
               </div>
             ))}
@@ -103,7 +103,7 @@ export default function SharePage() {
             <h3 style={{ color: '#0F172A', fontSize: 15, fontWeight: 700, margin: '0 0 16px' }}>What We Checked</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               {Object.entries({ 'HTTPS encryption': scanResult.checks.https, 'Privacy policy': scanResult.checks.privacyPolicy, 'Cookie consent': scanResult.checks.cookieBanner, 'Reject All option': scanResult.checks.cookieReject, 'Terms of service': scanResult.checks.termsOfService, 'Lawful basis': scanResult.checks.lawfulBasis, 'Data subject rights': scanResult.checks.dataRights, 'Trackers disclosed': scanResult.checks.trackersDisclosed, 'Retention period': scanResult.checks.retentionPolicy, 'DSAR contact': scanResult.checks.dsarContact }).map(([label, passed]) => (
-                <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: passed ? 'rgba(14,165,233,0.05)' : 'rgba(239,68,68,0.05)', borderRadius: 8, border: `1px solid ${passed ? 'rgba(14,165,233,0.15)' : 'rgba(239,68,68,0.1)'}` }}>
+                <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: passed ? 'rgba(139,92,246,0.05)' : 'rgba(239,68,68,0.05)', borderRadius: 8, border: `1px solid ${passed ? 'rgba(139,92,246,0.15)' : 'rgba(239,68,68,0.1)'}` }}>
                   <span style={{ fontSize: 15 }}>{passed ? '✅' : '❌'}</span>
                   <span style={{ fontSize: 12, color: '#CBD5E1' }}>{label}</span>
                 </div>
@@ -113,10 +113,10 @@ export default function SharePage() {
         )}
 
         {/* CTA */}
-        <div style={{ ...card, textAlign: 'center', background: 'linear-gradient(135deg,rgba(14,165,233,0.06),rgba(124,158,255,0.06))' }}>
+        <div style={{ ...card, textAlign: 'center', background: 'linear-gradient(135deg,rgba(139,92,246,0.06),rgba(124,158,255,0.06))' }}>
           <h3 style={{ color: '#0F172A', fontSize: 18, fontWeight: 700, margin: '0 0 8px' }}>Fix your compliance issues</h3>
           <p style={{ color: '#94A3B8', fontSize: 13, margin: '0 0 20px' }}>AlgoGrass helps you generate privacy policies, respond to DSARs, and stay GDPR compliant — automatically.</p>
-          <a href="https://algograss.com/signup" style={{ display: 'inline-block', background: 'linear-gradient(135deg,#0EA5E9,#0284C7)', color: '#FFFFFF', fontWeight: 700, fontSize: 14, padding: '12px 28px', borderRadius: 10, textDecoration: 'none' }}>Get your free account →</a>
+          <a href="https://algograss.com/signup" style={{ display: 'inline-block', background: 'linear-gradient(135deg,#9B7BFA,#7C3AED)', color: '#06060F', fontWeight: 700, fontSize: 14, padding: '12px 28px', borderRadius: 10, textDecoration: 'none' }}>Get your free account →</a>
           <p style={{ color: '#475569', fontSize: 11, margin: '14px 0 0' }}>Powered by AlgoGrass · algograss.com</p>
         </div>
       </div>

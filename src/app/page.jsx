@@ -29,33 +29,33 @@ function Hero() {
       <div className="wrap grid-hero" style={{position:'relative',zIndex:1}}>
         <div>
           {/* Badge */}
-          <div className="animate-fade-up" style={{animationDelay:'0.1s',display:'inline-flex',alignItems:'center',gap:7,background:'var(--green-p)',border:'1px solid var(--green-m)',padding:'5px 13px',borderRadius:100,marginBottom:28,fontSize:11,fontWeight:600,color:'var(--green)',letterSpacing:'.06em',textTransform:'uppercase'}}>
-            <span className="ping" style={{width:6,height:6,background:'var(--accent)',borderRadius:'50%',display:'inline-block'}}/>
-            🚀 Launch offer — 60 days free Pro, no card needed
+          <div className="animate-fade-up" style={{animationDelay:'0.1s',display:'inline-flex',alignItems:'center',gap:7,background:'rgba(139,92,246,0.1)',border:'1px solid rgba(139,92,246,0.25)',padding:'5px 14px',borderRadius:100,marginBottom:32,fontSize:11,fontWeight:700,color:'var(--accent)',letterSpacing:'.07em',textTransform:'uppercase'}}>
+            <span style={{width:6,height:6,background:'var(--accent)',borderRadius:'50%',display:'inline-block',boxShadow:'0 0 6px rgba(139,92,246,0.8)'}}/>
+            ✦ New — EU GDPR + UK DPA 2018 + EU AI Act
           </div>
 
-          {/* Headline */}
-          <h1 className="display animate-fade-up" style={{animationDelay:'0.2s',fontSize:'clamp(42px, 5.5vw, 74px)',marginBottom:22}}>
-            GDPR compliance<br/>made simple for<br/>
-            <span className="animate-gradient-text">small businesses</span>
+          {/* Headline — Vanta-style: short, bold, impactful */}
+          <h1 className="display animate-fade-up" style={{animationDelay:'0.2s',fontSize:'clamp(48px, 6vw, 82px)',marginBottom:24,lineHeight:1.02,letterSpacing:'-2px'}}>
+            Compliance is<br/>
+            <span className="animate-gradient-text">everything.</span>
           </h1>
 
-          <p className="subtext animate-fade-up" style={{animationDelay:'0.35s',maxWidth:500,marginBottom:34}}>
-            AlgoGrass scans your website, identifies GDPR risks, and generates privacy documents automatically — in minutes, not months.
+          <p className="subtext animate-fade-up" style={{animationDelay:'0.35s',maxWidth:480,marginBottom:36,fontSize:17,lineHeight:1.7}}>
+            Earn it, prove it, protect it. AlgoGrass automates GDPR compliance for UK and EU businesses — scan, fix, and document in minutes.
           </p>
 
           {/* Scan form */}
           <form className="animate-fade-up" style={{animationDelay:'0.45s'}} onSubmit={e=>{e.preventDefault();router.push('/scan'+(url.trim()?'?url='+encodeURIComponent(url.trim()):''))}}>
-            <div style={{display:'flex',background:'rgba(15,23,42,0.05)',border:'1.5px solid rgba(14,165,233,0.3)',borderRadius:12,padding:'5px 5px 5px 16px',maxWidth:470,marginBottom:14,gap:8,backdropFilter:'blur(8px)',transition:'border-color 0.3s'}}
-              onFocus={e=>e.currentTarget.style.borderColor='rgba(14,165,233,0.7)'}
-              onBlur={e=>e.currentTarget.style.borderColor='rgba(14,165,233,0.3)'}>
+            <div style={{display:'flex',background:'rgba(255,255,255,0.06)',border:'1.5px solid rgba(139,92,246,0.3)',borderRadius:12,padding:'5px 5px 5px 16px',maxWidth:470,marginBottom:14,gap:8,backdropFilter:'blur(8px)',transition:'border-color 0.3s'}}
+              onFocus={e=>e.currentTarget.style.borderColor='rgba(139,92,246,0.7)'}
+              onBlur={e=>e.currentTarget.style.borderColor='rgba(139,92,246,0.3)'}>
               <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="yourwebsite.co.uk"
                 style={{flex:1,border:'none',outline:'none',background:'transparent',fontSize:14,color:'var(--ink)'}}/>
               <button type="submit" className="btn btn-primary btn-sm animate-pulse-glow">Scan free →</button>
             </div>
           </form>
           <p className="animate-fade-up" style={{animationDelay:'0.5s',fontSize:12,color:'var(--ink2)'}}>
-            No credit card · <span style={{color:'#0EA5E9',fontWeight:600}}>60 days free Pro when you sign up</span> · GDPR + UK DPA 2018 + ePrivacy
+            No credit card · <span style={{color:'#9B7BFA',fontWeight:600}}>60 days free Pro when you sign up</span> · GDPR + UK DPA 2018 + ePrivacy
           </p>
 
           {/* Animated stats */}
@@ -78,13 +78,13 @@ function Hero() {
 
         {/* Hero card — 3D tilt */}
         <div className='hero-card-hide'><TiltCard intensity={8}>
-          <div className="card animate-scale-in" style={{animationDelay:'0.5s',padding:22,boxShadow:'0 24px 80px rgba(15,23,42,0.1)',border:'1px solid rgba(14,165,233,0.15)'}}>
-            <div style={{display:'flex',alignItems:'center',gap:8,background:'rgba(14,165,233,0.06)',border:'1px solid rgba(14,165,233,0.2)',borderRadius:8,padding:'9px 13px',marginBottom:18,fontSize:12,color:'var(--ink2)'}}>
+          <div className="card animate-scale-in" style={{animationDelay:'0.5s',padding:22,boxShadow:'0 24px 80px rgba(139,92,246,0.15),0 0 0 1px rgba(139,92,246,0.12)',border:'1px solid rgba(139,92,246,0.2)',background:'rgba(13,13,30,0.95)'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,background:'rgba(139,92,246,0.06)',border:'1px solid rgba(139,92,246,0.2)',borderRadius:8,padding:'9px 13px',marginBottom:18,fontSize:12,color:'var(--ink2)'}}>
               <span style={{width:7,height:7,background:'var(--accent)',borderRadius:'50%'}} className="animate-pulse-glow"/>
               example-site.co.uk — scan complete
             </div>
             <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:16}}>
-              <div style={{width:64,height:64,borderRadius:'50%',background:'conic-gradient(var(--accent) 252deg, rgba(14,165,233,0.1) 252deg)',display:'flex',alignItems:'center',justifyContent:'center',position:'relative',flexShrink:0}} className="animate-pulse-glow">
+              <div style={{width:64,height:64,borderRadius:'50%',background:'conic-gradient(var(--accent) 252deg, rgba(139,92,246,0.1) 252deg)',display:'flex',alignItems:'center',justifyContent:'center',position:'relative',flexShrink:0}} className="animate-pulse-glow">
                 <div style={{position:'absolute',width:48,height:48,background:'var(--bg2)',borderRadius:'50%'}}/>
                 <span style={{position:'relative',fontFamily:'Syne,sans-serif',fontWeight:700,fontSize:17,color:'var(--accent)',zIndex:1}}>70</span>
               </div>
@@ -94,7 +94,7 @@ function Hero() {
               </div>
             </div>
             {[['High','chip-high','No cookie consent banner'],['Medium','chip-medium','Privacy policy missing lawful basis'],['Low','chip-low','Contact form lacks privacy notice']].map(([sev,cls,text])=>(
-              <div key={sev} style={{display:'flex',alignItems:'flex-start',gap:9,padding:'9px 0',borderBottom:'1px solid rgba(14,165,233,0.08)'}}>
+              <div key={sev} style={{display:'flex',alignItems:'flex-start',gap:9,padding:'9px 0',borderBottom:'1px solid rgba(139,92,246,0.08)'}}>
                 <span className={`chip ${cls}`} style={{marginTop:1}}>{sev}</span>
                 <span style={{fontSize:12,color:'var(--ink2)',lineHeight:1.4,paddingTop:1}}>{text}</span>
               </div>
@@ -113,7 +113,7 @@ function Logos() {
     <AnimateOnScroll>
       <div style={{borderTop:'1px solid var(--border)',borderBottom:'1px solid var(--border)',background:'rgba(255,255,255,0.02)',padding:'18px 0'}}>
         <div className="wrap" style={{display:'flex',alignItems:'center',gap:36,flexWrap:'wrap'}}>
-          <span style={{fontSize:11,fontWeight:600,color:'var(--ink2)',letterSpacing:'.08em',textTransform:'uppercase',whiteSpace:'nowrap'}}>Works with websites built on</span>
+          <span style={{fontSize:11,fontWeight:600,color:'var(--ink3)',letterSpacing:'.08em',textTransform:'uppercase',whiteSpace:'nowrap'}}>Scans websites built on</span>
           {['Shopify','WordPress','Wix','Squarespace','Webflow','HubSpot'].map((l,i)=>(
             <span key={l} style={{fontSize:13,fontWeight:600,color:'var(--ink2)',opacity:.4,transition:'opacity 0.2s'}}
               onMouseEnter={e=>e.currentTarget.style.opacity='.9'}
@@ -180,9 +180,9 @@ function HowItWorks() {
           ].map(({n,title,desc},i)=>(
             <AnimateOnScroll key={n} delay={i+1}>
               <div style={{background:'var(--bg2)',padding:'32px 28px',borderRadius:i===0?'18px 0 0 18px':i===2?'0 18px 18px 0':0,height:'100%',transition:'transform 0.3s,box-shadow 0.3s',cursor:'default'}}
-                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-6px)';e.currentTarget.style.boxShadow='0 16px 48px rgba(14,165,233,0.12)'}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-6px)';e.currentTarget.style.boxShadow='0 16px 48px rgba(139,92,246,0.12)'}}
                 onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='none'}}>
-                <div style={{fontFamily:'Syne,sans-serif',fontSize:56,fontWeight:800,color:'rgba(14,165,233,0.18)',lineHeight:1,marginBottom:14,letterSpacing:'-2px'}}>{n}</div>
+                <div style={{fontFamily:'Syne,sans-serif',fontSize:56,fontWeight:800,color:'rgba(139,92,246,0.18)',lineHeight:1,marginBottom:14,letterSpacing:'-2px'}}>{n}</div>
                 <h3 style={{fontFamily:'Syne,sans-serif',fontSize:17,fontWeight:600,color:'var(--ink)',marginBottom:9}}>{title}</h3>
                 <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.65}}>{desc}</p>
               </div>
@@ -221,10 +221,10 @@ function Features() {
               <TiltCard intensity={5}>
                 <div className="card card-hover" style={{height:'100%'}}>
                   <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:18}}>
-                    <div style={{width:44,height:44,borderRadius:12,background:'rgba(14,165,233,0.1)',border:'1px solid rgba(14,165,233,0.2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,transition:'transform 0.3s'}}
+                    <div style={{width:44,height:44,borderRadius:12,background:'rgba(139,92,246,0.1)',border:'1px solid rgba(139,92,246,0.2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,transition:'transform 0.3s'}}
                       onMouseEnter={e=>e.currentTarget.style.transform='scale(1.15) rotate(-5deg)'}
                       onMouseLeave={e=>e.currentTarget.style.transform='none'}>{icon}</div>
-                    {badge&&<span style={{fontSize:10,fontWeight:700,background:'rgba(14,165,233,0.12)',color:'var(--accent)',padding:'2px 8px',borderRadius:100,letterSpacing:'.05em',textTransform:'uppercase',border:'1px solid rgba(14,165,233,0.2)'}}>{badge}</span>}
+                    {badge&&<span style={{fontSize:10,fontWeight:700,background:'rgba(139,92,246,0.12)',color:'var(--accent)',padding:'2px 8px',borderRadius:100,letterSpacing:'.05em',textTransform:'uppercase',border:'1px solid rgba(139,92,246,0.2)'}}>{badge}</span>}
                   </div>
                   <h3 style={{fontFamily:'Syne,sans-serif',fontSize:16,fontWeight:600,color:'var(--ink)',marginBottom:8}}>{title}</h3>
                   <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.65}}>{desc}</p>
@@ -234,7 +234,7 @@ function Features() {
           ))}
         </div>
         <AnimateOnScroll>
-          <div style={{background:'rgba(14,165,233,0.06)',border:'1px solid rgba(14,165,233,0.2)',borderRadius:12,padding:'16px 20px',marginBottom:28}}>
+          <div style={{background:'rgba(139,92,246,0.06)',border:'1px solid rgba(139,92,246,0.2)',borderRadius:12,padding:'16px 20px',marginBottom:28}}>
             <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.7}}><strong style={{color:'var(--accent)'}}>Important:</strong> AlgoGrass delivers expert GDPR compliance — scanning, risk assessment, document generation, and regulatory guidance — built for UK and EU businesses. Trusted, accurate, and actionable.</p>
           </div>
           <div style={{textAlign:'center',display:'flex',gap:12,justifyContent:'center'}}>
@@ -264,9 +264,9 @@ function SocialProof() {
       <div className="wrap" style={{position:'relative',zIndex:1}}>
         <AnimateOnScroll>
           <div style={{textAlign:'center',marginBottom:52}}>
-            <div style={{display:'inline-flex',alignItems:'center',gap:10,background:'rgba(14,165,233,0.08)',border:'1px solid rgba(14,165,233,0.25)',borderRadius:100,padding:'8px 22px',marginBottom:20}}>
-              <span style={{width:8,height:8,background:'#0EA5E9',borderRadius:'50%'}} className="animate-pulse-glow"/>
-              <span style={{fontFamily:'var(--f-num)',fontSize:20,fontWeight:700,color:'#0EA5E9',letterSpacing:'.01em'}}>
+            <div style={{display:'inline-flex',alignItems:'center',gap:10,background:'rgba(139,92,246,0.08)',border:'1px solid rgba(139,92,246,0.25)',borderRadius:100,padding:'8px 22px',marginBottom:20}}>
+              <span style={{width:8,height:8,background:'#9B7BFA',borderRadius:'50%'}} className="animate-pulse-glow"/>
+              <span style={{fontFamily:'var(--f-num)',fontSize:20,fontWeight:700,color:'#9B7BFA',letterSpacing:'.01em'}}>
                 {scanCount != null ? (scanCount + 47).toLocaleString() : '100+'}
               </span>
               <span style={{fontSize:13,color:'var(--ink2)'}}>businesses scanned for GDPR compliance</span>
@@ -285,8 +285,8 @@ function SocialProof() {
                     {[0,1,2,3,4].map(si=><svg key={si} width="13" height="13" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
                   </div>
                   <p style={{fontSize:14,color:'var(--ink2)',lineHeight:1.75,marginBottom:20,fontStyle:'italic'}}>"{q}"</p>
-                  <div style={{display:'flex',alignItems:'center',gap:11,borderTop:'1px solid rgba(15,23,42,0.07)',paddingTop:14}}>
-                    <div style={{width:36,height:36,borderRadius:'50%',background:'linear-gradient(135deg,#0EA5E9,#7C9EFF)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'var(--f-head)',fontWeight:700,fontSize:12,color:'#FFFFFF',flexShrink:0}}>{init}</div>
+                  <div style={{display:'flex',alignItems:'center',gap:11,borderTop:'1px solid rgba(255,255,255,0.07)',paddingTop:14}}>
+                    <div style={{width:36,height:36,borderRadius:'50%',background:'linear-gradient(135deg,#9B7BFA,#C084FC)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'var(--f-head)',fontWeight:700,fontSize:12,color:'#06060F',flexShrink:0}}>{init}</div>
                     <div>
                       <div style={{fontSize:13,fontWeight:600,color:'var(--ink)'}}>{name}</div>
                       <div style={{fontSize:11,color:'var(--ink2)'}}>{role}</div>
@@ -300,7 +300,7 @@ function SocialProof() {
         <AnimateOnScroll>
           <div style={{display:'flex',flexWrap:'wrap',gap:10,justifyContent:'center'}}>
             {['🔒 UK GDPR compliant','🇬🇧 UK-based','⚡ Real-time scanning','🤖 AI-powered','📄 Auto-generated docs','🛡️ No data sold','🎁 60 days free Pro'].map(b=>(
-              <span key={b} style={{fontSize:12,color:'var(--ink2)',background:'rgba(15,23,42,0.05)',border:'1px solid rgba(15,23,42,0.09)',borderRadius:100,padding:'5px 14px'}}>{b}</span>
+              <span key={b} style={{fontSize:12,color:'var(--ink2)',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:100,padding:'5px 14px'}}>{b}</span>
             ))}
           </div>
         </AnimateOnScroll>
@@ -325,7 +325,7 @@ function ComparisonTable() {
     {f:'Time to first result',         a:'Under 60s',    m:'3–6 weeks',    ico:'30 min', g:'1–2 days'},
   ]
   function Cell({v}) {
-    if(v===true)  return <span style={{color:'#0EA5E9',fontSize:18,fontWeight:700}}>✓</span>
+    if(v===true)  return <span style={{color:'#9B7BFA',fontSize:18,fontWeight:700}}>✓</span>
     if(v===false) return <span style={{color:'#F87171',fontSize:18}}>✗</span>
     if(v==='⚠')  return <span style={{color:'#F59E0B',fontSize:16}}>⚠</span>
     return <span style={{fontSize:12,color:'var(--ink2)',whiteSpace:'nowrap'}}>{v}</span>
@@ -346,8 +346,8 @@ function ComparisonTable() {
                 <tr style={{borderBottom:'1px solid var(--border)'}}>
                   <th style={{textAlign:'left',padding:'14px 18px',fontSize:11,color:'var(--ink2)',fontWeight:600,letterSpacing:'.07em',textTransform:'uppercase',width:'34%'}}>Feature</th>
                   {[['AlgoGrass',true],['Solicitor',false],['ICO self-assessment',false],['Generic SaaS',false]].map(([l,h])=>(
-                    <th key={l} style={{textAlign:'center',padding:'14px 10px',fontSize:11,fontWeight:700,letterSpacing:'.05em',textTransform:'uppercase',color:h?'#0EA5E9':'var(--ink2)',background:h?'rgba(14,165,233,0.07)':'transparent'}}>
-                      {l}{h&&<><br/><span style={{fontSize:9,color:'rgba(14,165,233,0.6)',fontWeight:400,textTransform:'none',letterSpacing:0}}>★ Recommended</span></>}
+                    <th key={l} style={{textAlign:'center',padding:'14px 10px',fontSize:11,fontWeight:700,letterSpacing:'.05em',textTransform:'uppercase',color:h?'#9B7BFA':'var(--ink2)',background:h?'rgba(139,92,246,0.07)':'transparent'}}>
+                      {l}{h&&<><br/><span style={{fontSize:9,color:'rgba(139,92,246,0.6)',fontWeight:400,textTransform:'none',letterSpacing:0}}>★ Recommended</span></>}
                     </th>
                   ))}
                 </tr>
@@ -356,7 +356,7 @@ function ComparisonTable() {
                 {rows.map(({f,a,m,ico,g},i)=>(
                   <tr key={f} style={{background:i%2===0?'rgba(255,255,255,0.015)':'transparent',borderBottom:'1px solid rgba(15,23,42,0.05)'}}>
                     <td style={{padding:'12px 18px',fontSize:13,color:'var(--ink2)'}}>{f}</td>
-                    <td style={{textAlign:'center',padding:'12px 8px',background:'rgba(14,165,233,0.04)'}}><Cell v={a}/></td>
+                    <td style={{textAlign:'center',padding:'12px 8px',background:'rgba(139,92,246,0.04)'}}><Cell v={a}/></td>
                     <td style={{textAlign:'center',padding:'12px 8px'}}><Cell v={m}/></td>
                     <td style={{textAlign:'center',padding:'12px 8px'}}><Cell v={ico}/></td>
                     <td style={{textAlign:'center',padding:'12px 8px'}}><Cell v={g}/></td>
@@ -404,13 +404,13 @@ function EarlyAccess() {
           <h2 className="heading" style={{fontSize:'clamp(28px,3vw,44px)',marginBottom:14}}>Be first to access full features</h2>
           <p className="subtext" style={{marginBottom:32}}>We're rolling out advanced features to early members first — unlimited scans, AI document generation, and GRC tools.</p>
           {done ? (
-            <div style={{background:'rgba(14,165,233,0.1)',border:'1px solid rgba(14,165,233,0.3)',borderRadius:14,padding:'20px 28px'}}>
+            <div style={{background:'rgba(139,92,246,0.1)',border:'1px solid rgba(139,92,246,0.3)',borderRadius:14,padding:'20px 28px'}}>
               <p style={{fontSize:15,color:'var(--accent)',fontWeight:600}}>You're on the list ✓</p>
               <p style={{fontSize:13,color:'var(--ink2)',marginTop:6}}>We'll be in touch when your access is ready.</p>
             </div>
           ) : (
             <>
-              <div style={{display:'flex',background:'rgba(15,23,42,0.05)',border:'1.5px solid rgba(14,165,233,0.3)',borderRadius:12,padding:'5px 5px 5px 16px',maxWidth:420,margin:'0 auto 12px',gap:8,backdropFilter:'blur(8px)'}}>
+              <div style={{display:'flex',background:'rgba(255,255,255,0.06)',border:'1.5px solid rgba(139,92,246,0.3)',borderRadius:12,padding:'5px 5px 5px 16px',maxWidth:420,margin:'0 auto 12px',gap:8,backdropFilter:'blur(8px)'}}>
                 <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="your@email.com" type="email"
                   style={{flex:1,border:'none',outline:'none',background:'transparent',fontSize:14,color:'var(--ink)'}}/>
                 <button onClick={join} disabled={loading} className="btn btn-primary btn-sm">{loading?'Joining…':'Join list →'}</button>
@@ -427,7 +427,7 @@ function EarlyAccess() {
 
 function CtaBanner() {
   return (
-    <section style={{padding:'56px 0',background:'linear-gradient(135deg,rgba(14,165,233,0.1) 0%,rgba(139,92,246,0.1) 100%)',borderTop:'1px solid var(--border)'}}>
+    <section style={{padding:'56px 0',background:'linear-gradient(135deg,rgba(139,92,246,0.1) 0%,rgba(139,92,246,0.1) 100%)',borderTop:'1px solid var(--border)'}}>
       <div className="wrap" style={{textAlign:'center'}}>
         <AnimateOnScroll>
           <h2 style={{fontFamily:'Syne,sans-serif',fontSize:'clamp(26px,3vw,42px)',fontWeight:700,color:'var(--ink)',marginBottom:14}}>Ready to check your compliance?</h2>

@@ -38,7 +38,7 @@ function downloadText(text, filename) {
 
 async function downloadPDF(result) {
   const score = result.score
-  const scoreColor = score >= 70 ? '#0284C7' : score >= 40 ? '#D97706' : '#DC2626'
+  const scoreColor = score >= 70 ? '#7C3AED' : score >= 40 ? '#D97706' : '#DC2626'
   const scoreLabel = score >= 70 ? 'Good' : score >= 40 ? 'Needs Work' : 'At Risk'
   const date = new Date(result.scannedAt).toLocaleString('en-GB', { day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' })
   const high   = result.issues.filter(i => i.sev === 'High')
@@ -497,22 +497,22 @@ function Dashboard() {
       {/* ── UPGRADE TOAST ── */}
       {toast && (
         <div style={{ position:'fixed', inset:0, zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(248,250,252,0.75)', backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)', padding:'0 16px' }}>
-          <div style={{ background:'#F8FAFC', border:'1px solid rgba(14,165,233,0.3)', borderRadius:24, padding:'40px 36px', maxWidth:460, width:'100%', boxShadow:'0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(14,165,233,0.08)', textAlign:'center' }}>
-            <div style={{ width:64, height:64, borderRadius:'50%', background:'rgba(14,165,233,0.12)', border:'2px solid rgba(14,165,233,0.3)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:30, margin:'0 auto 20px' }}>✅</div>
-            <h2 style={{ margin:'0 0 6px', fontSize:22, fontWeight:800, color:'#0F172A' }}>
+          <div style={{ background:'#0D0D1E', border:'1px solid rgba(139,92,246,0.3)', borderRadius:24, padding:'40px 36px', maxWidth:460, width:'100%', boxShadow:'0 40px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(139,92,246,0.08)', textAlign:'center' }}>
+            <div style={{ width:64, height:64, borderRadius:'50%', background:'rgba(139,92,246,0.12)', border:'2px solid rgba(139,92,246,0.3)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:30, margin:'0 auto 20px' }}>✅</div>
+            <h2 style={{ margin:'0 0 6px', fontSize:22, fontWeight:800, color:'#FFFFFF' }}>
               {toast.isTrial ? 'Free trial activated!' : 'Welcome to AlgoGrass!'}
             </h2>
             <p style={{ margin:'0 0 20px', fontSize:14, color:'#94A3B8' }}>
               {toast.isTrial ? `Your ${toast.plan} plan is free for the next 60 days. Enjoy full Pro access!` : `Your ${toast.plan} plan is now active.`}
             </p>
             {toast.isVerified && (
-              <div style={{ background:'rgba(14,165,233,0.08)', border:'1px solid rgba(14,165,233,0.2)', borderRadius:10, padding:'12px 16px', marginBottom:20 }}>
-                <p style={{ margin:0, fontSize:13, color:'#0EA5E9', fontWeight:600 }}>🎉 60-day Pro trial activated</p>
+              <div style={{ background:'rgba(139,92,246,0.08)', border:'1px solid rgba(139,92,246,0.2)', borderRadius:10, padding:'12px 16px', marginBottom:20 }}>
+                <p style={{ margin:0, fontSize:13, color:'#9B7BFA', fontWeight:600 }}>🎉 60-day Pro trial activated</p>
                 <p style={{ margin:'4px 0 0', fontSize:12, color:'#64748B' }}>You have full access to all Pro features for 60 days, completely free.</p>
               </div>
             )}
             <button onClick={()=>setToast(null)}
-              style={{ padding:'13px 40px', borderRadius:10, border:'none', background:'#0EA5E9', color:'#FFFFFF', fontWeight:700, fontSize:14, cursor:'pointer', width:'100%' }}>
+              style={{ padding:'13px 40px', borderRadius:10, border:'none', background:'#9B7BFA', color:'#06060F', fontWeight:700, fontSize:14, cursor:'pointer', width:'100%' }}>
               Start exploring AlgoGrass →
             </button>
           </div>
@@ -533,7 +533,7 @@ function Dashboard() {
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             {result && (
               <button onClick={() => downloadPDF(result)}
-                style={{ fontSize: 12, padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(14,165,233,.4)', background: 'rgba(14,165,233,.1)', color: '#0EA5E9', cursor: 'pointer', fontWeight: 600 }}>
+                style={{ fontSize: 12, padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(139,92,246,.4)', background: 'rgba(139,92,246,.1)', color: '#9B7BFA', cursor: 'pointer', fontWeight: 600 }}>
                 ⬇ PDF Report
               </button>
             )}
@@ -1021,3 +1021,4 @@ function Dashboard() {
     </div>
   )
 }
+ 

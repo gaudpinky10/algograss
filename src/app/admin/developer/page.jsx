@@ -7,7 +7,7 @@ function getUser() {
 }
 function fmt(d){if(!d)return'—';try{return new Date(d).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}catch{return'—'}}
 
-const TOOL_COLOR={scan:'#0EA5E9',auth:'#818CF8',complaint:'#F59E0B',dsar:'#EC4899',dpia:'#3B82F6','vendor-risk':'#10B981',grc:'#8B5CF6','ai-governance':'#F97316'}
+const TOOL_COLOR={scan:'#9B7BFA',auth:'#818CF8',complaint:'#F59E0B',dsar:'#EC4899',dpia:'#3B82F6','vendor-risk':'#10B981',grc:'#8B5CF6','ai-governance':'#F97316'}
 
 export default function DeveloperPage() {
   const router=useRouter()
@@ -40,7 +40,7 @@ export default function DeveloperPage() {
             </div>
             <div style={{display:'flex',gap:8,alignItems:'center'}}>
               <span style={{fontSize:11,color:'var(--ink2)'}}>Server: {serverTime?new Date(serverTime).toLocaleTimeString('en-GB'):'-'}</span>
-              <button onClick={()=>setRefresh(r=>r+1)} style={{fontSize:12,color:'var(--accent)',padding:'6px 14px',border:'1px solid rgba(14,165,233,0.3)',borderRadius:8,background:'transparent',cursor:'pointer'}}>↻ Refresh</button>
+              <button onClick={()=>setRefresh(r=>r+1)} style={{fontSize:12,color:'var(--accent)',padding:'6px 14px',border:'1px solid rgba(139,92,246,0.3)',borderRadius:8,background:'transparent',cursor:'pointer'}}>↻ Refresh</button>
               <a href="/admin" style={{fontSize:12,color:'var(--ink2)',padding:'6px 14px',border:'1px solid var(--border)',borderRadius:8,textDecoration:'none'}}>← Back</a>
             </div>
           </div>

@@ -43,8 +43,8 @@ function getStrength(v) {
   if (/[^A-Za-z0-9]/.test(v)) score++
   if (score <= 2) return { score, label: 'Weak',   color: '#EF4444' }
   if (score === 3) return { score, label: 'Fair',   color: '#F59E0B' }
-  if (score === 4) return { score, label: 'Good',   color: '#7C9EFF' }
-  return                       { score, label: 'Strong', color: '#0EA5E9' }
+  if (score === 4) return { score, label: 'Good',   color: '#C084FC' }
+  return                       { score, label: 'Strong', color: '#9B7BFA' }
 }
 
 export default function SignupPage() {
@@ -120,10 +120,10 @@ export default function SignupPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
+    <div style={{ minHeight: '100vh', background: '#06060F', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
       {/* Background glow */}
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: '15%', right: '20%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(14,165,233,0.07) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+        <div style={{ position: 'absolute', top: '15%', right: '20%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.07) 0%, transparent 70%)', filter: 'blur(40px)' }} />
         <div style={{ position: 'absolute', bottom: '15%', left: '20%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(124,158,255,0.06) 0%, transparent 70%)', filter: 'blur(40px)' }} />
       </div>
 
@@ -132,29 +132,29 @@ export default function SignupPage() {
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <a href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
             <svg width="28" height="32" viewBox="0 0 32 36" fill="none">
-              <defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#0EA5E9"/><stop offset="100%" stopColor="#7C9EFF"/></linearGradient></defs>
+              <defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#9B7BFA"/><stop offset="100%" stopColor="#C084FC"/></linearGradient></defs>
               <path d="M16 0 L32 6 L32 20 Q32 30 16 36 Q0 30 0 20 L0 6 Z" fill="url(#lg2)" opacity="0.9"/>
               <path d="M10 18 L14 22 L22 14" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span style={{ fontFamily: 'var(--f-head,Syne,sans-serif)', fontWeight: 800, fontSize: 22, background: 'linear-gradient(135deg,#0EA5E9,#7C9EFF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            <span style={{ fontFamily: 'var(--f-head,Syne,sans-serif)', fontWeight: 800, fontSize: 22, background: 'linear-gradient(135deg,#9B7BFA,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               AlgoGrass
             </span>
           </a>
           <h1 style={{ fontFamily: 'var(--f-head,Syne,sans-serif)', fontWeight: 800, fontSize: 26, color: '#0F172A', marginBottom: 8 }}>Start for free</h1>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(14,165,233,0.1)', border: '1px solid rgba(14,165,233,0.25)', borderRadius: 100, padding: '6px 14px', marginBottom: 4 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 100, padding: '6px 14px', marginBottom: 4 }}>
             <span style={{ fontSize: 13 }}>🚀</span>
-            <span style={{ fontSize: 13, color: '#0EA5E9', fontWeight: 700 }}>60 days free Pro — no credit card needed</span>
+            <span style={{ fontSize: 13, color: '#9B7BFA', fontWeight: 700 }}>60 days free Pro — no credit card needed</span>
           </div>
           <p style={{ fontSize: 12, color: '#94A3B8', marginTop: 8 }}>Full access to every feature. Upgrade or stay free after 60 days.</p>
         </div>
 
         {/* Card */}
-        <div style={{ background: 'rgba(248,250,252,0.85)', border: '1px solid rgba(15,23,42,0.09)', borderRadius: 20, padding: '28px 28px', backdropFilter: 'blur(20px)', boxShadow: '0 32px 80px rgba(15,23,42,0.1), 0 0 0 1px rgba(14,165,233,0.06)' }}>
+        <div style={{ background: 'rgba(248,250,252,0.85)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: '28px 28px', backdropFilter: 'blur(20px)', boxShadow: '0 32px 80px rgba(255,255,255,0.09), 0 0 0 1px rgba(139,92,246,0.06)' }}>
 
           {/* Google OAuth */}
-          <a href="/api/auth/google" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, width: '100%', padding: '12px 20px', borderRadius: 12, background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(15,23,42,0.1)', color: '#0F172A', fontSize: 14, fontWeight: 500, textDecoration: 'none', transition: 'all .2s', marginBottom: 20, boxSizing: 'border-box' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.09)'; e.currentTarget.style.borderColor = 'rgba(15,23,42,0.1)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.05)'; e.currentTarget.style.borderColor = 'rgba(15,23,42,0.1)' }}>
+          <a href="/api/auth/google" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, width: '100%', padding: '12px 20px', borderRadius: 12, background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(255,255,255,0.09)', color: '#0F172A', fontSize: 14, fontWeight: 500, textDecoration: 'none', transition: 'all .2s', marginBottom: 20, boxSizing: 'border-box' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)' }}>
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.566 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
               <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
@@ -165,17 +165,17 @@ export default function SignupPage() {
           </a>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-            <div style={{ flex: 1, height: 1, background: 'rgba(15,23,42,0.09)' }} />
+            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
             <span style={{ fontSize: 12, color: '#94A3B8' }}>or sign up with email</span>
-            <div style={{ flex: 1, height: 1, background: 'rgba(15,23,42,0.09)' }} />
+            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
           </div>
 
           {/* Already exists banner */}
           {exists && (
             <div style={{ background: 'rgba(124,158,255,0.08)', border: '1px solid rgba(124,158,255,0.25)', borderRadius: 12, padding: '14px 16px', marginBottom: 18 }}>
-              <p style={{ fontSize: 13, color: '#7C9EFF', margin: '0 0 8px', fontWeight: 600 }}>Account already exists for {form.email}</p>
+              <p style={{ fontSize: 13, color: '#C084FC', margin: '0 0 8px', fontWeight: 600 }}>Account already exists for {form.email}</p>
               <p style={{ fontSize: 12, color: '#64748B', margin: '0 0 10px' }}>Sign in to your existing account instead.</p>
-              <a href="/login" style={{ display: 'inline-block', padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 600, background: 'linear-gradient(135deg,#7C9EFF,#5B7FFF)', color: '#fff', textDecoration: 'none' }}>Sign in →</a>
+              <a href="/login" style={{ display: 'inline-block', padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 600, background: 'linear-gradient(135deg,#C084FC,#5B7FFF)', color: '#fff', textDecoration: 'none' }}>Sign in →</a>
             </div>
           )}
 
@@ -243,7 +243,7 @@ export default function SignupPage() {
               <div style={{ marginBottom: 14 }}>
                 <div style={{ display: 'flex', gap: 4, marginBottom: 5 }}>
                   {[1,2,3,4,5].map(i => (
-                    <div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= strength.score ? strength.color : 'rgba(15,23,42,0.09)', transition: 'background .3s' }} />
+                    <div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= strength.score ? strength.color : 'rgba(255,255,255,0.08)', transition: 'background .3s' }} />
                   ))}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -278,10 +278,10 @@ export default function SignupPage() {
 
             <button type="submit" disabled={loading} style={{
               width: '100%', padding: '13px', borderRadius: 12, border: 'none', marginTop: 6,
-              background: loading ? 'rgba(14,165,233,0.4)' : 'linear-gradient(135deg,#0EA5E9,#00B896)',
-              color: '#FFFFFF', fontWeight: 700, fontSize: 15, cursor: loading ? 'default' : 'pointer',
+              background: loading ? 'rgba(139,92,246,0.4)' : 'linear-gradient(135deg,#9B7BFA,#00B896)',
+              color: '#06060F', fontWeight: 700, fontSize: 15, cursor: loading ? 'default' : 'pointer',
               transition: 'all .2s', fontFamily: 'var(--f-head,Syne,sans-serif)',
-              boxShadow: loading ? 'none' : '0 0 24px rgba(14,165,233,0.3)',
+              boxShadow: loading ? 'none' : '0 0 24px rgba(139,92,246,0.3)',
             }}>
               {loading ? 'Creating account…' : 'Create free account →'}
             </button>
@@ -296,7 +296,7 @@ export default function SignupPage() {
 
         <p style={{ textAlign: 'center', fontSize: 13, color: '#94A3B8', marginTop: 20 }}>
           Already have an account?{' '}
-          <a href="/login" style={{ color: '#0EA5E9', fontWeight: 600, textDecoration: 'none' }}>Sign in</a>
+          <a href="/login" style={{ color: '#9B7BFA', fontWeight: 600, textDecoration: 'none' }}>Sign in</a>
         </p>
       </div>
     </div>
@@ -325,7 +325,7 @@ function iStyle(hasError) {
   return {
     width: '100%', padding: '11px 14px', borderRadius: 10, fontSize: 14,
     background: 'rgba(15,23,42,0.05)',
-    border: `1px solid ${hasError ? 'rgba(248,113,113,0.6)' : 'rgba(15,23,42,0.09)'}`,
+    border: `1px solid ${hasError ? 'rgba(248,113,113,0.6)' : 'rgba(255,255,255,0.08)'}`,
     color: '#0F172A', outline: 'none', boxSizing: 'border-box', transition: 'border-color .2s',
     fontFamily: 'var(--f-body,Lora,serif)',
   }

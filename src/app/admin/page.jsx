@@ -28,7 +28,7 @@ export default function AdminHub() {
           {href:'/admin/founder',    label:'Founder',    icon:'📈',desc:'User growth, revenue, tool usage, KPIs',color:'#F59E0B'},
           {href:'/admin/co-founder', label:'Co-Founder', icon:'🤝',desc:'Business overview, users, activity',color:'#EC4899'},
           {href:'/admin/database',   label:'Database',   icon:'🗄️',desc:'Collections, indexes, schema, initialize DB',color:'#34D399'},
-          {href:'/admin/visitors',   label:'Visitors',   icon:'👁️',desc:'Live visitor intelligence — pages, countries, devices',color:'#7C9EFF'},
+          {href:'/admin/visitors',   label:'Visitors',   icon:'👁️',desc:'Live visitor intelligence — pages, countries, devices',color:'#C084FC'},
           {href:'/dashboard',        label:'User',       icon:'🛡️',desc:'Personal compliance tools and history',color:'var(--accent)'},
         ].map(p=>(
           <a key={p.href} href={p.href} style={{background:'var(--bg2)',border:`1px solid ${p.color}30`,borderRadius:16,padding:'24px 20px',textDecoration:'none',textAlign:'center',transition:'border-color .2s'}}>

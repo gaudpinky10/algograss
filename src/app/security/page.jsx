@@ -24,7 +24,7 @@ const Row = ({ label, value, note }) => (
     </div>
   </div>
 )
-const Badge = ({ children, color = '#0EA5E9' }) => (
+const Badge = ({ children, color = '#9B7BFA' }) => (
   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color, background: `${color}14`, border: `1px solid ${color}40`, borderRadius: 100, padding: '4px 12px', margin: '4px' }}>
     <span style={{ width: 6, height: 6, background: color, borderRadius: '50%' }} />
     {children}
@@ -51,8 +51,8 @@ export default function SecurityPage() {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               <Badge>🔒 TLS 1.3 in transit</Badge>
               <Badge>🛡️ AES-256 at rest</Badge>
-              <Badge color="#7C9EFF">🇬🇧 UK GDPR compliant</Badge>
-              <Badge color="#7C9EFF">🇪🇺 EU data residency</Badge>
+              <Badge color="#C084FC">🇬🇧 UK GDPR compliant</Badge>
+              <Badge color="#C084FC">🇪🇺 EU data residency</Badge>
               <Badge color="#F59E0B">🚫 No data selling</Badge>
               <Badge color="#F59E0B">🧹 30-day scan retention</Badge>
             </div>
@@ -89,7 +89,7 @@ export default function SecurityPage() {
               { icon: '🍪', title: 'Session tokens', desc: 'Auth cookies are HttpOnly, Secure, and SameSite=Strict. Session data is not stored server-side.' },
             ].map(({ icon, title, desc }) => (
               <TiltCard key={title} intensity={6}>
-                <div style={{ background: 'rgba(14,165,233,0.04)', border: '1px solid rgba(14,165,233,0.15)', borderRadius: 14, padding: '22px 20px' }}>
+                <div style={{ background: 'rgba(139,92,246,0.04)', border: '1px solid rgba(139,92,246,0.15)', borderRadius: 14, padding: '22px 20px' }}>
                   <div style={{ fontSize: 26, marginBottom: 12 }}>{icon}</div>
                   <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', marginBottom: 8 }}>{title}</div>
                   <div style={{ fontSize: 13, color: 'var(--ink2)', lineHeight: 1.65 }}>{desc}</div>
@@ -148,7 +148,7 @@ export default function SecurityPage() {
               ['Permissions-Policy', 'camera=(), microphone=(), geolocation=()'],
             ].map(([h, v]) => (
               <div key={h} style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 4 }}>
-                <span style={{ color: '#0EA5E9', minWidth: 280, flexShrink: 0 }}>{h}:</span>
+                <span style={{ color: '#9B7BFA', minWidth: 280, flexShrink: 0 }}>{h}:</span>
                 <span style={{ color: '#64748B', fontSize: 11 }}>{v}</span>
               </div>
             ))}
@@ -197,13 +197,13 @@ export default function SecurityPage() {
               { right: 'Right to portability (Art. 20)', desc: 'Receive your data in a machine-readable format.' },
               { right: 'Right to object (Art. 21)', desc: 'Object to processing based on legitimate interests.' },
             ].map(({ right, desc }) => (
-              <div key={right} style={{ background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(15,23,42,0.07)', borderRadius: 12, padding: '18px 16px' }}>
+              <div key={right} style={{ background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '18px 16px' }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', marginBottom: 6 }}>{right}</div>
                 <div style={{ fontSize: 13, color: 'var(--ink2)', lineHeight: 1.65 }}>{desc}</div>
               </div>
             ))}
           </div>
-          <div style={{ marginTop: 28, padding: '18px 22px', background: 'rgba(14,165,233,0.06)', border: '1px solid rgba(14,165,233,0.2)', borderRadius: 12 }}>
+          <div style={{ marginTop: 28, padding: '18px 22px', background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 12 }}>
             <p style={{ fontSize: 14, color: 'var(--ink2)', margin: 0, lineHeight: 1.75 }}>
               To exercise any of these rights, email <a href="mailto:privacy@algograss.co.uk" style={{ color: 'var(--accent)' }}>privacy@algograss.co.uk</a>. We'll respond within 30 days as required by UK GDPR Article 12. If you're not satisfied with our response, you can lodge a complaint with the <a href="https://ico.org.uk/make-a-complaint/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>Information Commissioner's Office (ICO)</a>.
             </p>

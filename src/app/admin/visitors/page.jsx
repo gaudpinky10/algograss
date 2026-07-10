@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 const S = {
-  bg:'#FFFFFF', surface:'#F8FAFC', border:'rgba(15,23,42,0.1)',
-  teal:'#0EA5E9', blue:'#7C9EFF', text:'#0F172A',
+  bg:'#06060F', surface:'#0D0D1E', border:'rgba(255,255,255,0.09)',
+  teal:'#9B7BFA', blue:'#C084FC', text:'#0F172A',
   muted:'#94A3B8', dim:'#475569',
 }
 
@@ -62,7 +62,7 @@ export default function VisitorsDashboard() {
           <h1 style={{fontSize:28,fontWeight:800,color:S.text,margin:0}}>Visitor Intelligence</h1>
           <p style={{color:S.muted,fontSize:13,margin:'4px 0 0'}}>Every visitor, every page, every device — in real time</p>
         </div>
-        <button onClick={load} style={{padding:'10px 20px',background:'rgba(14,165,233,0.1)',border:`1px solid ${S.teal}`,borderRadius:10,color:S.teal,fontWeight:700,cursor:'pointer',fontSize:13}}>
+        <button onClick={load} style={{padding:'10px 20px',background:'rgba(139,92,246,0.1)',border:`1px solid ${S.teal}`,borderRadius:10,color:S.teal,fontWeight:700,cursor:'pointer',fontSize:13}}>
           ↻ Refresh
         </button>
       </div>
@@ -94,7 +94,7 @@ export default function VisitorsDashboard() {
             {(v.topPages || []).map((p,i) => (
               <div key={i} style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
                 <div style={{fontSize:11,color:S.dim,width:16,textAlign:'right',flexShrink:0}}>{i+1}</div>
-                <div style={{flex:1,background:'#FFFFFF',borderRadius:6,overflow:'hidden',height:6}}>
+                <div style={{flex:1,background:'#06060F',borderRadius:6,overflow:'hidden',height:6}}>
                   <div style={{height:6,borderRadius:6,background:`linear-gradient(90deg,${S.teal},${S.blue})`,width:`${(p.count/(v.topPages[0]?.count||1)*100)}%`,transition:'width .4s'}}/>
                 </div>
                 <div style={{fontSize:12,color:S.muted,width:120,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',textAlign:'right'}} title={p._id}>{p._id}</div>
@@ -141,11 +141,11 @@ export default function VisitorsDashboard() {
           {['device','country'].map(f => (
             <input key={f} placeholder={f.charAt(0).toUpperCase()+f.slice(1)} value={filter[f]}
               onChange={e => { setFilter(p=>({...p,[f]:e.target.value})); setPage(1) }}
-              style={{background:'#FFFFFF',border:`1px solid ${S.border}`,borderRadius:8,padding:'7px 12px',color:S.text,fontSize:12,outline:'none',width:130}} />
+              style={{background:'#06060F',border:`1px solid ${S.border}`,borderRadius:8,padding:'7px 12px',color:S.text,fontSize:12,outline:'none',width:130}} />
           ))}
           <input placeholder="Page path" value={filter.page}
             onChange={e => { setFilter(p=>({...p,page:e.target.value})); setPage(1) }}
-            style={{background:'#FFFFFF',border:`1px solid ${S.border}`,borderRadius:8,padding:'7px 12px',color:S.text,fontSize:12,outline:'none',width:160}} />
+            style={{background:'#06060F',border:`1px solid ${S.border}`,borderRadius:8,padding:'7px 12px',color:S.text,fontSize:12,outline:'none',width:160}} />
           {(filter.device||filter.country||filter.page) && (
             <button onClick={() => { setFilter({device:'',country:'',page:''}); setPage(1) }} style={{padding:'7px 14px',background:'rgba(239,68,68,0.1)',border:'1px solid rgba(239,68,68,0.3)',borderRadius:8,color:'#EF4444',fontSize:12,cursor:'pointer',fontWeight:600}}>
               Clear ×

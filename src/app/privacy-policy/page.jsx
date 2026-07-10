@@ -19,8 +19,8 @@ export default function PrivacyPolicyPage() {
           <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--green)', textTransform: 'uppercase', letterSpacing: '.1em' }}>Legal</span>
           <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 36, fontWeight: 800, color: 'var(--ink)', margin: '8px 0 12px' }}>Privacy Policy</h1>
           <p style={{ fontSize: 13, color: 'var(--ink2)' }}>Last updated: 19 June 2026 · Effective: 19 June 2026</p>
-          <div style={{ background: 'rgba(14,165,233,0.06)', border: '1px solid rgba(14,165,233,0.15)', borderRadius: 10, padding: '14px 18px', marginTop: 20 }}>
-            <p style={{ margin: 0, fontSize: 13, color: '#0EA5E9' }}>This policy explains how AlgoGrass Ltd collects, uses, and protects your personal data in compliance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>
+          <div style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.15)', borderRadius: 10, padding: '14px 18px', marginTop: 20 }}>
+            <p style={{ margin: 0, fontSize: 13, color: '#9B7BFA' }}>This policy explains how AlgoGrass Ltd collects, uses, and protects your personal data in compliance with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.</p>
           </div>
         </div>
 
@@ -94,7 +94,7 @@ export default function PrivacyPolicyPage() {
             ['Right to withdraw consent', 'Withdraw consent at any time where consent is the basis.'],
             ['Right to lodge a complaint', 'Complain to the ICO at ico.org.uk or 0303 123 1113.'],
           ].map(([right, desc]) => (
-            <div key={right} style={{ marginBottom: 10, paddingLeft: 14, borderLeft: '2px solid rgba(14,165,233,0.3)' }}>
+            <div key={right} style={{ marginBottom: 10, paddingLeft: 14, borderLeft: '2px solid rgba(139,92,246,0.3)' }}>
               <span style={{ fontWeight: 600, color: 'var(--ink)', fontSize: 13 }}>{right}</span>
               <span style={{ color: 'var(--ink2)', fontSize: 13 }}> — {desc}</span>
             </div>

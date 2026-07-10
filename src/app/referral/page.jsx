@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react'
 
 const S = {
-  bg: '#FFFFFF', surface: '#F8FAFC', border: 'rgba(15,23,42,0.1)',
-  teal: '#0EA5E9', blue: '#7C9EFF', text: '#0F172A',
+  bg: '#06060F', surface: '#0D0D1E', border: 'rgba(255,255,255,0.09)',
+  teal: '#9B7BFA', blue: '#C084FC', text: '#0F172A',
   muted: '#94A3B8', dim: '#475569', red: '#EF4444', amber: '#F59E0B',
 }
 
@@ -70,7 +70,7 @@ export default function ReferralPage() {
               { label: 'Free Months Earned', value: loading ? '…' : (stats?.freeMonths ?? 0), color: S.blue },
               { label: 'Your Rank', value: loading ? '…' : `#${stats?.rank ?? '—'}`, color: S.amber },
             ].map(s => (
-              <div key={s.label} style={{background:'rgba(15,23,42,0.05)',border:`1px solid ${S.border}`,borderRadius:14,padding:'18px 24px',minWidth:140}}>
+              <div key={s.label} style={{background:'rgba(255,255,255,0.06)',border:`1px solid ${S.border}`,borderRadius:14,padding:'18px 24px',minWidth:140}}>
                 <div style={{fontSize:30,fontWeight:800,color:s.color,lineHeight:1}}>{s.value}</div>
                 <div style={{fontSize:12,color:S.muted,marginTop:6}}>{s.label}</div>
               </div>
@@ -85,8 +85,8 @@ export default function ReferralPage() {
                 {referralLink}
               </div>
               <button onClick={copyLink} style={{
-                padding:'10px 20px',background:copied?'rgba(14,165,233,0.15)':'linear-gradient(135deg,#0EA5E9,#0284C7)',
-                color:copied?S.teal:'#FFFFFF',border:copied?`1px solid ${S.teal}`:'none',
+                padding:'10px 20px',background:copied?'rgba(139,92,246,0.15)':'linear-gradient(135deg,#9B7BFA,#7C3AED)',
+                color:copied?S.teal:'#06060F',border:copied?`1px solid ${S.teal}`:'none',
                 borderRadius:10,fontWeight:700,cursor:'pointer',fontSize:14,transition:'all .2s',flexShrink:0
               }}>
                 {copied ? '✓ Copied!' : 'Copy Link'}
@@ -124,8 +124,8 @@ export default function ReferralPage() {
             <div style={{color:S.text,fontWeight:700,marginBottom:6}}>No referrals yet</div>
             <div style={{color:S.muted,fontSize:13,marginBottom:20}}>Share your link with business owners who have a website. When they sign up, they'll appear here.</div>
             <button onClick={copyLink} style={{
-              padding:'10px 24px',background:'linear-gradient(135deg,#0EA5E9,#0284C7)',
-              color:'#FFFFFF',border:'none',borderRadius:10,fontWeight:700,cursor:'pointer',fontSize:14
+              padding:'10px 24px',background:'linear-gradient(135deg,#9B7BFA,#7C3AED)',
+              color:'#06060F',border:'none',borderRadius:10,fontWeight:700,cursor:'pointer',fontSize:14
             }}>
               Copy your referral link
             </button>
@@ -139,7 +139,7 @@ export default function ReferralPage() {
               <div key={i} style={{display:'grid',gridTemplateColumns:'1fr 1fr auto',padding:'14px 20px',borderBottom:i<stats.referrals.length-1?`1px solid ${S.border}`:'none',alignItems:'center'}}>
                 <span style={{fontSize:13,color:S.text,fontWeight:600}}>{r.email.split('@')[0].slice(0,3) + '***@' + r.email.split('@')[1]}</span>
                 <span style={{fontSize:12,color:S.muted}}>{new Date(r.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>
-                <span style={{fontSize:12,background:'rgba(14,165,233,0.1)',color:S.teal,padding:'3px 10px',borderRadius:20,fontWeight:700}}>+60 days</span>
+                <span style={{fontSize:12,background:'rgba(139,92,246,0.1)',color:S.teal,padding:'3px 10px',borderRadius:20,fontWeight:700}}>+60 days</span>
               </div>
             ))}
           </div>
@@ -157,7 +157,7 @@ export default function ReferralPage() {
             ].map(s => (
               <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" style={{
                 display:'inline-flex',alignItems:'center',gap:8,padding:'9px 18px',
-                background:'rgba(15,23,42,0.05)',border:`1px solid ${S.border}`,
+                background:'rgba(255,255,255,0.06)',border:`1px solid ${S.border}`,
                 borderRadius:10,textDecoration:'none',color:S.text,fontSize:13,fontWeight:600,
                 transition:'all .15s'
               }}

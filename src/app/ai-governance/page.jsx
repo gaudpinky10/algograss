@@ -6,7 +6,7 @@ const RISK_TIERS = {
   unacceptable: { label:'Unacceptable Risk — PROHIBITED', color:'#EF4444', bg:'rgba(239,68,68,0.1)', border:'rgba(239,68,68,0.3)', icon:'🚫', summary:'Your AI system falls under Article 5 prohibited practices. These are banned in the EU from 2 February 2025.', requirements:['This system CANNOT be placed on the EU market or used in the EU','No conformity assessment can make a prohibited system compliant','Prohibited: subliminal manipulation, exploitation of vulnerabilities, social scoring by public authorities, real-time remote biometric identification in public spaces','Review your system architecture — redesign or withdraw from EU market immediately'] },
   high: { label:'High Risk (Annex III)', color:'#F59E0B', bg:'rgba(245,158,11,0.1)', border:'rgba(245,158,11,0.3)', icon:'⚠️', summary:'Your system is classified as high-risk under Annex III. Full conformity obligations apply from 2 August 2026.', requirements:['Quality Management System (QMS) — Art. 17','Technical documentation — Art. 11 + Annex IV','Conformity assessment before market placement — Art. 43','EU Declaration of Conformity — Art. 47','CE marking required','Register in EU AI database — Art. 49','Post-market monitoring plan — Art. 72','Incident reporting to authorities — Art. 73'] },
   limited: { label:'Limited Risk', color:'#818CF8', bg:'rgba(99,102,241,0.1)', border:'rgba(99,102,241,0.3)', icon:'ℹ️', summary:'Your system has limited risk obligations — primarily transparency requirements.', requirements:['Inform users when they interact with an AI system','Disclose AI-generated or manipulated content (deepfakes etc.)','Ensure emotion recognition and biometric categorisation systems disclose their nature','No conformity assessment required but document your transparency measures'] },
-  minimal: { label:'Minimal Risk', color:'#0EA5E9', bg:'rgba(14,165,233,0.1)', border:'rgba(14,165,233,0.3)', icon:'✅', summary:'Your system poses minimal risk. No mandatory EU AI Act obligations apply, but best practice documentation is recommended.', requirements:['No mandatory EU AI Act obligations apply','Consider voluntary codes of conduct','Document the AI system in your AI governance register','Maintain basic transparency with users about AI use','Review periodically as regulations evolve'] },
+  minimal: { label:'Minimal Risk', color:'#9B7BFA', bg:'rgba(139,92,246,0.1)', border:'rgba(139,92,246,0.3)', icon:'✅', summary:'Your system poses minimal risk. No mandatory EU AI Act obligations apply, but best practice documentation is recommended.', requirements:['No mandatory EU AI Act obligations apply','Consider voluntary codes of conduct','Document the AI system in your AI governance register','Maintain basic transparency with users about AI use','Review periodically as regulations evolve'] },
 }
 
 const QUESTIONS = [
@@ -90,7 +90,7 @@ export default function AIGovernancePage() {
       {/* HERO */}
       <section style={{ background:'linear-gradient(135deg,var(--bg) 0%,var(--bg2) 100%)', padding:'52px 0 36px', borderBottom:'1px solid var(--border)' }}>
         <div className="wrap">
-          <div style={{ display:'inline-flex', alignItems:'center', gap:7, background:'rgba(124,158,255,.1)', border:'1px solid rgba(124,158,255,.25)', padding:'5px 13px', borderRadius:100, marginBottom:16, fontSize:11, fontWeight:600, color:'#7C9EFF', letterSpacing:'.08em', textTransform:'uppercase' }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:7, background:'rgba(124,158,255,.1)', border:'1px solid rgba(124,158,255,.25)', padding:'5px 13px', borderRadius:100, marginBottom:16, fontSize:11, fontWeight:600, color:'#C084FC', letterSpacing:'.08em', textTransform:'uppercase' }}>
             🤖 EU AI Act · UK AI Governance
           </div>
           <h1 style={{ fontFamily:'Syne,sans-serif', fontSize:'clamp(26px,3vw,42px)', fontWeight:800, color:'#fff', marginBottom:12 }}>AI Governance &amp; EU AI Act Readiness</h1>
@@ -103,7 +103,7 @@ export default function AIGovernancePage() {
         <div className="wrap" style={{ display:'flex' }}>
           {[['classifier','🔍 Risk Classifier'],['readiness','✅ Readiness Checklist'],['timeline','📅 EU AI Act Timeline'],['register','📋 AI Register']].map(([id, label]) => (
             <button key={id} onClick={() => setTab(id)}
-              style={{ padding:'14px 20px', border:'none', background:'transparent', fontSize:13, fontWeight:600, cursor:'pointer', color: tab===id ? '#0EA5E9' : 'rgba(255,255,255,.45)', borderBottom: tab===id ? '2px solid #0EA5E9' : '2px solid transparent', transition:'all .15s' }}>
+              style={{ padding:'14px 20px', border:'none', background:'transparent', fontSize:13, fontWeight:600, cursor:'pointer', color: tab===id ? '#9B7BFA' : 'rgba(255,255,255,.45)', borderBottom: tab===id ? '2px solid #9B7BFA' : '2px solid transparent', transition:'all .15s' }}>
               {label}
             </button>
           ))}
@@ -123,7 +123,7 @@ export default function AIGovernancePage() {
                     <span style={{ fontSize:12, color:'rgba(255,255,255,.35)' }}>Question {step + 1} of {QUESTIONS.length}</span>
                   </div>
                   <div style={{ height:4, background:'rgba(255,255,255,.08)', borderRadius:4, marginBottom:24, overflow:'hidden' }}>
-                    <div style={{ height:'100%', width:`${((step) / QUESTIONS.length) * 100}%`, background:'linear-gradient(90deg,#0EA5E9,#7C9EFF)', borderRadius:4, transition:'width .3s' }} />
+                    <div style={{ height:'100%', width:`${((step) / QUESTIONS.length) * 100}%`, background:'linear-gradient(90deg,#9B7BFA,#C084FC)', borderRadius:4, transition:'width .3s' }} />
                   </div>
 
                   <div style={{ marginBottom:16 }}>
@@ -135,7 +135,7 @@ export default function AIGovernancePage() {
                   <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
                     {QUESTIONS[step].options.map(opt => (
                       <button key={opt} onClick={() => answer(QUESTIONS[step].id, opt)}
-                        style={{ textAlign:'left', padding:'13px 16px', borderRadius:10, border:'1px solid rgba(255,255,255,.1)', background: answers[QUESTIONS[step].id] === opt ? 'rgba(14,165,233,.12)' : 'rgba(255,255,255,.04)', color:'#fff', cursor:'pointer', fontSize:13, fontWeight:500, transition:'all .15s', lineHeight:1.5 }}>
+                        style={{ textAlign:'left', padding:'13px 16px', borderRadius:10, border:'1px solid rgba(255,255,255,.1)', background: answers[QUESTIONS[step].id] === opt ? 'rgba(139,92,246,.12)' : 'rgba(255,255,255,.04)', color:'#fff', cursor:'pointer', fontSize:13, fontWeight:500, transition:'all .15s', lineHeight:1.5 }}>
                         {opt}
                       </button>
                     ))}
@@ -172,7 +172,7 @@ export default function AIGovernancePage() {
 
                 <div style={{ display:'flex', gap:10 }}>
                   <button onClick={reset} style={{ fontSize:13, padding:'10px 20px', borderRadius:8, border:'1px solid rgba(255,255,255,.15)', background:'transparent', color:'#fff', cursor:'pointer', fontWeight:500 }}>Classify another system</button>
-                  <button onClick={() => setTab('readiness')} style={{ fontSize:13, padding:'10px 20px', borderRadius:8, border:'none', background:'linear-gradient(135deg,#0EA5E9,#0284C7)', color:'#fff', cursor:'pointer', fontWeight:700 }}>Check your readiness →</button>
+                  <button onClick={() => setTab('readiness')} style={{ fontSize:13, padding:'10px 20px', borderRadius:8, border:'none', background:'linear-gradient(135deg,#9B7BFA,#7C3AED)', color:'#fff', cursor:'pointer', fontWeight:700 }}>Check your readiness →</button>
                 </div>
               </div>
             )}
@@ -188,13 +188,13 @@ export default function AIGovernancePage() {
                 <p style={{ fontSize:13, color:'rgba(255,255,255,.45)' }}>{completedChecks} of {READINESS_CHECKS.length} checks completed</p>
               </div>
               <div style={{ textAlign:'center', background:'rgba(255,255,255,0.9)', border:'1px solid rgba(255,255,255,.08)', borderRadius:12, padding:'14px 20px' }}>
-                <div style={{ fontSize:28, fontWeight:800, color: checksPct >= 75 ? '#0EA5E9' : checksPct >= 40 ? '#F59E0B' : '#EF4444' }}>{checksPct}%</div>
+                <div style={{ fontSize:28, fontWeight:800, color: checksPct >= 75 ? '#9B7BFA' : checksPct >= 40 ? '#F59E0B' : '#EF4444' }}>{checksPct}%</div>
                 <div style={{ fontSize:11, color:'rgba(255,255,255,.4)' }}>Ready</div>
               </div>
             </div>
 
             <div style={{ height:6, background:'rgba(255,255,255,.07)', borderRadius:6, marginBottom:28, overflow:'hidden' }}>
-              <div style={{ height:'100%', width:`${checksPct}%`, background:`linear-gradient(90deg,${checksPct>=75?'#0EA5E9':checksPct>=40?'#F59E0B':'#EF4444'},${checksPct>=75?'#0284C7':checksPct>=40?'#D97706':'#DC2626'})`, borderRadius:6, transition:'width .4s' }} />
+              <div style={{ height:'100%', width:`${checksPct}%`, background:`linear-gradient(90deg,${checksPct>=75?'#9B7BFA':checksPct>=40?'#F59E0B':'#EF4444'},${checksPct>=75?'#7C3AED':checksPct>=40?'#D97706':'#DC2626'})`, borderRadius:6, transition:'width .4s' }} />
             </div>
 
             {Object.entries(checksByCat).map(([cat, items]) => (
@@ -203,13 +203,13 @@ export default function AIGovernancePage() {
                 <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
                   {items.map(c => (
                     <div key={c.id} onClick={() => setChecks(prev => ({ ...prev, [c.id]: !prev[c.id] }))}
-                      style={{ display:'flex', gap:14, alignItems:'flex-start', background: checks[c.id] ? 'rgba(14,165,233,.06)' : 'rgba(255,255,255,0.88)', border:`1px solid ${checks[c.id] ? 'rgba(14,165,233,.25)' : 'rgba(255,255,255,.06)'}`, borderRadius:12, padding:'14px 16px', cursor:'pointer', transition:'all .15s' }}>
-                      <div style={{ width:20, height:20, borderRadius:6, border:`2px solid ${checks[c.id] ? '#0EA5E9' : 'rgba(255,255,255,.2)'}`, background: checks[c.id] ? '#0EA5E9' : 'transparent', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:1 }}>
+                      style={{ display:'flex', gap:14, alignItems:'flex-start', background: checks[c.id] ? 'rgba(139,92,246,.06)' : 'rgba(255,255,255,0.88)', border:`1px solid ${checks[c.id] ? 'rgba(139,92,246,.25)' : 'rgba(255,255,255,.06)'}`, borderRadius:12, padding:'14px 16px', cursor:'pointer', transition:'all .15s' }}>
+                      <div style={{ width:20, height:20, borderRadius:6, border:`2px solid ${checks[c.id] ? '#9B7BFA' : 'rgba(255,255,255,.2)'}`, background: checks[c.id] ? '#9B7BFA' : 'transparent', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:1 }}>
                         {checks[c.id] && <span style={{ fontSize:11, color:'#000', fontWeight:900 }}>✓</span>}
                       </div>
                       <div style={{ flex:1 }}>
                         <div style={{ display:'flex', gap:8, alignItems:'center', marginBottom:4, flexWrap:'wrap' }}>
-                          <span style={{ fontSize:13, fontWeight:600, color: checks[c.id] ? '#0EA5E9' : '#fff' }}>{c.label}</span>
+                          <span style={{ fontSize:13, fontWeight:600, color: checks[c.id] ? '#9B7BFA' : '#fff' }}>{c.label}</span>
                           <span style={{ fontSize:10, color:'rgba(255,255,255,.3)', background:'rgba(255,255,255,.05)', padding:'2px 7px', borderRadius:20 }}>{c.art}</span>
                         </div>
                         <p style={{ fontSize:12, color:'rgba(255,255,255,.45)', lineHeight:1.5, margin:0 }}>{c.desc}</p>
@@ -231,7 +231,7 @@ export default function AIGovernancePage() {
             <div style={{ position:'relative', paddingLeft:32 }}>
               <div style={{ position:'absolute', left:8, top:0, bottom:0, width:2, background:'rgba(255,255,255,.08)' }} />
               {[
-                { date:'1 Aug 2024', label:'EU AI Act enters into force', status:'done', color:'#0EA5E9', detail:'The Act was published in the Official Journal. 24-month implementation clock started for most obligations.' },
+                { date:'1 Aug 2024', label:'EU AI Act enters into force', status:'done', color:'#9B7BFA', detail:'The Act was published in the Official Journal. 24-month implementation clock started for most obligations.' },
                 { date:'2 Feb 2025', label:'Prohibited AI practices ban', status:'done', color:'#EF4444', detail:'All prohibited AI systems under Article 5 must be discontinued. Includes social scoring, subliminal manipulation, exploitation of vulnerabilities, and (with narrow exceptions) real-time remote biometric ID.' },
                 { date:'2 Aug 2025', label:'GPAI model obligations', status:'done', color:'#F59E0B', detail:'General Purpose AI model providers must: maintain technical documentation, publish training data summaries, implement copyright policies, report serious incidents to EU AI Office.' },
                 { date:'2 Aug 2026', label:'High-risk AI obligations (Annex III)', status:'upcoming', color:'#818CF8', detail:'Full conformity obligations for high-risk AI systems in: biometrics, critical infrastructure, education, employment, essential services, law enforcement, border control, justice. Includes QMS, conformity assessments, CE marking, EU database registration.' },
@@ -243,7 +243,7 @@ export default function AIGovernancePage() {
                   <div style={{ background:'rgba(255,255,255,0.9)', border:`1px solid ${item.status==='done' ? `${item.color}33` : 'rgba(255,255,255,.06)'}`, borderRadius:12, padding:'16px 20px' }}>
                     <div style={{ display:'flex', gap:10, alignItems:'center', marginBottom:8, flexWrap:'wrap' }}>
                       <span style={{ fontSize:12, fontWeight:700, color:item.color }}>{item.date}</span>
-                      <span style={{ fontSize:10, padding:'2px 8px', borderRadius:20, background: item.status==='done'?'rgba(14,165,233,.1)':item.status==='upcoming'?'rgba(99,102,241,.1)':'rgba(255,255,255,.05)', color: item.status==='done'?'#0EA5E9':item.status==='upcoming'?'#818CF8':'rgba(255,255,255,.35)', fontWeight:600 }}>{item.status==='done'?'IN FORCE':item.status==='upcoming'?'UPCOMING':'FUTURE'}</span>
+                      <span style={{ fontSize:10, padding:'2px 8px', borderRadius:20, background: item.status==='done'?'rgba(139,92,246,.1)':item.status==='upcoming'?'rgba(99,102,241,.1)':'rgba(255,255,255,.05)', color: item.status==='done'?'#9B7BFA':item.status==='upcoming'?'#818CF8':'rgba(255,255,255,.35)', fontWeight:600 }}>{item.status==='done'?'IN FORCE':item.status==='upcoming'?'UPCOMING':'FUTURE'}</span>
                     </div>
                     <div style={{ fontSize:14, fontWeight:600, color:'#fff', marginBottom:8 }}>{item.label}</div>
                     <p style={{ fontSize:12, color:'rgba(255,255,255,.5)', lineHeight:1.7, margin:0 }}>{item.detail}</p>
@@ -253,7 +253,7 @@ export default function AIGovernancePage() {
             </div>
 
             <div style={{ background:'rgba(124,158,255,.08)', border:'1px solid rgba(124,158,255,.2)', borderRadius:14, padding:'20px 22px', marginTop:8 }}>
-              <div style={{ fontSize:13, fontWeight:700, color:'#7C9EFF', marginBottom:8 }}>UK Position</div>
+              <div style={{ fontSize:13, fontWeight:700, color:'#C084FC', marginBottom:8 }}>UK Position</div>
               <p style={{ fontSize:13, color:'rgba(255,255,255,.6)', lineHeight:1.7, margin:0 }}>The UK is not bound by the EU AI Act post-Brexit, but UK businesses selling AI into the EU must comply. The UK government published a Pro-Innovation AI Regulation White Paper in 2023 and is taking a principles-based approach through existing regulators (ICO, FCA, CMA, Ofcom). A standalone UK AI Act is not currently planned.</p>
             </div>
           </div>
@@ -274,7 +274,7 @@ export default function AIGovernancePage() {
               <h3 style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>AI Register</h3>
               <p style={{ fontSize:14, color:'rgba(255,255,255,.45)', marginBottom:20, lineHeight:1.7, maxWidth:480, margin:'0 auto 20px' }}>Use the Risk Classifier to assess each AI system, then your classifications are stored here. Run the classifier for each AI tool your organisation uses.</p>
               <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
-                <button onClick={() => { setTab('classifier'); reset() }} style={{ padding:'10px 22px', borderRadius:8, border:'none', background:'linear-gradient(135deg,#0EA5E9,#0284C7)', color:'#fff', fontWeight:700, fontSize:13, cursor:'pointer' }}>+ Classify a new AI system</button>
+                <button onClick={() => { setTab('classifier'); reset() }} style={{ padding:'10px 22px', borderRadius:8, border:'none', background:'linear-gradient(135deg,#9B7BFA,#7C3AED)', color:'#fff', fontWeight:700, fontSize:13, cursor:'pointer' }}>+ Classify a new AI system</button>
                 <a href="/ai" style={{ padding:'10px 22px', borderRadius:8, border:'1px solid rgba(255,255,255,.15)', color:'#fff', fontWeight:600, fontSize:13, textDecoration:'none' }}>Ask AlgoGrass AI →</a>
               </div>
 

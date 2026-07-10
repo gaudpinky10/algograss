@@ -22,7 +22,7 @@ function TypingDots() {
     <div style={{ display: 'flex', gap: 4, padding: '4px 0', alignItems: 'center' }}>
       {[0,1,2].map(i => (
         <div key={i} style={{
-          width: 7, height: 7, borderRadius: '50%', background: '#0EA5E9',
+          width: 7, height: 7, borderRadius: '50%', background: '#9B7BFA',
           animation: 'bounce 1.2s infinite', animationDelay: `${i * 0.2}s`,
         }} />
       ))}
@@ -36,7 +36,7 @@ function Message({ msg }) {
   return (
     <div style={{ display: 'flex', justifyContent: isUser ? 'flex-end' : 'flex-start', marginBottom: 16, gap: 10, alignItems: 'flex-start' }}>
       {!isUser && (
-        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#0EA5E9,#7C9EFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0, marginTop: 2 }}>
+        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#9B7BFA,#C084FC)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0, marginTop: 2 }}>
           🛡️
         </div>
       )}
@@ -45,10 +45,10 @@ function Message({ msg }) {
         padding: '12px 16px',
         borderRadius: isUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
         background: isUser
-          ? 'linear-gradient(135deg,#0EA5E9,#00B896)'
-          : 'rgba(15,23,42,0.07)',
-        border: isUser ? 'none' : '1px solid rgba(15,23,42,0.09)',
-        color: isUser ? '#FFFFFF' : '#0F172A',
+          ? 'linear-gradient(135deg,#9B7BFA,#00B896)'
+          : 'rgba(255,255,255,0.07)',
+        border: isUser ? 'none' : '1px solid rgba(255,255,255,0.08)',
+        color: isUser ? '#06060F' : '#0F172A',
         fontSize: 14,
         lineHeight: 1.65,
         whiteSpace: 'pre-wrap',
@@ -58,7 +58,7 @@ function Message({ msg }) {
         {msg.streaming && <TypingDots />}
       </div>
       {isUser && (
-        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(15,23,42,0.09)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0, marginTop: 2 }}>
+        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0, marginTop: 2 }}>
           👤
         </div>
       )}
@@ -173,28 +173,28 @@ export default function AlgoGrassAI() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: '#06060F', display: 'flex', flexDirection: 'column' }}>
 
       {/* Header */}
-      <div style={{ borderBottom: '1px solid rgba(15,23,42,0.07)', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(12px)', position: 'sticky', top: 64, zIndex: 10 }}>
+      <div style={{ borderBottom: '1px solid rgba(255,255,255,0.07)', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(12px)', position: 'sticky', top: 64, zIndex: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'linear-gradient(135deg,#0EA5E9,#7C9EFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>🛡️</div>
+          <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'linear-gradient(135deg,#9B7BFA,#C084FC)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>🛡️</div>
           <div>
-            <div style={{ fontFamily: 'var(--font-syne,"Syne"),sans-serif', fontWeight: 800, fontSize: 16, background: 'linear-gradient(135deg,#0EA5E9,#7C9EFF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            <div style={{ fontFamily: 'var(--font-syne,"Syne"),sans-serif', fontWeight: 800, fontSize: 16, background: 'linear-gradient(135deg,#9B7BFA,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               AlgoGrass AI
             </div>
             <div style={{ fontSize: 11, color: '#64748B', display: 'flex', alignItems: 'center', gap: 5 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0EA5E9', display: 'inline-block' }} />
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#9B7BFA', display: 'inline-block' }} />
               GDPR & Compliance Expert · Always available
             </div>
           </div>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <span style={{ fontSize: 11, color: '#94A3B8', background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(15,23,42,0.09)', borderRadius: 20, padding: '4px 10px' }}>
+          <span style={{ fontSize: 11, color: '#94A3B8', background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: '4px 10px' }}>
             UK GDPR · EU AI Act · ICO
           </span>
           {messages.length > 0 && (
-            <button onClick={clearChat} style={{ fontSize: 12, color: '#64748B', background: 'transparent', border: '1px solid rgba(15,23,42,0.09)', borderRadius: 8, padding: '6px 12px', cursor: 'pointer' }}>
+            <button onClick={clearChat} style={{ fontSize: 12, color: '#64748B', background: 'transparent', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, padding: '6px 12px', cursor: 'pointer' }}>
               New chat
             </button>
           )}
@@ -207,10 +207,10 @@ export default function AlgoGrassAI() {
         {/* Welcome state */}
         {messages.length === 0 && (
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
-            <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg,rgba(14,165,233,0.2),rgba(124,158,255,0.2))', border: '1px solid rgba(14,165,233,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, margin: '0 auto 20px' }}>
+            <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg,rgba(139,92,246,0.2),rgba(124,158,255,0.2))', border: '1px solid rgba(139,92,246,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, margin: '0 auto 20px' }}>
               🛡️
             </div>
-            <h1 style={{ fontFamily: 'var(--font-syne,"Syne"),sans-serif', fontWeight: 800, fontSize: 28, background: 'linear-gradient(135deg,#0EA5E9,#7C9EFF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginBottom: 10 }}>
+            <h1 style={{ fontFamily: 'var(--font-syne,"Syne"),sans-serif', fontWeight: 800, fontSize: 28, background: 'linear-gradient(135deg,#9B7BFA,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginBottom: 10 }}>
               AlgoGrass AI
             </h1>
             <p style={{ color: '#64748B', fontSize: 15, lineHeight: 1.6, maxWidth: 480, margin: '0 auto 32px' }}>
@@ -223,13 +223,13 @@ export default function AlgoGrassAI() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(230px,1fr))', gap: 10 }}>
                   {SUGGESTED.map(q => (
                     <button key={q} onClick={() => send(q)} style={{
-                      background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(15,23,42,0.09)',
+                      background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(255,255,255,0.08)',
                       borderRadius: 10, padding: '12px 14px', color: '#334155',
                       fontSize: 13, textAlign: 'left', cursor: 'pointer', lineHeight: 1.4,
                       transition: 'all .2s',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(14,165,233,0.08)'; e.currentTarget.style.borderColor = 'rgba(14,165,233,0.3)' }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.05)'; e.currentTarget.style.borderColor = 'rgba(15,23,42,0.09)' }}>
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(139,92,246,0.08)'; e.currentTarget.style.borderColor = 'rgba(139,92,246,0.3)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}>
                       {q}
                     </button>
                   ))}
@@ -245,11 +245,11 @@ export default function AlgoGrassAI() {
       </div>
 
       {/* Input bar */}
-      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(20px)', borderTop: '1px solid rgba(15,23,42,0.07)', padding: '16px 20px 20px', zIndex: 20 }}>
+      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(20px)', borderTop: '1px solid rgba(255,255,255,0.07)', padding: '16px 20px 20px', zIndex: 20 }}>
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(15,23,42,0.09)', borderRadius: 14, padding: '10px 14px', transition: 'border-color .2s' }}
-            onFocus={e => e.currentTarget.style.borderColor = 'rgba(14,165,233,0.4)'}
-            onBlur={e => e.currentTarget.style.borderColor = 'rgba(15,23,42,0.09)'}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '10px 14px', transition: 'border-color .2s' }}
+            onFocus={e => e.currentTarget.style.borderColor = 'rgba(139,92,246,0.4)'}
+            onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'}>
             <textarea
               ref={inputRef}
               value={input}
@@ -270,8 +270,8 @@ export default function AlgoGrassAI() {
               disabled={!input.trim() || loading}
               style={{
                 width: 36, height: 36, borderRadius: 9, border: 'none', flexShrink: 0,
-                background: input.trim() && !loading ? 'linear-gradient(135deg,#0EA5E9,#00B896)' : 'rgba(15,23,42,0.09)',
-                color: input.trim() && !loading ? '#FFFFFF' : '#94A3B8',
+                background: input.trim() && !loading ? 'linear-gradient(135deg,#9B7BFA,#00B896)' : 'rgba(255,255,255,0.08)',
+                color: input.trim() && !loading ? '#06060F' : '#94A3B8',
                 cursor: input.trim() && !loading ? 'pointer' : 'default',
                 fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'all .2s',

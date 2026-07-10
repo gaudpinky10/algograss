@@ -8,13 +8,13 @@ export const metadata = {
 export default function NotFound() {
   return (
     <div style={{
-      minHeight: '90vh', background: '#FFFFFF',
+      minHeight: '90vh', background: '#06060F',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '40px 24px', textAlign: 'center',
     }}>
       {/* Background glow */}
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: '30%', left: '35%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(14,165,233,0.06) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        <div style={{ position: 'absolute', top: '30%', left: '35%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%)', filter: 'blur(60px)' }} />
       </div>
 
       <div style={{ position: 'relative', maxWidth: 480 }}>
@@ -23,7 +23,7 @@ export default function NotFound() {
           fontFamily: 'var(--font-barlow, "Barlow Condensed"), sans-serif',
           fontSize: 'clamp(80px, 15vw, 140px)',
           fontWeight: 800,
-          background: 'linear-gradient(135deg, #0EA5E9, #7C9EFF)',
+          background: 'linear-gradient(135deg, #9B7BFA, #C084FC)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
@@ -58,8 +58,8 @@ export default function NotFound() {
             display: 'inline-block',
             padding: '13px 28px',
             borderRadius: 12,
-            background: 'linear-gradient(135deg, #0EA5E9, #00B896)',
-            color: '#FFFFFF',
+            background: 'linear-gradient(135deg, #9B7BFA, #00B896)',
+            color: '#06060F',
             fontWeight: 700,
             fontSize: 14,
             textDecoration: 'none',
@@ -71,8 +71,8 @@ export default function NotFound() {
             display: 'inline-block',
             padding: '13px 28px',
             borderRadius: 12,
-            background: 'rgba(15,23,42,0.07)',
-            border: '1px solid rgba(15,23,42,0.1)',
+            background: 'rgba(255,255,255,0.07)',
+            border: '1px solid rgba(255,255,255,0.09)',
             color: '#0F172A',
             fontWeight: 600,
             fontSize: 14,
@@ -83,7 +83,7 @@ export default function NotFound() {
         </div>
 
         {/* Quick links */}
-        <div style={{ marginTop: 48, paddingTop: 32, borderTop: '1px solid rgba(15,23,42,0.07)' }}>
+        <div style={{ marginTop: 48, paddingTop: 32, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
           <p style={{ fontSize: 12, color: '#94A3B8', marginBottom: 14 }}>POPULAR PAGES</p>
           <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap' }}>
             {[
@@ -93,7 +93,7 @@ export default function NotFound() {
               { href: '/contact', label: 'Contact' },
             ].map(({ href, label }) => (
               <Link key={href} href={href} style={{
-                fontSize: 13, color: '#0EA5E9', textDecoration: 'none', fontWeight: 500,
+                fontSize: 13, color: '#9B7BFA', textDecoration: 'none', fontWeight: 500,
               }}>
                 {label}
               </Link>

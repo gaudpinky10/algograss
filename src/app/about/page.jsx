@@ -43,7 +43,7 @@ export default function AboutPage() {
             ].map(({ val, suffix, label, isNum }, i) => (
               <AnimateOnScroll key={label} delay={i + 1} direction="scale">
                 <TiltCard intensity={8}>
-                  <div style={{ background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(15,23,42,0.09)', borderRadius: 16, padding: '24px 20px', backdropFilter: 'blur(16px)', textAlign: 'center', height: '100%' }}>
+                  <div style={{ background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '24px 20px', backdropFilter: 'blur(16px)', textAlign: 'center', height: '100%' }}>
                     <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800, marginBottom: 6 }} className="animate-gradient-text">
                       {isNum ? <CountUp end={val} suffix={suffix || ''} /> : val}
                     </div>
@@ -74,9 +74,9 @@ export default function AboutPage() {
               { icon: '⚡', title: 'Practical', desc: 'Real checks, real issues, real guidance — not abstract compliance theory.' },
             ].map(({ icon, title, desc }, i) => (
               <AnimateOnScroll key={title} delay={i + 1} direction="right">
-                <div style={{ display: 'flex', gap: 14, padding: '16px 18px', background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(15,23,42,0.07)', borderRadius: 12, transition: 'border-color 0.3s, transform 0.3s' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(14,165,233,0.3)'; e.currentTarget.style.transform = 'translateX(6px)' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.07)'; e.currentTarget.style.transform = 'none' }}>
+                <div style={{ display: 'flex', gap: 14, padding: '16px 18px', background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, transition: 'border-color 0.3s, transform 0.3s' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(139,92,246,0.3)'; e.currentTarget.style.transform = 'translateX(6px)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.transform = 'none' }}>
                   <span style={{ fontSize: 20, flexShrink: 0 }}>{icon}</span>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', marginBottom: 3 }}>{title}</div>
@@ -105,11 +105,11 @@ export default function AboutPage() {
             {/* Founder — Pinki Gaud */}
             <AnimateOnScroll direction="left">
               <TiltCard intensity={7}>
-                <div style={{ background: 'linear-gradient(135deg,rgba(14,165,233,0.07),rgba(124,58,237,0.05))', border: '1px solid rgba(14,165,233,0.2)', borderRadius: 20, padding: '40px 32px', textAlign: 'center', backdropFilter: 'blur(16px)', height: '100%' }}>
-                  <div style={{ width: 110, height: 140, borderRadius: 12, overflow: 'hidden', margin: '0 auto 22px', border: '2px solid rgba(14,165,233,0.4)', boxShadow: '0 0 24px rgba(14,165,233,0.2)', background: 'linear-gradient(135deg,rgba(14,165,233,0.3),rgba(0,168,130,0.2))', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="animate-pulse-glow">
-                    <img src="/team/pinki.jpg" alt="Pinki Gaud" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} onError={e => { e.currentTarget.style.display='none'; e.currentTarget.parentElement.innerHTML='<span style="font-size:36px;font-weight:800;color:#0EA5E9;font-family:Syne,sans-serif">PG</span>' }} />
+                <div style={{ background: 'linear-gradient(135deg,rgba(139,92,246,0.07),rgba(124,58,237,0.05))', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 20, padding: '40px 32px', textAlign: 'center', backdropFilter: 'blur(16px)', height: '100%' }}>
+                  <div style={{ width: 110, height: 140, borderRadius: 12, overflow: 'hidden', margin: '0 auto 22px', border: '2px solid rgba(139,92,246,0.4)', boxShadow: '0 0 24px rgba(139,92,246,0.2)', background: 'linear-gradient(135deg,rgba(139,92,246,0.3),rgba(0,168,130,0.2))', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="animate-pulse-glow">
+                    <img src="/team/pinki.jpg" alt="Pinki Gaud" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} onError={e => { e.currentTarget.style.display='none'; e.currentTarget.parentElement.innerHTML='<span style="font-size:36px;font-weight:800;color:#9B7BFA;font-family:Syne,sans-serif">PG</span>' }} />
                   </div>
-                  <div style={{ display: 'inline-block', padding: '4px 14px', borderRadius: 100, background: 'linear-gradient(135deg,#0EA5E9,#0284C7)', color: '#FFFFFF', fontSize: 10, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 14 }}>Founder</div>
+                  <div style={{ display: 'inline-block', padding: '4px 14px', borderRadius: 100, background: 'linear-gradient(135deg,#9B7BFA,#7C3AED)', color: '#06060F', fontSize: 10, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 14 }}>Founder</div>
                   <h3 style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 700, color: 'var(--ink)', marginBottom: 8 }}>Pinki Gaud</h3>
                   <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7, marginBottom: 22, maxWidth: 300, margin: '0 auto 22px' }}>MSc Business Analytics, Queen Mary University London · AI Researcher recognised at a Top-3 university in China · Built AlgoGrass solo — 14 GDPR compliance tools from website scanner to AI document generator, serving UK and EU SMEs.</p>
                   <a href="https://www.linkedin.com/in/pinkigaud/" target="_blank" rel="noopener noreferrer"
@@ -126,7 +126,7 @@ export default function AboutPage() {
             {/* Co-Founder — Kumar Kuppusamy */}
             <AnimateOnScroll direction="right">
               <TiltCard intensity={7}>
-                <div style={{ background: 'linear-gradient(135deg,rgba(124,58,237,0.07),rgba(14,165,233,0.04))', border: '1px solid rgba(124,58,237,0.2)', borderRadius: 20, padding: '40px 32px', textAlign: 'center', backdropFilter: 'blur(16px)', height: '100%' }}>
+                <div style={{ background: 'linear-gradient(135deg,rgba(124,58,237,0.07),rgba(139,92,246,0.04))', border: '1px solid rgba(124,58,237,0.2)', borderRadius: 20, padding: '40px 32px', textAlign: 'center', backdropFilter: 'blur(16px)', height: '100%' }}>
                   <div style={{ width: 110, height: 140, borderRadius: 12, overflow: 'hidden', margin: '0 auto 22px', border: '2px solid rgba(124,58,237,0.4)', boxShadow: '0 0 24px rgba(124,58,237,0.2)', background: 'linear-gradient(135deg,rgba(124,58,237,0.3),rgba(155,94,255,0.2))', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="animate-pulse-purple">
                     <img src="/team/kumar.jpg" alt="Kumar Kuppusamy" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} onError={e => { e.currentTarget.style.display='none'; e.currentTarget.parentElement.innerHTML='<span style="font-size:36px;font-weight:800;color:#9B5EFF;font-family:Syne,sans-serif">KK</span>' }} />
                   </div>

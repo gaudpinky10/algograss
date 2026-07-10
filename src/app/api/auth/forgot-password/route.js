@@ -37,17 +37,17 @@ export async function POST(request) {
         <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#060B14;color:#0F172A;padding:40px 32px;border-radius:16px">
           <div style="text-align:center;margin-bottom:28px">
             <span style="font-size:32px">🔒</span>
-            <h1 style="font-size:22px;font-weight:800;color:#0EA5E9;margin:12px 0 4px">Password Reset</h1>
+            <h1 style="font-size:22px;font-weight:800;color:#9B7BFA;margin:12px 0 4px">Password Reset</h1>
             <p style="font-size:13px;color:#64748B;margin:0">AlgoGrass Compliance Platform</p>
           </div>
           <p style="font-size:14px;color:#94A3B8;margin-bottom:8px">Hi ${user.name || email.split('@')[0]},</p>
           <p style="font-size:14px;color:#94A3B8;margin-bottom:24px">We received a request to reset your password. Click the button below to set a new password. This link expires in <strong style="color:#0F172A">1 hour</strong>.</p>
           <div style="text-align:center;margin-bottom:24px">
-            <a href="${resetLink}" style="display:inline-block;background:#0EA5E9;color:#060B14;font-weight:700;font-size:15px;padding:14px 36px;border-radius:10px;text-decoration:none">Reset my password →</a>
+            <a href="${resetLink}" style="display:inline-block;background:#9B7BFA;color:#060B14;font-weight:700;font-size:15px;padding:14px 36px;border-radius:10px;text-decoration:none">Reset my password →</a>
           </div>
           <p style="font-size:12px;color:#475569;margin-bottom:4px">Or paste this link into your browser:</p>
           <p style="font-size:11px;color:#475569;word-break:break-all;margin-bottom:24px">${resetLink}</p>
-          <hr style="border:none;border-top:1px solid rgba(15,23,42,0.09);margin-bottom:20px"/>
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin-bottom:20px"/>
           <p style="font-size:11px;color:#475569;margin:0">If you didn't request this, you can safely ignore this email. Your password will not change.</p>
         </div>
       `,

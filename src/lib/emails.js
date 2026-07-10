@@ -27,7 +27,7 @@ function layout(body, previewText = '') {
   <!-- Header -->
   <div style="background:linear-gradient(135deg,#0D1525 0%,#0a1628 100%);padding:28px 40px;border-bottom:1px solid #1e2d45">
     <div style="display:flex;align-items:center;gap:10px">
-      <div style="width:30px;height:30px;background:linear-gradient(135deg,#00D4AA,#7C9EFF);border-radius:8px;display:inline-flex;align-items:center;justify-content:center">
+      <div style="width:30px;height:30px;background:linear-gradient(135deg,#00D4AA,#C084FC);border-radius:8px;display:inline-flex;align-items:center;justify-content:center">
         <span style="color:white;font-weight:800;font-size:13px">AG</span>
       </div>
       <span style="color:#00D4AA;font-weight:800;font-size:17px;vertical-align:middle">AlgoGrass</span>
@@ -268,7 +268,7 @@ export async function sendRegulatoryAlertEmail(name, email, updates) {
               <div>
                 <p style="color:#E8F0FE;font-size:13px;font-weight:600;margin:0 0 4px">${u.title}</p>
                 <p style="color:#64748B;font-size:12px;margin:0 0 8px;line-height:1.5">${u.summary || u.content?.slice(0, 150) + '...'}</p>
-                ${u.url ? `<a href="${u.url}" style="color:#7C9EFF;font-size:12px;text-decoration:none">Read more →</a>` : ''}
+                ${u.url ? `<a href="${u.url}" style="color:#C084FC;font-size:12px;text-decoration:none">Read more →</a>` : ''}
               </div>
             </div>
           </div>`).join('')}

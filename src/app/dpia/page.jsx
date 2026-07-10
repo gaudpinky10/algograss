@@ -44,9 +44,9 @@ const field = (label, val, onChange, placeholder='', type='text', required=false
     <label style={{display:'block',fontSize:12,fontWeight:600,color:'var(--ink)',marginBottom:6,textTransform:'uppercase',letterSpacing:'.05em'}}>{label}{required&&<span style={{color:'var(--red-text)',marginLeft:3}}>*</span>}</label>
     {type==='textarea'
       ? <textarea value={val} onChange={onChange} placeholder={placeholder} rows={3}
-          style={{width:'100%',background:'rgba(15,23,42,0.05)',border:'1px solid var(--border)',borderRadius:10,padding:'10px 14px',fontSize:14,color:'var(--ink)',outline:'none',resize:'vertical',fontFamily:'inherit'}}/>
+          style={{width:'100%',background:'rgba(255,255,255,0.06)',border:'1px solid var(--border)',borderRadius:10,padding:'10px 14px',fontSize:14,color:'var(--ink)',outline:'none',resize:'vertical',fontFamily:'inherit'}}/>
       : <input type={type} value={val} onChange={onChange} placeholder={placeholder}
-          style={{width:'100%',background:'rgba(15,23,42,0.05)',border:'1px solid var(--border)',borderRadius:10,padding:'10px 14px',fontSize:14,color:'var(--ink)',outline:'none'}}/>
+          style={{width:'100%',background:'rgba(255,255,255,0.06)',border:'1px solid var(--border)',borderRadius:10,padding:'10px 14px',fontSize:14,color:'var(--ink)',outline:'none'}}/>
     }
   </div>
 )
@@ -159,13 +159,13 @@ export default function DpiaPage() {
                 }}>
                   <div style={{
                     width:36,height:36,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:15,
-                    background:s.id<step?'var(--accent)':s.id===step?'rgba(14,165,233,0.15)':'rgba(15,23,42,0.05)',
+                    background:s.id<step?'var(--accent)':s.id===step?'rgba(139,92,246,0.15)':'rgba(15,23,42,0.05)',
                     border:s.id===step?'2px solid var(--accent)':'2px solid transparent',
-                    color:s.id<step?'#FFFFFF':'var(--ink)',transition:'all .2s',
+                    color:s.id<step?'#06060F':'var(--ink)',transition:'all .2s',
                   }}>{s.id<step?'✓':s.icon}</div>
                   <span style={{fontSize:10,fontWeight:600,color:s.id===step?'var(--accent)':'var(--ink2)',textAlign:'center',lineHeight:1.3}}>{s.title}</span>
                 </div>
-                {i<STEPS.length-1&&<div style={{width:20,height:2,background:s.id<step?'var(--accent)':'rgba(15,23,42,0.09)',flexShrink:0,marginBottom:16}}/>}
+                {i<STEPS.length-1&&<div style={{width:20,height:2,background:s.id<step?'var(--accent)':'rgba(255,255,255,0.08)',flexShrink:0,marginBottom:16}}/>}
               </div>
             ))}
           </div>
@@ -192,7 +192,7 @@ export default function DpiaPage() {
                 <label style={{display:'block',fontSize:12,fontWeight:600,color:'var(--ink)',marginBottom:8,textTransform:'uppercase',letterSpacing:'.05em'}}>Categories of personal data <span style={{color:'var(--red-text)'}}>*</span></label>
                 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
                   {DATA_TYPES.map(t=>(
-                    <label key={t} style={{display:'flex',alignItems:'center',gap:8,padding:'8px 12px',background:form.dataTypes.includes(t)?'rgba(14,165,233,0.1)':'rgba(15,23,42,0.02)',border:`1px solid ${form.dataTypes.includes(t)?'rgba(14,165,233,0.4)':'var(--border)'}`,borderRadius:8,cursor:'pointer',transition:'all .15s'}}>
+                    <label key={t} style={{display:'flex',alignItems:'center',gap:8,padding:'8px 12px',background:form.dataTypes.includes(t)?'rgba(139,92,246,0.1)':'rgba(15,23,42,0.02)',border:`1px solid ${form.dataTypes.includes(t)?'rgba(139,92,246,0.4)':'var(--border)'}`,borderRadius:8,cursor:'pointer',transition:'all .15s'}}>
                       <input type="checkbox" checked={form.dataTypes.includes(t)} onChange={()=>toggle('dataTypes',t)} style={{accentColor:'var(--accent)'}}/>
                       <span style={{fontSize:12,color:'var(--ink)'}}>{t}</span>
                     </label>
@@ -213,7 +213,7 @@ export default function DpiaPage() {
               {field('Why is this processing necessary?', form.necessity, set('necessity'), 'Explain why the processing is needed to achieve the stated purpose...', 'textarea', true)}
               {field('Is the processing proportionate to the purpose?', form.proportionality, set('proportionality'), 'Could a less privacy-intrusive approach achieve the same result?', 'textarea')}
               {field('Have less privacy-intrusive alternatives been considered?', form.alternatives, set('alternatives'), 'Describe any alternatives that were considered and why they were rejected...', 'textarea')}
-              <div style={{background:'rgba(14,165,233,0.07)',border:'1px solid rgba(14,165,233,0.2)',borderRadius:12,padding:'14px 18px',marginTop:8}}>
+              <div style={{background:'rgba(139,92,246,0.07)',border:'1px solid rgba(139,92,246,0.2)',borderRadius:12,padding:'14px 18px',marginTop:8}}>
                 <p style={{fontSize:12,color:'var(--accent)',margin:0,lineHeight:1.6}}><strong>ICO guidance:</strong> Processing is proportionate if it is adequate, relevant, and limited to what is necessary in relation to the purposes for which it is processed (GDPR Art. 5(1)(c)).</p>
               </div>
             </>}
@@ -242,7 +242,7 @@ export default function DpiaPage() {
               <p style={{fontSize:13,color:'var(--ink2)',marginBottom:24}}>Select the controls and safeguards you will implement to address the identified risks.</p>
               <div style={{display:'flex',flexDirection:'column',gap:8,marginBottom:20}}>
                 {MITIGATIONS.map(m=>(
-                  <label key={m} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 16px',background:form.mitigations.includes(m)?'rgba(14,165,233,0.08)':'rgba(15,23,42,0.02)',border:`1px solid ${form.mitigations.includes(m)?'rgba(14,165,233,0.3)':'var(--border)'}`,borderRadius:10,cursor:'pointer',transition:'all .15s'}}>
+                  <label key={m} style={{display:'flex',alignItems:'center',gap:10,padding:'12px 16px',background:form.mitigations.includes(m)?'rgba(139,92,246,0.08)':'rgba(15,23,42,0.02)',border:`1px solid ${form.mitigations.includes(m)?'rgba(139,92,246,0.3)':'var(--border)'}`,borderRadius:10,cursor:'pointer',transition:'all .15s'}}>
                     <input type="checkbox" checked={form.mitigations.includes(m)} onChange={()=>toggle('mitigations',m)} style={{accentColor:'var(--accent)',flexShrink:0}}/>
                     <span style={{fontSize:13,color:'var(--ink)'}}>{m}</span>
                   </label>
@@ -290,7 +290,7 @@ export default function DpiaPage() {
                 </button>
               ) : (
                 <div>
-                  <div style={{background:'rgba(14,165,233,0.06)',border:'1px solid rgba(14,165,233,0.2)',borderRadius:12,padding:'20px',marginBottom:16,maxHeight:320,overflowY:'auto'}}>
+                  <div style={{background:'rgba(139,92,246,0.06)',border:'1px solid rgba(139,92,246,0.2)',borderRadius:12,padding:'20px',marginBottom:16,maxHeight:320,overflowY:'auto'}}>
                     <pre style={{fontSize:12,color:'var(--ink2)',lineHeight:1.7,whiteSpace:'pre-wrap',fontFamily:'inherit'}}>{result}</pre>
                   </div>
                   <div style={{display:'flex',gap:10}}>

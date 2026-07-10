@@ -10,7 +10,7 @@ export default function Image() {
     (
       <div style={{
         width: '100%', height: '100%',
-        background: '#FFFFFF',
+        background: '#06060F',
         display: 'flex', flexDirection: 'column',
         justifyContent: 'center',
         padding: '80px 96px',
@@ -22,7 +22,7 @@ export default function Image() {
           position: 'absolute', top: 0, right: 0,
           width: 600, height: 600,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(14,165,233,0.15) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)',
           filter: 'blur(60px)',
         }} />
         <div style={{
@@ -37,14 +37,14 @@ export default function Image() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 48 }}>
           <div style={{
             width: 56, height: 64,
-            background: 'linear-gradient(135deg, #0EA5E9, #7C9EFF)',
+            background: 'linear-gradient(135deg, #9B7BFA, #C084FC)',
             borderRadius: 12,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 28, fontWeight: 800, color: 'white',
           }}>AG</div>
           <span style={{
             fontSize: 40, fontWeight: 800,
-            background: 'linear-gradient(135deg, #0EA5E9, #7C9EFF)',
+            background: 'linear-gradient(135deg, #9B7BFA, #C084FC)',
             backgroundClip: 'text',
             color: 'transparent',
           }}>AlgoGrass</span>
@@ -67,9 +67,9 @@ export default function Image() {
             <div key={badge} style={{
               padding: '10px 22px',
               borderRadius: 24,
-              background: 'rgba(14,165,233,0.1)',
-              border: '1px solid rgba(14,165,233,0.25)',
-              color: '#0EA5E9',
+              background: 'rgba(139,92,246,0.1)',
+              border: '1px solid rgba(139,92,246,0.25)',
+              color: '#9B7BFA',
               fontSize: 18,
               fontWeight: 600,
             }}>{badge}</div>

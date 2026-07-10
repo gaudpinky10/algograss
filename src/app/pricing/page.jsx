@@ -59,9 +59,9 @@ export default function PricingPage() {
     <>
       {/* ── HERO ── */}
       {/* 60-day launch promo banner */}
-      <div style={{ background:'linear-gradient(90deg,rgba(14,165,233,0.12),rgba(124,158,255,0.12))', borderBottom:'1px solid rgba(14,165,233,0.2)', padding:'14px 0', textAlign:'center' }}>
-        <p style={{ margin:0, fontSize:14, color:'#0F172A', fontWeight:600 }}>
-          🚀 <span style={{ color:'#0EA5E9' }}>Launch Offer:</span> Sign up free and get <span style={{ color:'#0EA5E9', fontWeight:800 }}>60 days full Pro access</span> — no credit card required. Ends soon.
+      <div style={{ background:'linear-gradient(90deg,rgba(139,92,246,0.12),rgba(124,158,255,0.12))', borderBottom:'1px solid rgba(139,92,246,0.2)', padding:'14px 0', textAlign:'center' }}>
+        <p style={{ margin:0, fontSize:14, color:'#FFFFFF', fontWeight:600 }}>
+          🚀 <span style={{ color:'#9B7BFA' }}>Launch Offer:</span> Sign up free and get <span style={{ color:'#9B7BFA', fontWeight:800 }}>60 days full Pro access</span> — no credit card required. Ends soon.
         </p>
       </div>
 
@@ -83,8 +83,8 @@ export default function PricingPage() {
       {/* ── REDIRECT OVERLAY ── */}
       {redirecting && (
         <div style={{ position:'fixed', inset:0, zIndex:9999, background:'rgba(248,250,252,0.92)', backdropFilter:'blur(10px)', WebkitBackdropFilter:'blur(10px)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:20 }}>
-          <div style={{ width:56, height:56, borderRadius:'50%', border:'3px solid rgba(14,165,233,0.2)', borderTop:'3px solid #0EA5E9', animation:'spin 0.8s linear infinite' }} />
-          <p style={{ color:'#0F172A', fontSize:16, fontWeight:600, margin:0 }}>Connecting to secure checkout…</p>
+          <div style={{ width:56, height:56, borderRadius:'50%', border:'3px solid rgba(139,92,246,0.2)', borderTop:'3px solid #9B7BFA', animation:'spin 0.8s linear infinite' }} />
+          <p style={{ color:'#FFFFFF', fontSize:16, fontWeight:600, margin:0 }}>Connecting to secure checkout…</p>
           <p style={{ color:'#64748B', fontSize:13, margin:0 }}>Powered by Stripe — please wait</p>
           <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
         </div>
@@ -93,12 +93,12 @@ export default function PricingPage() {
       {/* ── EMAIL CAPTURE MODAL ── */}
       {emailFor && (
         <div style={{ position:'fixed', inset:0, background:'rgba(248,250,252,0.82)', backdropFilter:'blur(6px)', WebkitBackdropFilter:'blur(6px)', zIndex:999, display:'flex', alignItems:'center', justifyContent:'center', padding:'0 16px' }}>
-          <div style={{ background:'#F8FAFC', border:'1px solid rgba(14,165,233,0.25)', borderRadius:20, padding:'36px 32px', maxWidth:440, width:'100%', boxShadow:'0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(14,165,233,0.08)' }}>
+          <div style={{ background:'#0D0D1E', border:'1px solid rgba(139,92,246,0.25)', borderRadius:20, padding:'36px 32px', maxWidth:440, width:'100%', boxShadow:'0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(139,92,246,0.08)' }}>
             {/* Header */}
             <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:8 }}>
-              <div style={{ width:40, height:40, borderRadius:10, background:'rgba(14,165,233,0.12)', border:'1px solid rgba(14,165,233,0.25)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>🔒</div>
+              <div style={{ width:40, height:40, borderRadius:10, background:'rgba(139,92,246,0.12)', border:'1px solid rgba(139,92,246,0.25)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>🔒</div>
               <div>
-                <h3 style={{ margin:0, fontSize:18, color:'#0F172A', fontWeight:700 }}>Secure checkout</h3>
+                <h3 style={{ margin:0, fontSize:18, color:'#FFFFFF', fontWeight:700 }}>Secure checkout</h3>
                 <p style={{ margin:0, fontSize:12, color:'#64748B' }}>Powered by Stripe</p>
               </div>
             </div>
@@ -107,12 +107,12 @@ export default function PricingPage() {
             <div style={{ background:'rgba(245,158,11,0.08)', border:'1px solid rgba(245,158,11,0.25)', borderRadius:10, padding:'12px 14px', marginBottom:20, marginTop:16 }}>
               <p style={{ margin:0, fontSize:13, color:'#F59E0B', fontWeight:600 }}>💳 £1.00 card verification</p>
               <p style={{ margin:'4px 0 0', fontSize:12, color:'#94A3B8', lineHeight:1.6 }}>
-                We charge £1 to confirm your card is valid and active. <b style={{color:'#0F172A'}}>This is refunded automatically</b> — usually within minutes. You will see it appear and disappear on your statement.
+                We charge £1 to confirm your card is valid and active. <b style={{color:'#FFFFFF'}}>This is refunded automatically</b> — usually within minutes. You will see it appear and disappear on your statement.
               </p>
             </div>
             {emailFor.trial && (
-              <div style={{ background:'rgba(14,165,233,0.06)', border:'1px solid rgba(14,165,233,0.15)', borderRadius:10, padding:'10px 14px', marginBottom:20 }}>
-                <p style={{ margin:0, fontSize:12, color:'#0EA5E9', fontWeight:600 }}>🎁 60 days free — no card needed</p>
+              <div style={{ background:'rgba(139,92,246,0.06)', border:'1px solid rgba(139,92,246,0.15)', borderRadius:10, padding:'10px 14px', marginBottom:20 }}>
+                <p style={{ margin:0, fontSize:12, color:'#9B7BFA', fontWeight:600 }}>🎁 60 days free — no card needed</p>
                 <p style={{ margin:'3px 0 0', fontSize:12, color:'#94A3B8' }}>Start your 60-day free Pro trial instantly. No card required. No charges at all.</p>
               </div>
             )}
@@ -124,7 +124,7 @@ export default function PricingPage() {
               type="email" placeholder="you@example.com" value={email}
               onChange={e=>setEmail(e.target.value)}
               onKeyDown={e=>e.key==='Enter'&&email&&startCheckout(PLANS.find(p=>p.id===emailFor.planId), emailFor.trial)}
-              style={{ width:'100%', background:'rgba(15,23,42,0.05)', border:'1px solid rgba(15,23,42,0.1)', borderRadius:10, padding:'12px 16px', fontSize:14, color:'#0F172A', marginBottom:6, boxSizing:'border-box', outline:'none' }}
+              style={{ width:'100%', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.09)', borderRadius:10, padding:'12px 16px', fontSize:14, color:'#FFFFFF', marginBottom:6, boxSizing:'border-box', outline:'none' }}
               autoFocus
             />
             {error && (
@@ -136,12 +136,12 @@ export default function PricingPage() {
             {/* Buttons */}
             <div style={{ display:'flex', gap:10, marginTop:16 }}>
               <button onClick={()=>{setEmailFor(null);setError('')}}
-                style={{ flex:1, padding:'12px', borderRadius:10, border:'1px solid rgba(15,23,42,0.1)', background:'transparent', color:'#94A3B8', fontSize:14, cursor:'pointer', fontWeight:500 }}>
+                style={{ flex:1, padding:'12px', borderRadius:10, border:'1px solid rgba(255,255,255,0.09)', background:'transparent', color:'#94A3B8', fontSize:14, cursor:'pointer', fontWeight:500 }}>
                 Cancel
               </button>
               <button onClick={()=>email&&startCheckout(PLANS.find(p=>p.id===emailFor.planId), emailFor.trial)}
                 disabled={!email||!!loading}
-                style={{ flex:2, padding:'12px', borderRadius:10, border:'none', background: email&&!loading ?'#0EA5E9':'rgba(14,165,233,0.3)', color: email&&!loading?'#FFFFFF':'#64748B', fontSize:14, fontWeight:700, cursor: email&&!loading?'pointer':'default', transition:'all .2s' }}>
+                style={{ flex:2, padding:'12px', borderRadius:10, border:'none', background: email&&!loading ?'#9B7BFA':'rgba(139,92,246,0.3)', color: email&&!loading?'#06060F':'#64748B', fontSize:14, fontWeight:700, cursor: email&&!loading?'pointer':'default', transition:'all .2s' }}>
                 {loading ? '⏳ Loading…' : '→ Continue to payment'}
               </button>
             </div>
