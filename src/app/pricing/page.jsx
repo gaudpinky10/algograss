@@ -281,3 +281,5 @@ function FaqItem({ q, a }) {
       </button>
       {open && <div style={{ padding:'0 20px 16px', fontSize:13, color:'var(--ink2)', lineHeight:1.7 }}>{a}</div>}
     </div>
+  )
+}

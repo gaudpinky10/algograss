@@ -111,7 +111,7 @@ function Hero() {
 function Logos() {
   return (
     <AnimateOnScroll>
-      <div style={{borderTop:'1px solid var(--border)',borderBottom:'1px solid var(--border)',background:'rgba(15,23,42,0.02)',padding:'18px 0'}}>
+      <div style={{borderTop:'1px solid var(--border)',borderBottom:'1px solid var(--border)',background:'rgba(255,255,255,0.02)',padding:'18px 0'}}>
         <div className="wrap" style={{display:'flex',alignItems:'center',gap:36,flexWrap:'wrap'}}>
           <span style={{fontSize:11,fontWeight:600,color:'var(--ink2)',letterSpacing:'.08em',textTransform:'uppercase',whiteSpace:'nowrap'}}>Works with websites built on</span>
           {['Shopify','WordPress','Wix','Squarespace','Webflow','HubSpot'].map((l,i)=>(
@@ -436,4 +436,8 @@ function CtaBanner() {
             <a href="/scan" className="btn btn-primary btn-lg animate-pulse-glow">Scan my website →</a>
             <a href="/pricing" className="btn btn-secondary btn-lg">View pricing</a>
           </div>
-      
+        </AnimateOnScroll>
+      </div>
+    </section>
+  )
+}

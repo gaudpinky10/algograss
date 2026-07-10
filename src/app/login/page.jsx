@@ -92,7 +92,7 @@ export default function LoginPage() {
               color: '#0F172A', fontSize: 14, fontWeight: 500, textDecoration: 'none',
               transition: 'all .2s', marginBottom: 20, cursor: 'pointer',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.09)'; e.currentTarget.style.borderColor = 'rgba(15,23,42,0.1)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.09)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.05)'; e.currentTarget.style.borderColor = 'rgba(15,23,42,0.1)' }}
           >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -143,12 +143,12 @@ export default function LoginPage() {
                 value={form.email} onChange={set('email')} required
                 style={{
                   width: '100%', padding: '12px 14px', borderRadius: 10, fontSize: 14,
-                  background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(15,23,42,0.09)',
+                  background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(255,255,255,0.1)',
                   color: '#0F172A', outline: 'none', boxSizing: 'border-box', transition: 'border-color .2s',
                   fontFamily: 'var(--font-space-grotesk,"Space Grotesk"),sans-serif',
                 }}
                 onFocus={e => e.target.style.borderColor = 'rgba(14,165,233,0.5)'}
-                onBlur={e => e.target.style.borderColor = 'rgba(15,23,42,0.09)'}
+                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
               />
             </div>
             <div style={{ marginBottom: 10 }}>
@@ -161,12 +161,12 @@ export default function LoginPage() {
                   value={form.password} onChange={set('password')} required
                   style={{
                     width: '100%', padding: '12px 44px 12px 14px', borderRadius: 10, fontSize: 14,
-                    background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(15,23,42,0.09)',
+                    background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(255,255,255,0.1)',
                     color: '#0F172A', outline: 'none', boxSizing: 'border-box', transition: 'border-color .2s',
                     fontFamily: 'var(--f-body,Lora,serif)',
                   }}
                   onFocus={e => e.target.style.borderColor = 'rgba(14,165,233,0.5)'}
-                  onBlur={e => e.target.style.borderColor = 'rgba(15,23,42,0.09)'}
+                  onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
                 />
                 <button
                   type="button"
@@ -190,4 +190,37 @@ export default function LoginPage() {
               </div>
             </div>
             <div style={{ textAlign: 'right', marginBottom: 20 }}>
-              <a 
+              <a href="/forgot-password" style={{ fontSize: 12, color: '#0EA5E9', textDecoration: 'none' }}>
+                Forgot password?
+              </a>
+            </div>
+            {error && (
+              <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 10, padding: '10px 14px', marginBottom: 16 }}>
+                <p style={{ fontSize: 13, color: '#F87171', margin: 0 }}>{error}</p>
+              </div>
+            )}
+            <button
+              type="submit" disabled={loading}
+              style={{
+                width: '100%', padding: '13px', borderRadius: 12, border: 'none',
+                background: loading ? 'rgba(14,165,233,0.4)' : 'linear-gradient(135deg,#0EA5E9,#00B896)',
+                color: '#FFFFFF', fontWeight: 700, fontSize: 15, cursor: loading ? 'default' : 'pointer',
+                transition: 'all .2s', fontFamily: 'var(--font-syne,"Syne"),sans-serif',
+                boxShadow: loading ? 'none' : '0 0 24px rgba(14,165,233,0.3)',
+              }}
+            >
+              {loading ? 'Signing in…' : 'Sign in →'}
+            </button>
+          </form>
+        </div>
+
+        <p style={{ textAlign: 'center', fontSize: 13, color: '#94A3B8', marginTop: 20 }}>
+          New to AlgoGrass?{' '}
+          <a href="/signup" style={{ color: '#0EA5E9', fontWeight: 600, textDecoration: 'none' }}>
+            Create a free account
+          </a>
+        </p>
+      </div>
+    </div>
+  )
+}
