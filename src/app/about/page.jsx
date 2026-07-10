@@ -43,11 +43,11 @@ export default function AboutPage() {
             ].map(({ val, suffix, label, isNum }, i) => (
               <AnimateOnScroll key={label} delay={i + 1} direction="scale">
                 <TiltCard intensity={8}>
-                  <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '24px 20px', backdropFilter: 'blur(16px)', textAlign: 'center', height: '100%' }}>
+                  <div style={{ background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(15,23,42,0.09)', borderRadius: 16, padding: '24px 20px', backdropFilter: 'blur(16px)', textAlign: 'center', height: '100%' }}>
                     <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800, marginBottom: 6 }} className="animate-gradient-text">
                       {isNum ? <CountUp end={val} suffix={suffix || ''} /> : val}
                     </div>
-                    <div style={{ fontSize: 12, color: 'rgba(232,240,254,0.5)', lineHeight: 1.5 }}>{label}</div>
+                    <div style={{ fontSize: 12, color: '#64748B', lineHeight: 1.5 }}>{label}</div>
                   </div>
                 </TiltCard>
               </AnimateOnScroll>
@@ -57,13 +57,13 @@ export default function AboutPage() {
       </section>
 
       {/* Mission */}
-      <section style={{ padding: '80px 0', background: 'rgba(13,21,37,0.8)', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)', position: 'relative', zIndex: 1 }}>
+      <section style={{ padding: '80px 0', background: 'rgba(255,255,255,0.9)', borderTop: '1px solid rgba(15,23,42,0.05)', borderBottom: '1px solid rgba(15,23,42,0.05)', position: 'relative', zIndex: 1 }}>
         <div className="wrap grid-2col">
           <AnimateOnScroll direction="left">
             <span className="eyebrow">Our mission</span>
             <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(24px,2.5vw,38px)', fontWeight: 700, color: 'var(--ink)', marginBottom: 16, letterSpacing: '-0.5px' }}>Compliance shouldn't cost thousands</h2>
-            <p style={{ fontSize: 15, color: 'rgba(232,240,254,0.55)', lineHeight: 1.8, marginBottom: 16 }}>We give every small business owner a clear, honest picture of their GDPR compliance position — and practical tools to address what they find.</p>
-            <p style={{ fontSize: 13, color: 'rgba(232,240,254,0.38)', lineHeight: 1.75, marginBottom: 28 }}>We work collaboratively with data protection professionals. We're not here to replace solicitors — we're here to help businesses come to those conversations better informed.</p>
+            <p style={{ fontSize: 15, color: '#475569', lineHeight: 1.8, marginBottom: 16 }}>We give every small business owner a clear, honest picture of their GDPR compliance position — and practical tools to address what they find.</p>
+            <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.75, marginBottom: 28 }}>We work collaboratively with data protection professionals. We're not here to replace solicitors — we're here to help businesses come to those conversations better informed.</p>
             <a href="/pricing" className="btn btn-primary">See our plans →</a>
           </AnimateOnScroll>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -74,13 +74,13 @@ export default function AboutPage() {
               { icon: '⚡', title: 'Practical', desc: 'Real checks, real issues, real guidance — not abstract compliance theory.' },
             ].map(({ icon, title, desc }, i) => (
               <AnimateOnScroll key={title} delay={i + 1} direction="right">
-                <div style={{ display: 'flex', gap: 14, padding: '16px 18px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, transition: 'border-color 0.3s, transform 0.3s' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(0,212,170,0.3)'; e.currentTarget.style.transform = 'translateX(6px)' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.transform = 'none' }}>
+                <div style={{ display: 'flex', gap: 14, padding: '16px 18px', background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(15,23,42,0.07)', borderRadius: 12, transition: 'border-color 0.3s, transform 0.3s' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(14,165,233,0.3)'; e.currentTarget.style.transform = 'translateX(6px)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.07)'; e.currentTarget.style.transform = 'none' }}>
                   <span style={{ fontSize: 20, flexShrink: 0 }}>{icon}</span>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)', marginBottom: 3 }}>{title}</div>
-                    <div style={{ fontSize: 13, color: 'rgba(232,240,254,0.45)', lineHeight: 1.6 }}>{desc}</div>
+                    <div style={{ fontSize: 13, color: '#64748B', lineHeight: 1.6 }}>{desc}</div>
                   </div>
                 </div>
               </AnimateOnScroll>
@@ -97,7 +97,7 @@ export default function AboutPage() {
             <div style={{ textAlign: 'center', marginBottom: 56 }}>
               <span className="eyebrow">The team</span>
               <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(26px,3vw,42px)', fontWeight: 800, color: 'var(--ink)', letterSpacing: '-1px', marginBottom: 12 }}>The people behind AlgoGrass</h2>
-              <p style={{ fontSize: 15, color: 'rgba(232,240,254,0.5)', maxWidth: 480, margin: '0 auto' }}>A passionate team making GDPR compliance accessible for every UK and EU small business.</p>
+              <p style={{ fontSize: 15, color: '#64748B', maxWidth: 480, margin: '0 auto' }}>A passionate team making GDPR compliance accessible for every UK and EU small business.</p>
             </div>
           </AnimateOnScroll>
 
@@ -105,13 +105,13 @@ export default function AboutPage() {
             {/* Founder — Pinki Gaud */}
             <AnimateOnScroll direction="left">
               <TiltCard intensity={7}>
-                <div style={{ background: 'linear-gradient(135deg,rgba(0,212,170,0.07),rgba(124,58,237,0.05))', border: '1px solid rgba(0,212,170,0.2)', borderRadius: 20, padding: '40px 32px', textAlign: 'center', backdropFilter: 'blur(16px)', height: '100%' }}>
-                  <div style={{ width: 110, height: 140, borderRadius: 12, overflow: 'hidden', margin: '0 auto 22px', border: '2px solid rgba(0,212,170,0.4)', boxShadow: '0 0 24px rgba(0,212,170,0.2)', background: 'linear-gradient(135deg,rgba(0,212,170,0.3),rgba(0,168,130,0.2))', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="animate-pulse-glow">
-                    <img src="/team/pinki.jpg" alt="Pinki Gaud" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} onError={e => { e.currentTarget.style.display='none'; e.currentTarget.parentElement.innerHTML='<span style="font-size:36px;font-weight:800;color:#00D4AA;font-family:Syne,sans-serif">PG</span>' }} />
+                <div style={{ background: 'linear-gradient(135deg,rgba(14,165,233,0.07),rgba(124,58,237,0.05))', border: '1px solid rgba(14,165,233,0.2)', borderRadius: 20, padding: '40px 32px', textAlign: 'center', backdropFilter: 'blur(16px)', height: '100%' }}>
+                  <div style={{ width: 110, height: 140, borderRadius: 12, overflow: 'hidden', margin: '0 auto 22px', border: '2px solid rgba(14,165,233,0.4)', boxShadow: '0 0 24px rgba(14,165,233,0.2)', background: 'linear-gradient(135deg,rgba(14,165,233,0.3),rgba(0,168,130,0.2))', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="animate-pulse-glow">
+                    <img src="/team/pinki.jpg" alt="Pinki Gaud" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} onError={e => { e.currentTarget.style.display='none'; e.currentTarget.parentElement.innerHTML='<span style="font-size:36px;font-weight:800;color:#0EA5E9;font-family:Syne,sans-serif">PG</span>' }} />
                   </div>
-                  <div style={{ display: 'inline-block', padding: '4px 14px', borderRadius: 100, background: 'linear-gradient(135deg,#00D4AA,#00A882)', color: '#06111E', fontSize: 10, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 14 }}>Founder</div>
+                  <div style={{ display: 'inline-block', padding: '4px 14px', borderRadius: 100, background: 'linear-gradient(135deg,#0EA5E9,#0284C7)', color: '#FFFFFF', fontSize: 10, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 14 }}>Founder</div>
                   <h3 style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 700, color: 'var(--ink)', marginBottom: 8 }}>Pinki Gaud</h3>
-                  <p style={{ fontSize: 13, color: 'rgba(232,240,254,0.5)', lineHeight: 1.7, marginBottom: 22, maxWidth: 300, margin: '0 auto 22px' }}>MSc Business Analytics, Queen Mary University London · AI Researcher recognised at a Top-3 university in China · Built AlgoGrass solo — 14 GDPR compliance tools from website scanner to AI document generator, serving UK and EU SMEs.</p>
+                  <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7, marginBottom: 22, maxWidth: 300, margin: '0 auto 22px' }}>MSc Business Analytics, Queen Mary University London · AI Researcher recognised at a Top-3 university in China · Built AlgoGrass solo — 14 GDPR compliance tools from website scanner to AI document generator, serving UK and EU SMEs.</p>
                   <a href="https://www.linkedin.com/in/pinkigaud/" target="_blank" rel="noopener noreferrer"
                     style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600, color: '#fff', textDecoration: 'none', padding: '9px 20px', borderRadius: 9, background: '#0A66C2', boxShadow: '0 4px 16px rgba(10,102,194,0.3)', transition: 'all .2s' }}
                     onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(10,102,194,0.5)' }}
@@ -126,13 +126,13 @@ export default function AboutPage() {
             {/* Co-Founder — Kumar Kuppusamy */}
             <AnimateOnScroll direction="right">
               <TiltCard intensity={7}>
-                <div style={{ background: 'linear-gradient(135deg,rgba(124,58,237,0.07),rgba(0,212,170,0.04))', border: '1px solid rgba(124,58,237,0.2)', borderRadius: 20, padding: '40px 32px', textAlign: 'center', backdropFilter: 'blur(16px)', height: '100%' }}>
+                <div style={{ background: 'linear-gradient(135deg,rgba(124,58,237,0.07),rgba(14,165,233,0.04))', border: '1px solid rgba(124,58,237,0.2)', borderRadius: 20, padding: '40px 32px', textAlign: 'center', backdropFilter: 'blur(16px)', height: '100%' }}>
                   <div style={{ width: 110, height: 140, borderRadius: 12, overflow: 'hidden', margin: '0 auto 22px', border: '2px solid rgba(124,58,237,0.4)', boxShadow: '0 0 24px rgba(124,58,237,0.2)', background: 'linear-gradient(135deg,rgba(124,58,237,0.3),rgba(155,94,255,0.2))', display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="animate-pulse-purple">
                     <img src="/team/kumar.jpg" alt="Kumar Kuppusamy" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }} onError={e => { e.currentTarget.style.display='none'; e.currentTarget.parentElement.innerHTML='<span style="font-size:36px;font-weight:800;color:#9B5EFF;font-family:Syne,sans-serif">KK</span>' }} />
                   </div>
                   <div style={{ display: 'inline-block', padding: '4px 14px', borderRadius: 100, background: 'linear-gradient(135deg,#7C3AED,#9B5EFF)', color: '#fff', fontSize: 10, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 14 }}>Co-Founder</div>
                   <h3 style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 700, color: 'var(--ink)', marginBottom: 8 }}>Kumar Kuppusamy</h3>
-                  <p style={{ fontSize: 13, color: 'rgba(232,240,254,0.5)', lineHeight: 1.7, marginBottom: 22, maxWidth: 300, margin: '0 auto 22px' }}>Co-founding AlgoGrass with deep expertise in technology and business strategy. Focused on scaling compliant, AI-driven tools for businesses of all sizes.</p>
+                  <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.7, marginBottom: 22, maxWidth: 300, margin: '0 auto 22px' }}>Co-founding AlgoGrass with deep expertise in technology and business strategy. Focused on scaling compliant, AI-driven tools for businesses of all sizes.</p>
                   <a href="https://www.linkedin.com/in/kumar-kuppusamy/" target="_blank" rel="noopener noreferrer"
                     style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600, color: '#fff', textDecoration: 'none', padding: '9px 20px', borderRadius: 9, background: '#0A66C2', boxShadow: '0 4px 16px rgba(10,102,194,0.3)', transition: 'all .2s' }}
                     onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(10,102,194,0.5)' }}
@@ -148,12 +148,12 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section style={{ padding: '80px 0', background: 'rgba(13,21,37,0.8)', borderTop: '1px solid rgba(255,255,255,0.05)', textAlign: 'center', position: 'relative', zIndex: 1, overflow: 'hidden' }}>
+      <section style={{ padding: '80px 0', background: 'rgba(255,255,255,0.9)', borderTop: '1px solid rgba(15,23,42,0.05)', textAlign: 'center', position: 'relative', zIndex: 1, overflow: 'hidden' }}>
         <div className="orb orb-teal" style={{ width: 600, height: 300, top: '50%', left: '50%', transform: 'translate(-50%,-50%)', opacity: 0.4 }} />
         <div className="wrap" style={{ maxWidth: 520, position: 'relative', zIndex: 1 }}>
           <AnimateOnScroll direction="scale">
             <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(24px,3vw,38px)', fontWeight: 700, color: 'var(--ink)', marginBottom: 14 }}>Try the free scanner today</h2>
-            <p style={{ fontSize: 15, color: 'rgba(232,240,254,0.5)', marginBottom: 28, lineHeight: 1.7 }}>No account, no card. See your compliance position in seconds.</p>
+            <p style={{ fontSize: 15, color: '#64748B', marginBottom: 28, lineHeight: 1.7 }}>No account, no card. See your compliance position in seconds.</p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
               <a href="/scan" className="btn btn-primary">Scan my website →</a>
               <a href="/pricing" className="btn btn-secondary">View pricing</a>

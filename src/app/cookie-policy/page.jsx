@@ -17,8 +17,8 @@ export default function CookiePolicyPage() {
           <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--green)', textTransform: 'uppercase', letterSpacing: '.1em' }}>Legal</span>
           <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 36, fontWeight: 800, color: 'var(--ink)', margin: '8px 0 12px' }}>Cookie Policy</h1>
           <p style={{ fontSize: 13, color: 'var(--ink2)' }}>Last updated: 19 June 2026</p>
-          <div style={{ background: 'rgba(0,212,170,0.06)', border: '1px solid rgba(0,212,170,0.15)', borderRadius: 10, padding: '14px 18px', marginTop: 20 }}>
-            <p style={{ margin: 0, fontSize: 13, color: '#00D4AA' }}>This policy explains what cookies AlgoGrass uses, why, and how you can control them — in compliance with the Privacy and Electronic Communications Regulations (PECR) and UK GDPR.</p>
+          <div style={{ background: 'rgba(14,165,233,0.06)', border: '1px solid rgba(14,165,233,0.15)', borderRadius: 10, padding: '14px 18px', marginTop: 20 }}>
+            <p style={{ margin: 0, fontSize: 13, color: '#0EA5E9' }}>This policy explains what cookies AlgoGrass uses, why, and how you can control them — in compliance with the Privacy and Electronic Communications Regulations (PECR) and UK GDPR.</p>
           </div>
         </div>
 
@@ -29,7 +29,7 @@ export default function CookiePolicyPage() {
         <Section title="2. Cookies we use">
           <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', marginBottom: 16 }}>
             {/* Header row */}
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1.5fr 2fr', gap: 12, padding: '12px 16px', background: 'rgba(0,212,170,0.06)', fontSize: 11, fontWeight: 700, color: 'var(--green)', textTransform: 'uppercase', letterSpacing: '.06em' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1.5fr 2fr', gap: 12, padding: '12px 16px', background: 'rgba(14,165,233,0.06)', fontSize: 11, fontWeight: 700, color: 'var(--green)', textTransform: 'uppercase', letterSpacing: '.06em' }}>
               <span>Cookie name</span><span>Type</span><span>Duration</span><span>Purpose</span>
             </div>
             {[
@@ -41,7 +41,7 @@ export default function CookiePolicyPage() {
               <div key={name} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1.5fr 2fr', gap: 12, padding: '12px 16px', borderTop: '1px solid var(--border)', fontSize: 12 }}>
                 <span style={{ color: 'var(--ink)', fontFamily: 'monospace', fontSize: 11 }}>{name}</span>
                 <span style={{
-                  color: type === 'Essential' ? '#00D4AA' : '#818CF8',
+                  color: type === 'Essential' ? '#0EA5E9' : '#818CF8',
                   fontWeight: 600,
                 }}>{type}</span>
                 <span style={{ color: 'var(--ink2)' }}>{duration}</span>
@@ -68,7 +68,7 @@ export default function CookiePolicyPage() {
             'We do not set any cookies before you have given consent (except essential)',
             'We do not use fingerprinting or cross-site tracking',
           ].map(item => (
-            <div key={item} style={{ paddingLeft: 14, borderLeft: '2px solid rgba(0,212,170,0.3)', marginBottom: 10, fontSize: 13 }}>✅ {item}</div>
+            <div key={item} style={{ paddingLeft: 14, borderLeft: '2px solid rgba(14,165,233,0.3)', marginBottom: 10, fontSize: 13 }}>✅ {item}</div>
           ))}
         </Section>
 

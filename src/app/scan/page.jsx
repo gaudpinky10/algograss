@@ -49,7 +49,7 @@ function ScanPageInner() {
   function downloadPDF() {
     if (!result) return
     const sc = result.score
-    const scoreColor = sc >= 70 ? '#00D4AA' : sc >= 40 ? '#F59E0B' : '#EF4444'
+    const scoreColor = sc >= 70 ? '#0EA5E9' : sc >= 40 ? '#F59E0B' : '#EF4444'
     const scoreLabel = sc >= 70 ? 'Good' : sc >= 40 ? 'Needs Work' : 'At Risk'
     const now = new Date(result.scannedAt).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' })
 
@@ -61,7 +61,7 @@ function ScanPageInner() {
           <span style="background:${sevBg};color:${sevColor};padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap">${iss.sev}</span>
         </td>
         <td style="padding:12px 14px;border-bottom:1px solid #e5e7eb;vertical-align:top">
-          <div style="color:#111827;font-weight:600;font-size:13px;margin-bottom:3px">${iss.title}</div>
+          <div style="color:#F8FAFC;font-weight:600;font-size:13px;margin-bottom:3px">${iss.title}</div>
           <div style="color:#6B7280;font-size:12px;line-height:1.55;margin-bottom:5px">${iss.desc}</div>
           <span style="background:#D1FAE5;color:#065F46;font-size:10px;padding:2px 8px;border-radius:4px">${iss.reg}</span>
         </td>
@@ -98,25 +98,25 @@ function ScanPageInner() {
   <title>GDPR Compliance Report — ${result.url}</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Segoe UI',Arial,sans-serif; background:#fff; color:#111827; font-size:13px; }
+    body { font-family:'Segoe UI',Arial,sans-serif; background:#fff; color:#F8FAFC; font-size:13px; }
     @page { margin:20mm 18mm; size:A4; }
     @media print {
       .no-print { display:none !important; }
       body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     }
-    .header { background:linear-gradient(135deg,#0D1525,#1a2744); color:white; padding:28px 32px; border-radius:0 0 16px 16px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; }
+    .header { background:linear-gradient(135deg,#0EA5E9,#0284C7); color:white; padding:28px 32px; border-radius:0 0 16px 16px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; }
     .logo { display:flex; align-items:center; gap:10px; }
-    .logo-icon { width:36px; height:36px; background:linear-gradient(135deg,#00D4AA,#7C9EFF); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:14px; }
-    .logo-text { color:#00D4AA; font-weight:800; font-size:18px; }
+    .logo-icon { width:36px; height:36px; background:linear-gradient(135deg,#0EA5E9,#7C9EFF); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:14px; }
+    .logo-text { color:#0EA5E9; font-weight:800; font-size:18px; }
     .header-right { text-align:right; }
-    .header-right h1 { font-size:20px; font-weight:700; color:#E8F0FE; margin-bottom:4px; }
+    .header-right h1 { font-size:20px; font-weight:700; color:#0F172A; margin-bottom:4px; }
     .header-right p { font-size:12px; color:#94A3B8; }
     .score-section { display:flex; align-items:center; gap:28px; background:#F9FAFB; border:1px solid #E5E7EB; border-radius:14px; padding:20px 24px; margin-bottom:20px; }
     .score-ring { flex-shrink:0; }
     .score-info h2 { font-size:22px; font-weight:800; color:${scoreColor}; margin-bottom:4px; }
     .score-info .label { display:inline-block; background:${scoreColor}20; color:${scoreColor}; padding:3px 12px; border-radius:20px; font-size:12px; font-weight:700; margin-bottom:8px; }
     .score-info p { font-size:13px; color:#6B7280; line-height:1.5; }
-    h2.section-title { font-size:15px; font-weight:700; color:#111827; margin-bottom:10px; padding-bottom:6px; border-bottom:2px solid #E5E7EB; }
+    h2.section-title { font-size:15px; font-weight:700; color:#F8FAFC; margin-bottom:10px; padding-bottom:6px; border-bottom:2px solid #E5E7EB; }
     table { width:100%; border-collapse:collapse; border:1px solid #E5E7EB; border-radius:10px; overflow:hidden; margin-bottom:20px; }
     th { background:#F3F4F6; color:#374151; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:10px 14px; text-align:left; }
     .cta { background:linear-gradient(135deg,#065F46,#047857); color:white; border-radius:12px; padding:20px 24px; margin-top:20px; text-align:center; }
@@ -124,7 +124,7 @@ function ScanPageInner() {
     .cta p { font-size:12px; color:rgba(255,255,255,.8); margin-bottom:14px; line-height:1.5; }
     .cta a { background:white; color:#065F46; font-weight:700; font-size:13px; padding:10px 24px; border-radius:8px; text-decoration:none; display:inline-block; }
     .footer { text-align:center; margin-top:24px; color:#9CA3AF; font-size:10px; line-height:1.6; border-top:1px solid #E5E7EB; padding-top:14px; }
-    .print-btn { position:fixed; top:20px; right:20px; background:#00D4AA; color:#06111E; border:none; padding:12px 24px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; }
+    .print-btn { position:fixed; top:20px; right:20px; background:#0EA5E9; color:#FFFFFF; border:none; padding:12px 24px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; }
   </style>
 </head>
 <body>
@@ -212,7 +212,7 @@ function ScanPageInner() {
           <div style={{maxWidth:560,margin:'0 auto 10px',textAlign:'left'}}>
             <label style={{fontSize:12,fontWeight:600,color:'var(--ink2)',letterSpacing:'.06em',textTransform:'uppercase'}}>Your website URL</label>
           </div>
-          <form onSubmit={e=>{e.preventDefault();runScan()}} className="scan-form" style={{display:'flex',gap:8,background:'rgba(255,255,255,0.05)',border:'1.5px solid rgba(0,212,170,0.35)',borderRadius:12,padding:'6px 6px 6px 18px',maxWidth:560,margin:'0 auto'}}>
+          <form onSubmit={e=>{e.preventDefault();runScan()}} className="scan-form" style={{display:'flex',gap:8,background:'rgba(15,23,42,0.05)',border:'1.5px solid rgba(14,165,233,0.35)',borderRadius:12,padding:'6px 6px 6px 18px',maxWidth:560,margin:'0 auto'}}>
             <span style={{fontSize:14,color:'var(--ink2)',alignSelf:'center',flexShrink:0,opacity:.5}}>https://</span>
             <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="yourwebsite.co.uk" disabled={status==='scanning'}
               autoFocus
@@ -229,7 +229,7 @@ function ScanPageInner() {
       {status==='scanning' && (
         <section style={{padding:'64px 0',textAlign:'center'}}>
           <div className="wrap">
-            <div style={{width:56,height:56,border:'4px solid rgba(0,212,170,0.2)',borderTop:'4px solid var(--accent)',borderRadius:'50%',animation:'spin 0.8s linear infinite',margin:'0 auto 20px'}}/>
+            <div style={{width:56,height:56,border:'4px solid rgba(14,165,233,0.2)',borderTop:'4px solid var(--accent)',borderRadius:'50%',animation:'spin 0.8s linear infinite',margin:'0 auto 20px'}}/>
             <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
             <p style={{fontSize:16,color:'var(--ink2)',fontWeight:300}}>Scanning <strong style={{color:'var(--ink)'}}>{url}</strong>…</p>
             <p style={{fontSize:12,color:'var(--ink2)',marginTop:8,opacity:.6}}>Fetching your site and running compliance checks — usually under 5 seconds</p>
@@ -262,7 +262,7 @@ function ScanPageInner() {
                 {/* Ring */}
                 <div style={{position:'relative',width:80,height:80,flexShrink:0}}>
                   <svg width="80" height="80" viewBox="0 0 80 80">
-                    <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8"/>
+                    <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(15,23,42,0.05)" strokeWidth="8"/>
                     <circle cx="40" cy="40" r="34" fill="none" stroke={scCol} strokeWidth="8"
                       strokeDasharray={`${2*Math.PI*34}`}
                       strokeDashoffset={`${2*Math.PI*34*(1-sc/100)}`}
@@ -276,7 +276,7 @@ function ScanPageInner() {
                 <div>
                   <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:5}}>
                     <span style={{fontFamily:'Syne,sans-serif',fontSize:18,fontWeight:700,color:'var(--ink)'}}>Compliance Score</span>
-                    <span style={{fontSize:11,fontWeight:700,padding:'3px 10px',borderRadius:100,background:sc>=70?'rgba(0,212,170,0.12)':sc>=40?'rgba(245,158,11,0.12)':'rgba(239,68,68,0.12)',color:scCol}}>{scLabel}</span>
+                    <span style={{fontSize:11,fontWeight:700,padding:'3px 10px',borderRadius:100,background:sc>=70?'rgba(14,165,233,0.12)':sc>=40?'rgba(245,158,11,0.12)':'rgba(239,68,68,0.12)',color:scCol}}>{scLabel}</span>
                   </div>
                   <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.5}}>
                     Scanned <strong style={{color:'var(--ink)'}}>{result.url}</strong> · {result.issues.length} issue{result.issues.length!==1?'s':''} found
@@ -302,7 +302,7 @@ function ScanPageInner() {
                   {result.issues.length===0 ? '🎉 No issues found!' : `${result.issues.length} compliance issue${result.issues.length!==1?'s':''} found`}
                 </h2>
                 {result.issues.length===0 ? (
-                  <div style={{background:'rgba(0,212,170,0.08)',border:'1px solid rgba(0,212,170,0.25)',borderRadius:14,padding:24,textAlign:'center'}}>
+                  <div style={{background:'rgba(14,165,233,0.08)',border:'1px solid rgba(14,165,233,0.25)',borderRadius:14,padding:24,textAlign:'center'}}>
                     <p style={{fontSize:14,color:'var(--accent)',fontWeight:500}}>This website passed all our compliance checks.</p>
                   </div>
                 ) : (
@@ -315,7 +315,7 @@ function ScanPageInner() {
                           <div>
                             <div style={{fontSize:13,fontWeight:600,color:'var(--ink)',marginBottom:4}}>{iss.title}</div>
                             <div style={{fontSize:12,color:'var(--ink2)',lineHeight:1.55,marginBottom:6}}>{iss.desc}</div>
-                            <span style={{fontSize:10,background:'rgba(0,212,170,0.1)',color:'var(--accent)',padding:'2px 8px',borderRadius:4}}>{iss.reg}</span>
+                            <span style={{fontSize:10,background:'rgba(14,165,233,0.1)',color:'var(--accent)',padding:'2px 8px',borderRadius:4}}>{iss.reg}</span>
                           </div>
                         </div>
                       )
@@ -341,14 +341,14 @@ function ScanPageInner() {
                   <p style={{fontFamily:'Syne,sans-serif',fontSize:13,fontWeight:600,color:'var(--ink)',marginBottom:4}}>📧 Email this report</p>
                   <p style={{fontSize:11,color:'var(--ink2)',marginBottom:12,lineHeight:1.5}}>Get a professionally formatted copy sent to your inbox</p>
                   {emailStatus==='sent' ? (
-                    <div style={{background:'rgba(0,212,170,0.1)',border:'1px solid rgba(0,212,170,0.3)',borderRadius:8,padding:'10px 14px',textAlign:'center'}}>
+                    <div style={{background:'rgba(14,165,233,0.1)',border:'1px solid rgba(14,165,233,0.3)',borderRadius:8,padding:'10px 14px',textAlign:'center'}}>
                       <p style={{fontSize:13,color:'var(--accent)',fontWeight:600}}>✓ Report sent to {email}</p>
                     </div>
                   ) : (
                     <>
                       <div style={{display:'flex',gap:6}}>
                         <input value={email} onChange={e=>setEmail(e.target.value)} type="email" placeholder="your@email.com"
-                          style={{flex:1,background:'rgba(255,255,255,0.04)',border:'1px solid var(--border)',borderRadius:8,padding:'9px 12px',fontSize:12,color:'var(--ink)',outline:'none',minWidth:0}}/>
+                          style={{flex:1,background:'rgba(15,23,42,0.05)',border:'1px solid var(--border)',borderRadius:8,padding:'9px 12px',fontSize:12,color:'var(--ink)',outline:'none',minWidth:0}}/>
                         <button onClick={sendEmail} disabled={emailStatus==='sending'} className="btn btn-primary btn-sm" style={{flexShrink:0,fontSize:12}}>
                           {emailStatus==='sending'?'Sending…':'Send'}
                         </button>
@@ -360,7 +360,7 @@ function ScanPageInner() {
               </div>
             </div>
 
-            <div style={{background:'rgba(0,212,170,0.05)',border:'1px solid rgba(0,212,170,0.15)',borderRadius:10,padding:'12px 16px',fontSize:12,color:'var(--ink2)',lineHeight:1.65}}>
+            <div style={{background:'rgba(14,165,233,0.05)',border:'1px solid rgba(14,165,233,0.15)',borderRadius:10,padding:'12px 16px',fontSize:12,color:'var(--ink2)',lineHeight:1.65}}>
               <strong style={{color:'var(--accent)'}}>About this scan:</strong> AlgoGrass analyses your website against GDPR, UK DPA 2018, ePrivacy Regulations, and ICO guidance. Results reflect real compliance indicators identified on your live site. This does not constitute legal advice.
             </div>
           </div>
@@ -375,7 +375,7 @@ function ScanPageInner() {
             <p style={{textAlign:'center',fontSize:14,color:'var(--ink2)',marginBottom:16}}>Try these examples to see live results:</p>
             <div style={{display:'flex',gap:8,justifyContent:'center',flexWrap:'wrap',marginBottom:44}}>
               {['bbc.co.uk','tesco.com','amazon.co.uk','gov.uk'].map(eg=>(
-                <button key={eg} onClick={()=>{setUrl(eg);setTimeout(()=>runScan(eg),50)}} style={{fontSize:12,padding:'7px 14px',borderRadius:20,border:'1px solid rgba(0,212,170,0.25)',background:'rgba(0,212,170,0.06)',color:'var(--accent)',cursor:'pointer'}}>
+                <button key={eg} onClick={()=>{setUrl(eg);setTimeout(()=>runScan(eg),50)}} style={{fontSize:12,padding:'7px 14px',borderRadius:20,border:'1px solid rgba(14,165,233,0.25)',background:'rgba(14,165,233,0.06)',color:'var(--accent)',cursor:'pointer'}}>
                   Try {eg}
                 </button>
               ))}

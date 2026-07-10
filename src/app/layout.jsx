@@ -44,7 +44,7 @@ export const metadata = {
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
   icons: { icon: '/favicon.svg', apple: '/favicon.svg' },
   manifest: '/manifest.json',
-  themeColor: '#00D4AA',
+  themeColor: '#0EA5E9',
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'AlgoGrass' },
   openGraph: {
     type: 'website',
@@ -74,16 +74,16 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${plusJakarta.variable} ${lora.variable} ${barlowCondensed.variable}`}>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#00D4AA" />
+        <meta name="theme-color" content="#0EA5E9" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="AlgoGrass" />
         <script dangerouslySetInnerHTML={{ __html: `if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}` }} />
       </head>
       <body>
-        <div style={{background:'linear-gradient(90deg,rgba(0,212,170,0.15),rgba(124,158,255,0.1))',borderBottom:'1px solid rgba(0,212,170,0.2)',padding:'9px 0',textAlign:'center'}}>
-          <p style={{fontSize:12,color:'#E8F0FE',letterSpacing:'.01em',margin:0,fontWeight:500}}>
-            🚀 <span style={{color:'#00D4AA',fontWeight:700}}>Launch offer:</span> Sign up free and get <strong>60 days full Pro access</strong> — no credit card needed.{' '}
+        <div style={{background:'linear-gradient(90deg,rgba(14,165,233,0.15),rgba(124,158,255,0.1))',borderBottom:'1px solid rgba(14,165,233,0.2)',padding:'9px 0',textAlign:'center'}}>
+          <p style={{fontSize:12,color:'#0F172A',letterSpacing:'.01em',margin:0,fontWeight:500}}>
+            🚀 <span style={{color:'#0EA5E9',fontWeight:700}}>Launch offer:</span> Sign up free and get <strong>60 days full Pro access</strong> — no credit card needed.{' '}
             <a href="/signup" style={{color:'#7C9EFF',fontWeight:700,textDecoration:'none'}}>Claim it →</a>
           </p>
         </div>

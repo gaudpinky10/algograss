@@ -7,11 +7,11 @@ const COLS = [
 
 export default function Footer() {
   return (
-    <footer style={{ background: '#030810', borderTop: '1px solid rgba(255,255,255,0.06)', padding: '64px 0 32px', position: 'relative', overflow: 'hidden' }}>
+    <footer style={{ background: '#F1F5F9', borderTop: '1px solid rgba(15,23,42,0.1)', padding: '64px 0 32px', position: 'relative', overflow: 'hidden' }}>
 
       {/* Glow orb background */}
-      <div style={{ position: 'absolute', bottom: -80, left: '10%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle,rgba(0,212,170,0.06),transparent 70%)', pointerEvents: 'none' }} />
-      <div style={{ position: 'absolute', bottom: -60, right: '10%', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle,rgba(124,58,237,0.05),transparent 70%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: -80, left: '10%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle,rgba(14,165,233,0.1),transparent 70%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: -60, right: '10%', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle,rgba(99,102,241,0.08),transparent 70%)', pointerEvents: 'none' }} />
 
       <div className="wrap" style={{ position: 'relative', zIndex: 1 }}>
         <div className='footer-grid' style={{ marginBottom: 48 }}>
@@ -22,17 +22,17 @@ export default function Footer() {
               <svg width="22" height="26" viewBox="0 0 32 36" fill="none">
                 <defs>
                   <linearGradient id="fLogGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#00D4AA"/>
+                    <stop offset="0%" stopColor="#0EA5E9"/>
                     <stop offset="100%" stopColor="#7C9EFF"/>
                   </linearGradient>
                 </defs>
                 <path d="M16 0 L32 6 L32 20 Q32 30 16 36 Q0 30 0 20 L0 6 Z" fill="url(#fLogGrad)" opacity="0.9"/>
                 <path d="M10 18 L14 22 L22 14" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <span style={{ background: 'linear-gradient(135deg,#00D4AA,#7C9EFF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>AlgoGrass</span>
+              <span style={{ background: 'linear-gradient(135deg,#0EA5E9,#7C9EFF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>AlgoGrass</span>
             </div>
 
-            <p style={{ fontSize: 13, color: 'rgba(232,240,254,0.45)', lineHeight: 1.8, maxWidth: 270, marginBottom: 20 }}>
+            <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.8, maxWidth: 270, marginBottom: 20 }}>
               The AI-powered GDPR and GRC compliance platform for UK and EU businesses. Expert compliance, automated.
             </p>
 
@@ -43,14 +43,14 @@ export default function Footer() {
                 ['✓', 'Trusted by UK & EU SMEs'],
                 ['✓', 'AI-powered · Always up to date'],
               ].map(([icon, text]) => (
-                <span key={text} style={{ fontSize: 12, color: 'rgba(232,240,254,0.35)', display: 'flex', alignItems: 'center', gap: 7 }}>
-                  <span style={{ color: '#00D4AA', fontWeight: 700 }}>{icon}</span>{text}
+                <span key={text} style={{ fontSize: 12, color: '#94A3B8', display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <span style={{ color: '#0EA5E9', fontWeight: 700 }}>{icon}</span>{text}
                 </span>
               ))}
             </div>
 
             <a href="mailto:hello@algograss.co.uk" style={{
-              fontSize: 13, color: '#00D4AA', textDecoration: 'none',
+              fontSize: 13, color: '#0EA5E9', textDecoration: 'none',
               display: 'inline-flex', alignItems: 'center', gap: 6,
             }}
               onMouseEnter={e => e.currentTarget.style.opacity = '.75'}
@@ -62,13 +62,13 @@ export default function Footer() {
           {/* Link columns */}
           {COLS.map(col => (
             <div key={col.title}>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(0,212,170,0.6)', marginBottom: 18 }}>{col.title}</div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: '#0EA5E9', marginBottom: 18 }}>{col.title}</div>
               <ul style={{ listStyle: 'none' }}>
                 {col.links.map(([href, label]) => (
                   <li key={label} style={{ marginBottom: 11 }}>
-                    <a href={href} style={{ fontSize: 13, color: 'rgba(232,240,254,0.38)', textDecoration: 'none', transition: 'color .2s' }}
-                      onMouseEnter={e => e.currentTarget.style.color = '#00D4AA'}
-                      onMouseLeave={e => e.currentTarget.style.color = 'rgba(232,240,254,0.38)'}>
+                    <a href={href} style={{ fontSize: 13, color: '#64748B', textDecoration: 'none', transition: 'color .2s' }}
+                      onMouseEnter={e => e.currentTarget.style.color = '#0EA5E9'}
+                      onMouseLeave={e => e.currentTarget.style.color = '#64748B'}>
                       {label}
                     </a>
                   </li>
@@ -79,13 +79,13 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 22, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
-          <span style={{ fontSize: 12, color: 'rgba(232,240,254,0.2)' }}>© 2026 AlgoGrass Ltd · Registered in England & Wales · algograss.com</span>
+        <div style={{ borderTop: '1px solid rgba(15,23,42,0.07)', paddingTop: 22, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+          <span style={{ fontSize: 12, color: '#94A3B8' }}>© 2026 AlgoGrass Ltd · Registered in England & Wales · algograss.com</span>
           <div style={{ display: 'flex', gap: 22 }}>
             {[['Privacy Policy','/privacy-policy'],['Terms of Service','/terms'],['Cookie Policy','/cookie-policy']].map(([item,href]) => (
-              <a key={item} href={href} style={{ fontSize: 12, color: 'rgba(232,240,254,0.2)', textDecoration: 'none', transition: 'color .2s' }}
-                onMouseEnter={e => e.currentTarget.style.color = 'rgba(232,240,254,0.55)'}
-                onMouseLeave={e => e.currentTarget.style.color = 'rgba(232,240,254,0.2)'}>
+              <a key={item} href={href} style={{ fontSize: 12, color: '#94A3B8', textDecoration: 'none', transition: 'color .2s' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#0EA5E9'}
+                onMouseLeave={e => e.currentTarget.style.color = '#94A3B8'}>
                 {item}
               </a>
 

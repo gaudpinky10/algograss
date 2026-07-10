@@ -2,24 +2,24 @@
 import { useState, useEffect, useRef } from 'react'
 
 const S = {
-  page: { minHeight: '100vh', background: '#060B14', padding: '40px 20px', fontFamily: "'Segoe UI', sans-serif" },
+  page: { minHeight: '100vh', background: '#FFFFFF', padding: '40px 20px', fontFamily: "'Segoe UI', sans-serif" },
   wrap: { maxWidth: 800, margin: '0 auto' },
   header: { marginBottom: 36 },
   tag: { fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: '#EF4444', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 20, padding: '4px 14px', display: 'inline-block', marginBottom: 14 },
-  h1: { fontSize: 34, fontWeight: 800, color: '#E8F0FE', margin: '0 0 10px', letterSpacing: -0.5 },
+  h1: { fontSize: 34, fontWeight: 800, color: '#0F172A', margin: '0 0 10px', letterSpacing: -0.5 },
   sub: { color: '#94A3B8', fontSize: 15, margin: 0 },
-  card: { background: '#0D1525', border: '1px solid #1e2d45', borderRadius: 16, padding: '28px 32px', marginBottom: 20 },
-  cardTitle: { fontSize: 16, fontWeight: 700, color: '#E8F0FE', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 10 },
+  card: { background: '#F8FAFC', border: '1px solid rgba(15,23,42,0.1)', borderRadius: 16, padding: '28px 32px', marginBottom: 20 },
+  cardTitle: { fontSize: 16, fontWeight: 700, color: '#0F172A', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 10 },
   label: { fontSize: 13, fontWeight: 600, color: '#CBD5E1', display: 'block', marginBottom: 6 },
-  input: { width: '100%', background: '#060B14', border: '1.5px solid #1e2d45', borderRadius: 10, padding: '10px 14px', color: '#E8F0FE', fontSize: 14, outline: 'none', boxSizing: 'border-box' },
-  textarea: { width: '100%', background: '#060B14', border: '1.5px solid #1e2d45', borderRadius: 10, padding: '10px 14px', color: '#E8F0FE', fontSize: 14, outline: 'none', resize: 'vertical', minHeight: 90, boxSizing: 'border-box', fontFamily: 'inherit' },
+  input: { width: '100%', background: '#FFFFFF', border: '1.5px solid rgba(15,23,42,0.1)', borderRadius: 10, padding: '10px 14px', color: '#0F172A', fontSize: 14, outline: 'none', boxSizing: 'border-box' },
+  textarea: { width: '100%', background: '#FFFFFF', border: '1.5px solid rgba(15,23,42,0.1)', borderRadius: 10, padding: '10px 14px', color: '#0F172A', fontSize: 14, outline: 'none', resize: 'vertical', minHeight: 90, boxSizing: 'border-box', fontFamily: 'inherit' },
   row: { marginBottom: 18 },
-  btn: { background: 'linear-gradient(135deg,#00D4AA,#00A882)', color: '#06111E', fontWeight: 700, fontSize: 14, padding: '12px 28px', borderRadius: 10, border: 'none', cursor: 'pointer', width: '100%' },
-  btnOutline: { background: 'transparent', color: '#00D4AA', fontWeight: 600, fontSize: 13, padding: '10px 20px', borderRadius: 10, border: '1px solid #00D4AA', cursor: 'pointer' },
+  btn: { background: 'linear-gradient(135deg,#0EA5E9,#0284C7)', color: '#FFFFFF', fontWeight: 700, fontSize: 14, padding: '12px 28px', borderRadius: 10, border: 'none', cursor: 'pointer', width: '100%' },
+  btnOutline: { background: 'transparent', color: '#0EA5E9', fontWeight: 600, fontSize: 13, padding: '10px 20px', borderRadius: 10, border: '1px solid #0EA5E9', cursor: 'pointer' },
   check: { display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 12 },
   checkIcon: { fontSize: 16, flexShrink: 0, marginTop: 1 },
   checkText: { fontSize: 14, color: '#CBD5E1', lineHeight: 1.5 },
-  letter: { background: '#060B14', border: '1px solid #1e2d45', borderRadius: 12, padding: 24, color: '#CBD5E1', fontSize: 13, lineHeight: 1.8, whiteSpace: 'pre-wrap', fontFamily: 'Georgia, serif' },
+  letter: { background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.1)', borderRadius: 12, padding: 24, color: '#CBD5E1', fontSize: 13, lineHeight: 1.8, whiteSpace: 'pre-wrap', fontFamily: 'Georgia, serif' },
 }
 
 const DATA_TYPES = ['Names','Email addresses','Financial data','Health data','Passwords','Location data','Phone numbers',"Children's data",'Biometric data','Criminal records']
@@ -55,19 +55,19 @@ function Countdown({ breachDateTime }) {
   const mins = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60))
   const secs = Math.floor((remaining % (1000 * 60)) / 1000)
   const pct = Math.max(0, (remaining / (72 * 60 * 60 * 1000)) * 100)
-  const col = hrs > 24 ? '#00D4AA' : hrs > 6 ? '#F59E0B' : '#EF4444'
+  const col = hrs > 24 ? '#0EA5E9' : hrs > 6 ? '#F59E0B' : '#EF4444'
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginBottom: 16 }}>
         {[[hrs,'Hours'],[mins,'Minutes'],[secs,'Seconds']].map(([v,l]) => (
-          <div key={l} style={{ textAlign: 'center', background: '#060B14', border: '1px solid #1e2d45', borderRadius: 12, padding: '16px 20px', minWidth: 80 }}>
+          <div key={l} style={{ textAlign: 'center', background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.1)', borderRadius: 12, padding: '16px 20px', minWidth: 80 }}>
             <div style={{ fontSize: 32, fontWeight: 800, color: col, fontVariantNumeric: 'tabular-nums' }}>{String(v).padStart(2,'0')}</div>
             <div style={{ fontSize: 11, color: '#475569', marginTop: 4 }}>{l}</div>
           </div>
         ))}
       </div>
-      <div style={{ background: '#060B14', borderRadius: 8, height: 8, overflow: 'hidden' }}>
+      <div style={{ background: '#FFFFFF', borderRadius: 8, height: 8, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: col, borderRadius: 8, transition: 'width 1s linear' }} />
       </div>
       <p style={{ textAlign: 'center', fontSize: 12, color: '#475569', marginTop: 8 }}>Time remaining to report to the ICO under Article 33 UK GDPR</p>
@@ -147,7 +147,7 @@ export default function BreachPage() {
             <label style={S.label}>Data types affected</label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {DATA_TYPES.map(t => (
-                <button key={t} onClick={() => toggleType(t)} style={{ background: form.dataTypes.includes(t) ? 'rgba(0,212,170,0.15)' : 'rgba(255,255,255,0.03)', border: `1px solid ${form.dataTypes.includes(t) ? '#00D4AA' : '#1e2d45'}`, color: form.dataTypes.includes(t) ? '#00D4AA' : '#94A3B8', borderRadius: 20, padding: '6px 14px', fontSize: 13, cursor: 'pointer' }}>
+                <button key={t} onClick={() => toggleType(t)} style={{ background: form.dataTypes.includes(t) ? 'rgba(14,165,233,0.15)' : 'rgba(15,23,42,0.03)', border: `1px solid ${form.dataTypes.includes(t) ? '#0EA5E9' : 'rgba(15,23,42,0.1)'}`, color: form.dataTypes.includes(t) ? '#0EA5E9' : '#94A3B8', borderRadius: 20, padding: '6px 14px', fontSize: 13, cursor: 'pointer' }}>
                   {t}
                 </button>
               ))}
@@ -185,12 +185,12 @@ export default function BreachPage() {
             <div key={title} style={S.check}>
               <span style={S.checkIcon}>{icon}</span>
               <div>
-                <div style={{ fontWeight: 600, color: '#E8F0FE', fontSize: 14, marginBottom: 2 }}>{title}</div>
+                <div style={{ fontWeight: 600, color: '#0F172A', fontSize: 14, marginBottom: 2 }}>{title}</div>
                 <div style={S.checkText}>{desc}</div>
               </div>
             </div>
           ))}
-          <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid #1e2d45' }}>
+          <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid rgba(15,23,42,0.1)' }}>
             <a href="https://ico.org.uk/for-organisations/report-a-breach/" target="_blank" rel="noopener noreferrer"
               style={{ display: 'inline-block', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#EF4444', fontWeight: 700, fontSize: 14, padding: '12px 24px', borderRadius: 10, textDecoration: 'none' }}>
               🏛️ Report directly to the ICO →

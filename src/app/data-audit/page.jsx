@@ -104,7 +104,7 @@ export default function DataAuditPage() {
     <div style={{ minHeight: '90vh', background: 'var(--cream)' }}>
       <section style={{ background: 'var(--bg2)', padding: '48px 0', borderBottom: '1px solid var(--border)' }}>
         <div className="wrap">
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(0,212,170,0.12)', border: '1px solid rgba(0,212,170,0.25)', padding: '5px 13px', borderRadius: 100, marginBottom: 16, fontSize: 11, fontWeight: 600, color: 'var(--lime)', letterSpacing: '.06em', textTransform: 'uppercase' }}>Data Compliance Audit</div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(14,165,233,0.12)', border: '1px solid rgba(14,165,233,0.25)', padding: '5px 13px', borderRadius: 100, marginBottom: 16, fontSize: 11, fontWeight: 600, color: 'var(--lime)', letterSpacing: '.06em', textTransform: 'uppercase' }}>Data Compliance Audit</div>
           <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(26px,3vw,44px)', fontWeight: 800, color: '#fff', marginBottom: 12 }}>Beyond the Website — Full Data Audit</h1>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,.65)', maxWidth: 600, lineHeight: 1.7 }}>GDPR covers more than your website. Audit your CRM, HR records, email marketing, and vendor contracts — get a scored compliance report with specific action steps.</p>
         </div>

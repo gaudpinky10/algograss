@@ -3,13 +3,13 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 const S = {
-  page: { minHeight: '100vh', background: '#060B14', padding: '40px 20px', fontFamily: "'Segoe UI', sans-serif" },
+  page: { minHeight: '100vh', background: '#FFFFFF', padding: '40px 20px', fontFamily: "'Segoe UI', sans-serif" },
   wrap: { maxWidth: 800, margin: '0 auto' },
-  h1: { fontSize: 34, fontWeight: 800, color: '#E8F0FE', margin: '0 0 8px', letterSpacing: -0.5 },
+  h1: { fontSize: 34, fontWeight: 800, color: '#0F172A', margin: '0 0 8px', letterSpacing: -0.5 },
   sub: { color: '#94A3B8', fontSize: 15, margin: '0 0 32px' },
-  card: { background: '#0D1525', border: '1px solid #1e2d45', borderRadius: 16, padding: '24px 28px', marginBottom: 16 },
-  btn: { background: 'linear-gradient(135deg,#00D4AA,#00A882)', color: '#06111E', fontWeight: 700, fontSize: 14, padding: '11px 24px', borderRadius: 10, border: 'none', cursor: 'pointer' },
-  btnGhost: { background: 'transparent', color: '#94A3B8', fontWeight: 600, fontSize: 13, padding: '8px 16px', borderRadius: 8, border: '1px solid #1e2d45', cursor: 'pointer' },
+  card: { background: '#F8FAFC', border: '1px solid rgba(15,23,42,0.1)', borderRadius: 16, padding: '24px 28px', marginBottom: 16 },
+  btn: { background: 'linear-gradient(135deg,#0EA5E9,#0284C7)', color: '#FFFFFF', fontWeight: 700, fontSize: 14, padding: '11px 24px', borderRadius: 10, border: 'none', cursor: 'pointer' },
+  btnGhost: { background: 'transparent', color: '#94A3B8', fontWeight: 600, fontSize: 13, padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(15,23,42,0.1)', cursor: 'pointer' },
 }
 
 const MODULES = [
@@ -102,10 +102,10 @@ function ProgressBar({ completed, total }) {
     <div style={{ marginBottom: 32 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
         <span style={{ fontSize: 13, color: '#94A3B8' }}>Overall Progress</span>
-        <span style={{ fontSize: 13, color: '#00D4AA', fontWeight: 600 }}>{completed}/{total} modules</span>
+        <span style={{ fontSize: 13, color: '#0EA5E9', fontWeight: 600 }}>{completed}/{total} modules</span>
       </div>
-      <div style={{ background: '#1e2d45', borderRadius: 8, height: 8, overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${pct}%`, background: 'linear-gradient(90deg,#00D4AA,#7C9EFF)', borderRadius: 8, transition: 'width 0.5s ease' }} />
+      <div style={{ background: 'rgba(15,23,42,0.1)', borderRadius: 8, height: 8, overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${pct}%`, background: 'linear-gradient(90deg,#0EA5E9,#7C9EFF)', borderRadius: 8, transition: 'width 0.5s ease' }} />
       </div>
     </div>
   )
@@ -114,12 +114,12 @@ function ProgressBar({ completed, total }) {
 function QuizQuestion({ q, idx, onAnswer, answered }) {
   return (
     <div style={{ marginBottom: 20 }}>
-      <p style={{ fontSize: 14, fontWeight: 600, color: '#E8F0FE', marginBottom: 10 }}>{idx + 1}. {q.q}</p>
+      <p style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 10 }}>{idx + 1}. {q.q}</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {q.opts.map((opt, i) => {
-          let bg = 'rgba(255,255,255,0.03)', col = '#CBD5E1', border = '#1e2d45'
+          let bg = 'rgba(15,23,42,0.03)', col = '#CBD5E1', border = 'rgba(15,23,42,0.1)'
           if (answered !== undefined) {
-            if (i === q.correct) { bg = 'rgba(0,212,170,0.1)'; col = '#00D4AA'; border = '#00D4AA' }
+            if (i === q.correct) { bg = 'rgba(14,165,233,0.1)'; col = '#0EA5E9'; border = '#0EA5E9' }
             else if (i === answered && answered !== q.correct) { bg = 'rgba(239,68,68,0.1)'; col = '#EF4444'; border = '#EF4444' }
           }
           return (
@@ -157,23 +157,23 @@ function Module({ mod, onComplete, isCompleted }) {
   const retry = () => { setAnswers({}); setSubmitted(false); setScore(0) }
 
   return (
-    <div style={{ ...S.card, borderColor: isCompleted ? 'rgba(0,212,170,0.3)' : '#1e2d45' }}>
+    <div style={{ ...S.card, borderColor: isCompleted ? 'rgba(14,165,233,0.3)' : 'rgba(15,23,42,0.1)' }}>
       <div onClick={() => setOpen(o => !o)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <span style={{ fontSize: 24 }}>{mod.icon}</span>
           <div>
             <div style={{ fontSize: 11, color: '#475569', fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 2 }}>Module {mod.id}</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#E8F0FE' }}>{mod.title}</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#0F172A' }}>{mod.title}</div>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {isCompleted && <span style={{ background: 'rgba(0,212,170,0.12)', color: '#00D4AA', fontSize: 12, fontWeight: 700, padding: '3px 12px', borderRadius: 20 }}>✓ Passed</span>}
+          {isCompleted && <span style={{ background: 'rgba(14,165,233,0.12)', color: '#0EA5E9', fontSize: 12, fontWeight: 700, padding: '3px 12px', borderRadius: 20 }}>✓ Passed</span>}
           <span style={{ color: '#475569', fontSize: 18 }}>{open ? '▲' : '▼'}</span>
         </div>
       </div>
 
       {open && (
-        <div style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid #1e2d45' }}>
+        <div style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid rgba(15,23,42,0.1)' }}>
           {!quizStarted ? (
             <>
               <div style={{ marginBottom: 24 }}>
@@ -185,7 +185,7 @@ function Module({ mod, onComplete, isCompleted }) {
             </>
           ) : (
             <div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: '#E8F0FE', marginBottom: 20 }}>Answer at least 2 out of 3 questions correctly to pass this module.</p>
+              <p style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 20 }}>Answer at least 2 out of 3 questions correctly to pass this module.</p>
               {mod.quiz.map((q, i) => (
                 <QuizQuestion key={i} q={q} idx={i} onAnswer={a => answer(i, a)} answered={submitted ? (answers[i] !== undefined ? answers[i] : undefined) : answers[i] !== undefined ? undefined : undefined} />
               ))}
@@ -195,8 +195,8 @@ function Module({ mod, onComplete, isCompleted }) {
                   Submit Answers
                 </button>
               ) : (
-                <div style={{ background: score >= 2 ? 'rgba(0,212,170,0.08)' : 'rgba(239,68,68,0.08)', border: `1px solid ${score >= 2 ? 'rgba(0,212,170,0.25)' : 'rgba(239,68,68,0.25)'}`, borderRadius: 12, padding: '16px 20px', marginTop: 16 }}>
-                  <p style={{ color: score >= 2 ? '#00D4AA' : '#EF4444', fontWeight: 700, fontSize: 15, margin: '0 0 6px' }}>
+                <div style={{ background: score >= 2 ? 'rgba(14,165,233,0.08)' : 'rgba(239,68,68,0.08)', border: `1px solid ${score >= 2 ? 'rgba(14,165,233,0.25)' : 'rgba(239,68,68,0.25)'}`, borderRadius: 12, padding: '16px 20px', marginTop: 16 }}>
+                  <p style={{ color: score >= 2 ? '#0EA5E9' : '#EF4444', fontWeight: 700, fontSize: 15, margin: '0 0 6px' }}>
                     {score >= 2 ? `✅ Passed! ${score}/3 correct` : `❌ ${score}/3 correct — try again`}
                   </p>
                   {score < 2 && <button onClick={retry} style={S.btnGhost}>Retry Quiz</button>}
@@ -212,17 +212,17 @@ function Module({ mod, onComplete, isCompleted }) {
 
 function Certificate({ name, date }) {
   return (
-    <div id="certificate" style={{ background: '#fff', color: '#111', border: '8px solid #00D4AA', borderRadius: 16, padding: '48px 56px', textAlign: 'center', maxWidth: 640, margin: '0 auto', fontFamily: 'Georgia, serif' }}>
-      <div style={{ fontSize: 13, fontWeight: 700, color: '#00D4AA', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>AlgoGrass</div>
-      <div style={{ width: 60, height: 3, background: 'linear-gradient(90deg,#00D4AA,#7C9EFF)', margin: '0 auto 28px', borderRadius: 2 }} />
+    <div id="certificate" style={{ background: '#fff', color: '#111', border: '8px solid #0EA5E9', borderRadius: 16, padding: '48px 56px', textAlign: 'center', maxWidth: 640, margin: '0 auto', fontFamily: 'Georgia, serif' }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: '#0EA5E9', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>AlgoGrass</div>
+      <div style={{ width: 60, height: 3, background: 'linear-gradient(90deg,#0EA5E9,#7C9EFF)', margin: '0 auto 28px', borderRadius: 2 }} />
       <h2 style={{ fontSize: 13, fontWeight: 600, color: '#666', letterSpacing: 2, textTransform: 'uppercase', margin: '0 0 16px' }}>Certificate of Completion</h2>
       <p style={{ fontSize: 15, color: '#555', margin: '0 0 8px' }}>This is to certify that</p>
       <h1 style={{ fontSize: 32, fontWeight: 800, color: '#111', margin: '0 0 12px', letterSpacing: -0.5 }}>{name}</h1>
       <p style={{ fontSize: 15, color: '#555', margin: '0 0 8px' }}>has successfully completed</p>
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#00D4AA', margin: '0 0 24px' }}>GDPR Staff Awareness Training</h2>
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#0EA5E9', margin: '0 0 24px' }}>GDPR Staff Awareness Training</h2>
       <p style={{ fontSize: 13, color: '#888', margin: '0 0 4px' }}>All 5 modules completed · 100% quiz pass rate</p>
       <p style={{ fontSize: 13, color: '#888', margin: '0 0 28px' }}>Issued: {date}</p>
-      <div style={{ width: 60, height: 3, background: 'linear-gradient(90deg,#00D4AA,#7C9EFF)', margin: '0 auto 16px', borderRadius: 2 }} />
+      <div style={{ width: 60, height: 3, background: 'linear-gradient(90deg,#0EA5E9,#7C9EFF)', margin: '0 auto 16px', borderRadius: 2 }} />
       <p style={{ fontSize: 11, color: '#aaa', margin: 0 }}>algograss.com · Automated GDPR Compliance</p>
     </div>
   )
@@ -263,7 +263,7 @@ export default function TrainingPage() {
   return (
     <div style={S.page}>
       <div style={S.wrap}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: '#00D4AA', letterSpacing: 1, textTransform: 'uppercase', background: 'rgba(0,212,170,0.1)', border: '1px solid rgba(0,212,170,0.2)', borderRadius: 20, padding: '4px 14px', display: 'inline-block', marginBottom: 14 }}>🎓 Staff Training</div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#0EA5E9', letterSpacing: 1, textTransform: 'uppercase', background: 'rgba(14,165,233,0.1)', border: '1px solid rgba(14,165,233,0.2)', borderRadius: 20, padding: '4px 14px', display: 'inline-block', marginBottom: 14 }}>🎓 Staff Training</div>
         <h1 style={S.h1}>GDPR Staff Awareness Training</h1>
         <p style={S.sub}>Complete all 5 modules and pass each quiz to earn your AlgoGrass GDPR Certificate</p>
 
@@ -274,11 +274,11 @@ export default function TrainingPage() {
         ))}
 
         {allDone && !showCert && (
-          <div style={{ background: 'linear-gradient(135deg,rgba(0,212,170,0.1),rgba(124,158,255,0.1))', border: '1px solid rgba(0,212,170,0.25)', borderRadius: 16, padding: '32px', textAlign: 'center', marginTop: 24 }}>
+          <div style={{ background: 'linear-gradient(135deg,rgba(14,165,233,0.1),rgba(124,158,255,0.1))', border: '1px solid rgba(14,165,233,0.25)', borderRadius: 16, padding: '32px', textAlign: 'center', marginTop: 24 }}>
             <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
-            <h2 style={{ color: '#E8F0FE', fontSize: 22, fontWeight: 700, margin: '0 0 8px' }}>Congratulations! All modules complete.</h2>
+            <h2 style={{ color: '#0F172A', fontSize: 22, fontWeight: 700, margin: '0 0 8px' }}>Congratulations! All modules complete.</h2>
             <p style={{ color: '#94A3B8', fontSize: 14, margin: '0 0 24px' }}>Enter your name to generate your GDPR training certificate.</p>
-            <input style={{ ...S.card, display: 'block', width: '100%', maxWidth: 360, margin: '0 auto 16px', textAlign: 'center', color: '#E8F0FE', fontSize: 16, padding: '12px 16px', borderRadius: 10, boxSizing: 'border-box' }}
+            <input style={{ ...S.card, display: 'block', width: '100%', maxWidth: 360, margin: '0 auto 16px', textAlign: 'center', color: '#0F172A', fontSize: 16, padding: '12px 16px', borderRadius: 10, boxSizing: 'border-box' }}
               placeholder="Your full name" value={certName} onChange={e => setCertName(e.target.value)} />
             <button style={{ ...S.btn, opacity: certName.trim() ? 1 : 0.5 }} onClick={() => certName.trim() && setShowCert(true)} disabled={!certName.trim()}>
               🏆 Generate Certificate

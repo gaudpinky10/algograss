@@ -30,7 +30,7 @@ const SEV = {
   critical: { bg:'rgba(220,38,38,0.15)', color:'#EF4444', label:'Critical' },
   high:     { bg:'rgba(245,158,11,0.15)', color:'#F59E0B', label:'High Impact' },
   medium:   { bg:'rgba(99,102,241,0.15)', color:'#818CF8', label:'Medium' },
-  low:      { bg:'rgba(0,212,170,0.12)',  color:'#00D4AA', label:'Low' },
+  low:      { bg:'rgba(14,165,233,0.12)',  color:'#0EA5E9', label:'Low' },
 }
 const CAT_ICONS = { 'UK GDPR':'🇬🇧','EU GDPR':'🇪🇺','EU AI Act':'🤖','ICO Guidance':'📘','Enforcement':'⚖️','PECR / Cookies':'🍪','Cybersecurity':'🔐','International Transfers':'🌍' }
 
@@ -75,7 +75,7 @@ export default function RegulatoryMonitorPage() {
       {/* HERO */}
       <section style={{ background:'linear-gradient(135deg,var(--bg) 0%,var(--bg2) 100%)', padding:'52px 0 40px', borderBottom:'1px solid var(--border)' }}>
         <div className="wrap">
-          <div style={{ display:'inline-flex', alignItems:'center', gap:7, background:'rgba(0,212,170,.1)', border:'1px solid rgba(0,212,170,.25)', padding:'5px 13px', borderRadius:100, marginBottom:16, fontSize:11, fontWeight:600, color:'#00D4AA', letterSpacing:'.08em', textTransform:'uppercase' }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:7, background:'rgba(14,165,233,.1)', border:'1px solid rgba(14,165,233,.25)', padding:'5px 13px', borderRadius:100, marginBottom:16, fontSize:11, fontWeight:600, color:'#0EA5E9', letterSpacing:'.08em', textTransform:'uppercase' }}>
             📡 Live Regulatory Feed · Updated June 2026
           </div>
           <h1 style={{ fontFamily:'Syne,sans-serif', fontSize:'clamp(26px,3vw,42px)', fontWeight:800, color:'#fff', marginBottom:12 }}>Regulatory Change Monitor</h1>
@@ -95,17 +95,17 @@ export default function RegulatoryMonitorPage() {
       </section>
 
       {/* STICKY FILTERS */}
-      <div style={{ background:'rgba(6,11,20,0.95)', borderBottom:'1px solid var(--border)', padding:'14px 0', position:'sticky', top:64, zIndex:10, backdropFilter:'blur(12px)' }}>
+      <div style={{ background:'rgba(255,255,255,0.95)', borderBottom:'1px solid var(--border)', padding:'14px 0', position:'sticky', top:64, zIndex:10, backdropFilter:'blur(12px)' }}>
         <div className="wrap" style={{ display:'flex', gap:10, alignItems:'center', flexWrap:'wrap' }}>
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search updates..."
             style={{ flex:1, minWidth:180, background:'rgba(255,255,255,.06)', border:'1px solid rgba(255,255,255,.1)', borderRadius:8, padding:'8px 14px', fontSize:13, color:'#fff', outline:'none' }} />
           <select value={cat} onChange={e => setCat(e.target.value)}
             style={{ background:'rgba(255,255,255,.06)', border:'1px solid rgba(255,255,255,.1)', borderRadius:8, padding:'8px 12px', fontSize:13, color:'#fff', cursor:'pointer' }}>
-            {CATS.map(c => <option key={c} value={c} style={{ background:'#0D1525' }}>{c === 'All' ? 'All Categories' : c}</option>)}
+            {CATS.map(c => <option key={c} value={c} style={{ background:'#F8FAFC' }}>{c === 'All' ? 'All Categories' : c}</option>)}
           </select>
           <select value={sev} onChange={e => setSev(e.target.value)}
             style={{ background:'rgba(255,255,255,.06)', border:'1px solid rgba(255,255,255,.1)', borderRadius:8, padding:'8px 12px', fontSize:13, color:'#fff', cursor:'pointer' }}>
-            {['All','Critical','High','Medium','Low'].map(s => <option key={s} value={s} style={{ background:'#0D1525' }}>{s === 'All' ? 'All Severities' : s}</option>)}
+            {['All','Critical','High','Medium','Low'].map(s => <option key={s} value={s} style={{ background:'#F8FAFC' }}>{s === 'All' ? 'All Severities' : s}</option>)}
           </select>
           <span style={{ fontSize:12, color:'rgba(255,255,255,.35)' }}>{filtered.length} result{filtered.length !== 1 ? 's' : ''}</span>
         </div>
@@ -124,7 +124,7 @@ export default function RegulatoryMonitorPage() {
             const s = SEV[u.severity] || SEV.medium
             const isOpen = open === u.id
             return (
-              <div key={u.id} style={{ background:'rgba(13,21,37,0.8)', border:`1px solid ${isOpen ? 'rgba(0,212,170,0.3)' : 'rgba(255,255,255,0.06)'}`, borderRadius:14, overflow:'hidden', transition:'border-color .2s' }}>
+              <div key={u.id} style={{ background:'rgba(255,255,255,0.9)', border:`1px solid ${isOpen ? 'rgba(14,165,233,0.3)' : 'rgba(15,23,42,0.07)'}`, borderRadius:14, overflow:'hidden', transition:'border-color .2s' }}>
                 <button onClick={() => setOpen(isOpen ? null : u.id)}
                   style={{ width:'100%', textAlign:'left', background:'transparent', border:'none', padding:'18px 20px', cursor:'pointer', display:'flex', gap:14, alignItems:'flex-start' }}>
                   <div style={{ flexShrink:0, fontSize:11, color:'rgba(255,255,255,.3)', marginTop:2, minWidth:58 }}>{u.date}</div>
@@ -143,7 +143,7 @@ export default function RegulatoryMonitorPage() {
                     <p style={{ fontSize:13, color:'rgba(255,255,255,.6)', lineHeight:1.8, marginTop:14, marginBottom:14 }}>{u.body}</p>
                     <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
                       <span style={{ fontSize:11, color:'rgba(255,255,255,.3)' }}>Source: {u.source}</span>
-                      {u.url && <a href={u.url} target="_blank" rel="noopener noreferrer" style={{ fontSize:11, padding:'5px 12px', borderRadius:6, border:'1px solid rgba(0,212,170,.3)', color:'#00D4AA', textDecoration:'none', fontWeight:600 }}>Read source →</a>}
+                      {u.url && <a href={u.url} target="_blank" rel="noopener noreferrer" style={{ fontSize:11, padding:'5px 12px', borderRadius:6, border:'1px solid rgba(14,165,233,.3)', color:'#0EA5E9', textDecoration:'none', fontWeight:600 }}>Read source →</a>}
                       {u.category === 'EU AI Act' && <a href="/ai-governance" style={{ fontSize:11, padding:'5px 12px', borderRadius:6, border:'1px solid rgba(124,158,255,.25)', color:'#7C9EFF', textDecoration:'none', fontWeight:600 }}>Check AI Governance →</a>}
                       {(u.category === 'UK GDPR' || u.category === 'EU GDPR') && <a href="/grc" style={{ fontSize:11, padding:'5px 12px', borderRadius:6, border:'1px solid rgba(124,158,255,.25)', color:'#7C9EFF', textDecoration:'none', fontWeight:600 }}>Review GRC →</a>}
                       {u.category === 'Enforcement' && <a href="/scan" style={{ fontSize:11, padding:'5px 12px', borderRadius:6, border:'1px solid rgba(124,158,255,.25)', color:'#7C9EFF', textDecoration:'none', fontWeight:600 }}>Scan Your Site →</a>}
@@ -158,24 +158,24 @@ export default function RegulatoryMonitorPage() {
         {/* SIDEBAR */}
         <div style={{ display:'flex', flexDirection:'column', gap:16, position:'sticky', top:120 }}>
 
-          <div style={{ background:'rgba(13,21,37,0.9)', border:'1px solid rgba(0,212,170,.2)', borderRadius:16, padding:'20px' }}>
-            <div style={{ fontSize:14, fontWeight:700, color:'#00D4AA', marginBottom:6 }}>📬 Get Regulatory Alerts</div>
+          <div style={{ background:'rgba(255,255,255,0.93)', border:'1px solid rgba(14,165,233,.2)', borderRadius:16, padding:'20px' }}>
+            <div style={{ fontSize:14, fontWeight:700, color:'#0EA5E9', marginBottom:6 }}>📬 Get Regulatory Alerts</div>
             <p style={{ fontSize:12, color:'rgba(255,255,255,.45)', marginBottom:14, lineHeight:1.6 }}>Notified when major GDPR fines, ICO guidance, or law changes happen.</p>
             {subscribed ? (
-              <div style={{ background:'rgba(0,212,170,.1)', border:'1px solid rgba(0,212,170,.25)', borderRadius:8, padding:'12px', fontSize:13, color:'#00D4AA', textAlign:'center' }}>✅ You're subscribed!</div>
+              <div style={{ background:'rgba(14,165,233,.1)', border:'1px solid rgba(14,165,233,.25)', borderRadius:8, padding:'12px', fontSize:13, color:'#0EA5E9', textAlign:'center' }}>✅ You're subscribed!</div>
             ) : (
               <>
                 <input value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com"
                   style={{ width:'100%', background:'rgba(255,255,255,.06)', border:'1px solid rgba(255,255,255,.1)', borderRadius:8, padding:'9px 12px', fontSize:13, color:'#fff', outline:'none', marginBottom:8, boxSizing:'border-box' }} />
                 <button onClick={() => { if (email.includes('@')) setSubscribed(true) }}
-                  style={{ width:'100%', padding:'10px', borderRadius:8, border:'none', background:'linear-gradient(135deg,#00D4AA,#00A882)', color:'#fff', fontWeight:700, fontSize:13, cursor:'pointer' }}>
+                  style={{ width:'100%', padding:'10px', borderRadius:8, border:'none', background:'linear-gradient(135deg,#0EA5E9,#0284C7)', color:'#fff', fontWeight:700, fontSize:13, cursor:'pointer' }}>
                   Subscribe to alerts
                 </button>
               </>
             )}
           </div>
 
-          <div style={{ background:'rgba(13,21,37,0.8)', border:'1px solid rgba(255,255,255,.06)', borderRadius:16, padding:'18px' }}>
+          <div style={{ background:'rgba(255,255,255,0.9)', border:'1px solid rgba(255,255,255,.06)', borderRadius:16, padding:'18px' }}>
             <div style={{ fontSize:13, fontWeight:700, color:'#fff', marginBottom:12 }}>Quick Actions</div>
             {[['🛡️','Review GRC Controls','/grc'],['🤖','AI Governance','/ai-governance'],['🔍','Scan Your Website','/scan'],['📋','DPIA Wizard','/dpia'],['🏢','Vendor Risk','/vendor-risk']].map(([icon, label, href]) => (
               <a key={href} href={href} style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 0', borderBottom:'1px solid rgba(255,255,255,.04)', textDecoration:'none', color:'rgba(255,255,255,.6)', fontSize:13 }}>

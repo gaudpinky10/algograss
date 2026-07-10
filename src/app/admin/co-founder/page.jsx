@@ -7,8 +7,8 @@ function getUser() {
 }
 function fmt(d){if(!d)return'—';try{return new Date(d).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}catch{return'—'}}
 
-const PLAN_COLOR={free:'#888',growth:'#818CF8',agency:'#F59E0B',enterprise:'#00D4AA'}
-const TOOL_COLOR={scan:'#00D4AA',auth:'#818CF8',complaint:'#F59E0B',dsar:'#EC4899',dpia:'#3B82F6','vendor-risk':'#10B981',grc:'#8B5CF6','ai-governance':'#F97316'}
+const PLAN_COLOR={free:'#888',growth:'#818CF8',agency:'#F59E0B',enterprise:'#0EA5E9'}
+const TOOL_COLOR={scan:'#0EA5E9',auth:'#818CF8',complaint:'#F59E0B',dsar:'#EC4899',dpia:'#3B82F6','vendor-risk':'#10B981',grc:'#8B5CF6','ai-governance':'#F97316'}
 const TOOL_ICON={scan:'🔍',auth:'🔑',complaint:'📨',dsar:'📁',dpia:'📊','vendor-risk':'🏢',grc:'🏛','ai-governance':'🤖',reminders:'🔔','data-audit':'🗂'}
 
 export default function CoFounderPage() {
@@ -64,7 +64,7 @@ export default function CoFounderPage() {
                 {[
                   {label:'Total users',    val:overview.totalUsers,      sub:`+${overview.usersMonth} this month`,  color:'#818CF8'},
                   {label:'New today',      val:overview.usersToday,      sub:`+${overview.usersWeek} this week`,    color:'var(--accent)'},
-                  {label:'Total scans',    val:overview.totalScans,      sub:`Avg score: ${overview.avgScore}/100`, color:'#00D4AA'},
+                  {label:'Total scans',    val:overview.totalScans,      sub:`Avg score: ${overview.avgScore}/100`, color:'#0EA5E9'},
                   {label:'Tool uses today',val:overview.activitiesToday, sub:`${overview.totalActivities} total`,   color:'#F59E0B'},
                 ].map(k=>(
                   <div key={k.label} style={{background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:14,padding:'20px 22px'}}>
@@ -109,7 +109,7 @@ export default function CoFounderPage() {
                   {Object.entries(planBreakdown||{}).map(([plan,count])=>(
                     <div key={plan} style={{display:'flex',alignItems:'center',gap:10,marginBottom:12}}>
                       <span style={{fontSize:12,color:'var(--ink)',minWidth:80,textTransform:'capitalize'}}>{plan}</span>
-                      <div style={{flex:1,height:8,background:'rgba(255,255,255,0.06)',borderRadius:4,overflow:'hidden'}}>
+                      <div style={{flex:1,height:8,background:'rgba(15,23,42,0.07)',borderRadius:4,overflow:'hidden'}}>
                         <div style={{height:'100%',width:`${Math.round(count/overview.totalUsers*100)||0}%`,background:PLAN_COLOR[plan]||'#888',borderRadius:4}}/>
                       </div>
                       <span style={{fontSize:12,color:'var(--ink2)',minWidth:30,textAlign:'right'}}>{count}</span>
@@ -158,7 +158,7 @@ export default function CoFounderPage() {
                 <div key={tool} style={{display:'flex',alignItems:'center',gap:10,marginBottom:12}}>
                   <span style={{fontSize:16}}>{TOOL_ICON[tool]||'⚡'}</span>
                   <span style={{fontSize:12,color:'var(--ink)',minWidth:120}}>{tool}</span>
-                  <div style={{flex:1,height:8,background:'rgba(255,255,255,0.06)',borderRadius:4,overflow:'hidden'}}>
+                  <div style={{flex:1,height:8,background:'rgba(15,23,42,0.07)',borderRadius:4,overflow:'hidden'}}>
                     <div style={{height:'100%',width:`${totalToolUses?Math.round(count/totalToolUses*100):0}%`,background:TOOL_COLOR[tool]||'#818CF8',borderRadius:4}}/>
                   </div>
                   <span style={{fontSize:12,fontWeight:700,color:TOOL_COLOR[tool]||'#818CF8',minWidth:40,textAlign:'right'}}>{count}</span>

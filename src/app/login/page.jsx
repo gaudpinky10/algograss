@@ -41,13 +41,13 @@ export default function LoginPage() {
 
   return (
     <div style={{
-      minHeight: '100vh', background: '#060B14',
+      minHeight: '100vh', background: '#FFFFFF',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '40px 24px',
     }}>
       {/* Background glow */}
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: '20%', left: '30%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,212,170,0.07) 0%, transparent 70%)', filter: 'blur(40px)' }} />
+        <div style={{ position: 'absolute', top: '20%', left: '30%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(14,165,233,0.07) 0%, transparent 70%)', filter: 'blur(40px)' }} />
         <div style={{ position: 'absolute', bottom: '20%', right: '25%', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(124,158,255,0.06) 0%, transparent 70%)', filter: 'blur(40px)' }} />
       </div>
 
@@ -56,30 +56,30 @@ export default function LoginPage() {
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
           <a href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 28 }}>
             <svg width="28" height="32" viewBox="0 0 32 36" fill="none">
-              <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#00D4AA"/><stop offset="100%" stopColor="#7C9EFF"/></linearGradient></defs>
+              <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#0EA5E9"/><stop offset="100%" stopColor="#7C9EFF"/></linearGradient></defs>
               <path d="M16 0 L32 6 L32 20 Q32 30 16 36 Q0 30 0 20 L0 6 Z" fill="url(#lg)" opacity="0.9"/>
               <path d="M10 18 L14 22 L22 14" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span style={{ fontFamily: 'var(--font-syne,"Syne"),sans-serif', fontWeight: 800, fontSize: 22, background: 'linear-gradient(135deg,#00D4AA,#7C9EFF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            <span style={{ fontFamily: 'var(--font-syne,"Syne"),sans-serif', fontWeight: 800, fontSize: 22, background: 'linear-gradient(135deg,#0EA5E9,#7C9EFF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               AlgoGrass
             </span>
           </a>
-          <h1 style={{ fontFamily: 'var(--font-syne,"Syne"),sans-serif', fontWeight: 800, fontSize: 28, color: '#E8F0FE', marginBottom: 8, lineHeight: 1.2 }}>
+          <h1 style={{ fontFamily: 'var(--font-syne,"Syne"),sans-serif', fontWeight: 800, fontSize: 28, color: '#0F172A', marginBottom: 8, lineHeight: 1.2 }}>
             Welcome back
           </h1>
-          <p style={{ fontSize: 14, color: 'rgba(232,240,254,0.45)' }}>
+          <p style={{ fontSize: 14, color: '#64748B' }}>
             Sign in to your compliance dashboard
           </p>
         </div>
 
         {/* Card */}
         <div style={{
-          background: 'rgba(13,21,37,0.8)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgba(255,255,255,0.9)',
+          border: '1px solid rgba(15,23,42,0.09)',
           borderRadius: 20,
           padding: '32px 28px',
           backdropFilter: 'blur(20px)',
-          boxShadow: '0 32px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,212,170,0.06)',
+          boxShadow: '0 32px 80px rgba(15,23,42,0.1), 0 0 0 1px rgba(14,165,233,0.06)',
         }}>
 
           {/* Google OAuth */}
@@ -88,12 +88,12 @@ export default function LoginPage() {
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
               width: '100%', padding: '12px 20px', borderRadius: 12,
-              background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-              color: '#E8F0FE', fontSize: 14, fontWeight: 500, textDecoration: 'none',
+              background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(15,23,42,0.1)',
+              color: '#0F172A', fontSize: 14, fontWeight: 500, textDecoration: 'none',
               transition: 'all .2s', marginBottom: 20, cursor: 'pointer',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.09)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.09)'; e.currentTarget.style.borderColor = 'rgba(15,23,42,0.1)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.05)'; e.currentTarget.style.borderColor = 'rgba(15,23,42,0.1)' }}
           >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.566 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
@@ -106,9 +106,9 @@ export default function LoginPage() {
 
           {/* Divider */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
-            <span style={{ fontSize: 12, color: 'rgba(232,240,254,0.3)' }}>or sign in with email</span>
-            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+            <div style={{ flex: 1, height: 1, background: 'rgba(15,23,42,0.09)' }} />
+            <span style={{ fontSize: 12, color: '#94A3B8' }}>or sign in with email</span>
+            <div style={{ flex: 1, height: 1, background: 'rgba(15,23,42,0.09)' }} />
           </div>
 
           {/* Not found banner */}
@@ -120,12 +120,12 @@ export default function LoginPage() {
               <p style={{ fontSize: 13, color: '#7C9EFF', margin: '0 0 8px', fontWeight: 600 }}>
                 No account found for {form.email}
               </p>
-              <p style={{ fontSize: 12, color: 'rgba(232,240,254,0.5)', margin: '0 0 10px' }}>
+              <p style={{ fontSize: 12, color: '#64748B', margin: '0 0 10px' }}>
                 Looks like you're new here. Create a free account to get started.
               </p>
               <a href={`/signup?email=${encodeURIComponent(form.email)}`} style={{
                 display: 'inline-block', padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 600,
-                background: 'linear-gradient(135deg,#00D4AA,#00B896)', color: '#060B14', textDecoration: 'none',
+                background: 'linear-gradient(135deg,#0EA5E9,#00B896)', color: '#FFFFFF', textDecoration: 'none',
               }}>
                 Create free account →
               </a>
@@ -135,7 +135,7 @@ export default function LoginPage() {
           {/* Form */}
           <form onSubmit={submit}>
             <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(232,240,254,0.6)', marginBottom: 6, letterSpacing: '.04em', textTransform: 'uppercase' }}>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#475569', marginBottom: 6, letterSpacing: '.04em', textTransform: 'uppercase' }}>
                 Email address
               </label>
               <input
@@ -143,16 +143,16 @@ export default function LoginPage() {
                 value={form.email} onChange={set('email')} required
                 style={{
                   width: '100%', padding: '12px 14px', borderRadius: 10, fontSize: 14,
-                  background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#E8F0FE', outline: 'none', boxSizing: 'border-box', transition: 'border-color .2s',
+                  background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(15,23,42,0.09)',
+                  color: '#0F172A', outline: 'none', boxSizing: 'border-box', transition: 'border-color .2s',
                   fontFamily: 'var(--font-space-grotesk,"Space Grotesk"),sans-serif',
                 }}
-                onFocus={e => e.target.style.borderColor = 'rgba(0,212,170,0.5)'}
-                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                onFocus={e => e.target.style.borderColor = 'rgba(14,165,233,0.5)'}
+                onBlur={e => e.target.style.borderColor = 'rgba(15,23,42,0.09)'}
               />
             </div>
             <div style={{ marginBottom: 10 }}>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'rgba(232,240,254,0.6)', marginBottom: 6, letterSpacing: '.04em', textTransform: 'uppercase' }}>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#475569', marginBottom: 6, letterSpacing: '.04em', textTransform: 'uppercase' }}>
                 Password
               </label>
               <div style={{ position: 'relative' }}>
@@ -161,19 +161,19 @@ export default function LoginPage() {
                   value={form.password} onChange={set('password')} required
                   style={{
                     width: '100%', padding: '12px 44px 12px 14px', borderRadius: 10, fontSize: 14,
-                    background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                    color: '#E8F0FE', outline: 'none', boxSizing: 'border-box', transition: 'border-color .2s',
+                    background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(15,23,42,0.09)',
+                    color: '#0F172A', outline: 'none', boxSizing: 'border-box', transition: 'border-color .2s',
                     fontFamily: 'var(--f-body,Lora,serif)',
                   }}
-                  onFocus={e => e.target.style.borderColor = 'rgba(0,212,170,0.5)'}
-                  onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                  onFocus={e => e.target.style.borderColor = 'rgba(14,165,233,0.5)'}
+                  onBlur={e => e.target.style.borderColor = 'rgba(15,23,42,0.09)'}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPwd(s => !s)}
                   tabIndex={-1}
                   aria-label={showPwd ? 'Hide password' : 'Show password'}
-                  style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(232,240,254,0.4)', padding: 4, display: 'flex', alignItems: 'center' }}>
+                  style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: 4, display: 'flex', alignItems: 'center' }}>
                   {showPwd ? (
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
@@ -190,37 +190,4 @@ export default function LoginPage() {
               </div>
             </div>
             <div style={{ textAlign: 'right', marginBottom: 20 }}>
-              <a href="/forgot-password" style={{ fontSize: 12, color: '#00D4AA', textDecoration: 'none' }}>
-                Forgot password?
-              </a>
-            </div>
-            {error && (
-              <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 10, padding: '10px 14px', marginBottom: 16 }}>
-                <p style={{ fontSize: 13, color: '#F87171', margin: 0 }}>{error}</p>
-              </div>
-            )}
-            <button
-              type="submit" disabled={loading}
-              style={{
-                width: '100%', padding: '13px', borderRadius: 12, border: 'none',
-                background: loading ? 'rgba(0,212,170,0.4)' : 'linear-gradient(135deg,#00D4AA,#00B896)',
-                color: '#060B14', fontWeight: 700, fontSize: 15, cursor: loading ? 'default' : 'pointer',
-                transition: 'all .2s', fontFamily: 'var(--font-syne,"Syne"),sans-serif',
-                boxShadow: loading ? 'none' : '0 0 24px rgba(0,212,170,0.3)',
-              }}
-            >
-              {loading ? 'Signing in…' : 'Sign in →'}
-            </button>
-          </form>
-        </div>
-
-        <p style={{ textAlign: 'center', fontSize: 13, color: 'rgba(232,240,254,0.35)', marginTop: 20 }}>
-          New to AlgoGrass?{' '}
-          <a href="/signup" style={{ color: '#00D4AA', fontWeight: 600, textDecoration: 'none' }}>
-            Create a free account
-          </a>
-        </p>
-      </div>
-    </div>
-  )
-}
+              <a 

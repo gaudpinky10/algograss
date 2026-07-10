@@ -7,7 +7,7 @@ function getUser() {
 }
 function fmt(d){if(!d)return'—';try{return new Date(d).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}catch{return'—'}}
 
-const TOOL_COLOR={scan:'#00D4AA',auth:'#818CF8',complaint:'#F59E0B',dsar:'#EC4899',dpia:'#3B82F6','vendor-risk':'#10B981',grc:'#8B5CF6','ai-governance':'#F97316'}
+const TOOL_COLOR={scan:'#0EA5E9',auth:'#818CF8',complaint:'#F59E0B',dsar:'#EC4899',dpia:'#3B82F6','vendor-risk':'#10B981',grc:'#8B5CF6','ai-governance':'#F97316'}
 
 export default function DeveloperPage() {
   const router=useRouter()
@@ -40,7 +40,7 @@ export default function DeveloperPage() {
             </div>
             <div style={{display:'flex',gap:8,alignItems:'center'}}>
               <span style={{fontSize:11,color:'var(--ink2)'}}>Server: {serverTime?new Date(serverTime).toLocaleTimeString('en-GB'):'-'}</span>
-              <button onClick={()=>setRefresh(r=>r+1)} style={{fontSize:12,color:'var(--accent)',padding:'6px 14px',border:'1px solid rgba(0,212,170,0.3)',borderRadius:8,background:'transparent',cursor:'pointer'}}>↻ Refresh</button>
+              <button onClick={()=>setRefresh(r=>r+1)} style={{fontSize:12,color:'var(--accent)',padding:'6px 14px',border:'1px solid rgba(14,165,233,0.3)',borderRadius:8,background:'transparent',cursor:'pointer'}}>↻ Refresh</button>
               <a href="/admin" style={{fontSize:12,color:'var(--ink2)',padding:'6px 14px',border:'1px solid var(--border)',borderRadius:8,textDecoration:'none'}}>← Back</a>
             </div>
           </div>
@@ -87,7 +87,7 @@ export default function DeveloperPage() {
                 <h3 style={{fontFamily:'Syne,sans-serif',fontSize:13,fontWeight:700,color:'var(--ink)',marginBottom:14,textTransform:'uppercase',letterSpacing:'.06em'}}>Environment Variables</h3>
                 <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:10}}>
                   {Object.entries(envStatus||{}).map(([key,val])=>(
-                    <div key={key} style={{display:'flex',alignItems:'center',gap:8,padding:'8px 12px',background:'rgba(255,255,255,0.03)',borderRadius:8,border:'1px solid var(--border)'}}>
+                    <div key={key} style={{display:'flex',alignItems:'center',gap:8,padding:'8px 12px',background:'rgba(15,23,42,0.03)',borderRadius:8,border:'1px solid var(--border)'}}>
                       {key==='NODE_ENV'?<span style={{fontSize:11,color:'var(--accent)',fontWeight:600}}>{key}</span>:<><Dot ok={!!val}/><span style={{fontSize:12,color:'var(--ink)',fontWeight:500}}>{key}</span></>}
                       <span style={{marginLeft:'auto',fontSize:11,color:key==='NODE_ENV'?'#818CF8':val?'#22C55E':'#EF4444',fontWeight:600}}>{key==='NODE_ENV'?val:val?'✓ Set':'✗ Missing'}</span>
                     </div>
@@ -121,7 +121,7 @@ export default function DeveloperPage() {
                 <table style={{width:'100%',borderCollapse:'collapse',fontSize:12,fontFamily:'monospace'}}>
                   <thead><tr>{['Time','User','Tool','Action','Detail'].map(h=><th key={h} style={{padding:'8px 12px',textAlign:'left',fontSize:10,fontWeight:700,color:'var(--ink2)',textTransform:'uppercase',borderBottom:'1px solid var(--border)'}}>{h}</th>)}</tr></thead>
                   <tbody>{(recent||[]).map((a,i)=>(
-                    <tr key={i} style={{borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
+                    <tr key={i} style={{borderBottom:'1px solid rgba(15,23,42,0.03)'}}>
                       <td style={{padding:'7px 12px',color:'var(--ink2)',whiteSpace:'nowrap',fontSize:11}}>{fmt(a.createdAt)}</td>
                       <td style={{padding:'7px 12px',color:'var(--accent)',fontSize:11}}>{a.userEmail}</td>
                       <td style={{padding:'7px 12px'}}><span style={{fontSize:10,fontWeight:700,padding:'1px 7px',borderRadius:20,background:(TOOL_COLOR[a.tool]||'#888')+'18',color:TOOL_COLOR[a.tool]||'#888'}}>{a.tool}</span></td>

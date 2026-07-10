@@ -8,7 +8,7 @@ function Layout({meta,children}){
         <div className="wrap" style={{maxWidth:740}}>
           <Link href="/blog" style={{fontSize:13,color:'var(--accent)',display:'inline-flex',alignItems:'center',gap:6,marginBottom:24}}>← Back to blog</Link>
           <div style={{display:'flex',gap:12,alignItems:'center',marginBottom:16}}>
-            <span style={{fontSize:10,fontWeight:700,background:'rgba(0,212,170,0.12)',color:'var(--accent)',padding:'3px 10px',borderRadius:100,textTransform:'uppercase',letterSpacing:'.07em',border:'1px solid rgba(0,212,170,0.2)'}}>{meta.cat}</span>
+            <span style={{fontSize:10,fontWeight:700,background:'rgba(14,165,233,0.12)',color:'var(--accent)',padding:'3px 10px',borderRadius:100,textTransform:'uppercase',letterSpacing:'.07em',border:'1px solid rgba(14,165,233,0.2)'}}>{meta.cat}</span>
             <span style={{fontSize:12,color:'var(--ink2)'}}>{meta.date} · {meta.read} read</span>
           </div>
           <h1 style={{fontFamily:'Syne,sans-serif',fontSize:'clamp(26px,3.5vw,42px)',fontWeight:700,color:'var(--ink)',lineHeight:1.2}}>{meta.title}</h1>
@@ -24,9 +24,9 @@ function Layout({meta,children}){
 const P = ({children,mb=24})=><p style={{fontSize:15,lineHeight:1.85,color:'var(--ink2)',marginBottom:mb}}>{children}</p>
 const H2 = ({children})=><h2 style={{fontFamily:'Syne,sans-serif',fontSize:22,fontWeight:700,color:'var(--ink)',marginBottom:14,marginTop:48,paddingBottom:10,borderBottom:'1px solid var(--border)'}}>{children}</h2>
 const H3 = ({children})=><h3 style={{fontFamily:'Syne,sans-serif',fontSize:17,fontWeight:600,color:'var(--ink)',marginBottom:10,marginTop:28}}>{children}</h3>
-const Ul = ({items})=><ul style={{marginBottom:24,paddingLeft:0,listStyle:'none'}}>{items.map((t,i)=><li key={i} style={{fontSize:14,color:'var(--ink2)',lineHeight:1.75,padding:'6px 0 6px 22px',position:'relative',borderBottom:'1px solid rgba(255,255,255,0.04)'}}><span style={{position:'absolute',left:0,color:'var(--accent)'}}>→</span>{t}</li>)}</ul>
+const Ul = ({items})=><ul style={{marginBottom:24,paddingLeft:0,listStyle:'none'}}>{items.map((t,i)=><li key={i} style={{fontSize:14,color:'var(--ink2)',lineHeight:1.75,padding:'6px 0 6px 22px',position:'relative',borderBottom:'1px solid rgba(15,23,42,0.05)'}}><span style={{position:'absolute',left:0,color:'var(--accent)'}}>→</span>{t}</li>)}</ul>
 const Callout = ({children,type='info'})=>{
-  const styles={info:{bg:'rgba(0,212,170,0.07)',border:'rgba(0,212,170,0.25)',text:'var(--accent)'},warn:{bg:'rgba(245,158,11,0.08)',border:'rgba(245,158,11,0.3)',text:'var(--amber-text)'},danger:{bg:'rgba(239,68,68,0.08)',border:'rgba(239,68,68,0.3)',text:'var(--red-text)'}}
+  const styles={info:{bg:'rgba(14,165,233,0.07)',border:'rgba(14,165,233,0.25)',text:'var(--accent)'},warn:{bg:'rgba(245,158,11,0.08)',border:'rgba(245,158,11,0.3)',text:'var(--amber-text)'},danger:{bg:'rgba(239,68,68,0.08)',border:'rgba(239,68,68,0.3)',text:'var(--red-text)'}}
   const s=styles[type]
   return <div style={{background:s.bg,border:`1px solid ${s.border}`,borderRadius:12,padding:'16px 20px',marginBottom:24}}><p style={{fontSize:14,lineHeight:1.75,color:s.text,margin:0}}>{children}</p></div>
 }
@@ -108,7 +108,7 @@ export default function CookieBannerGuide(){
       <P>The ICO can issue fines up to £17.5 million or 4% of global annual turnover under UK GDPR, and separate fines under PECR. While most enforcement to date has targeted large companies, the ICO has made clear that cookie compliance is a priority for all organisations.</P>
       <Callout type="danger">The ICO's cookie sweep programme actively checks websites for compliance. Any UK business with a website that sets analytics or advertising cookies is within scope.</Callout>
 
-      <div style={{background:'rgba(0,212,170,0.07)',border:'1px solid rgba(0,212,170,0.2)',borderRadius:16,padding:'28px 32px',marginTop:48,textAlign:'center'}}>
+      <div style={{background:'rgba(14,165,233,0.07)',border:'1px solid rgba(14,165,233,0.2)',borderRadius:16,padding:'28px 32px',marginTop:48,textAlign:'center'}}>
         <p style={{fontFamily:'Syne,sans-serif',fontSize:18,fontWeight:600,color:'var(--ink)',marginBottom:10}}>Check your cookie compliance right now</p>
         <p style={{fontSize:14,color:'var(--ink2)',marginBottom:20}}>AlgoGrass scans your website for cookie consent issues and tells you exactly what to fix — free, no account needed.</p>
         <a href="/scan" className="btn btn-primary">Scan my website free →</a>

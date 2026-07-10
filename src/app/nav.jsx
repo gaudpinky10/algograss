@@ -61,9 +61,9 @@ export default function Nav() {
         position:'fixed', inset:'0 0 auto', zIndex:999,
         display:'flex', alignItems:'center', justifyContent:'space-between',
         height:64,
-        background: scrolled ? 'rgba(6,11,20,0.97)' : 'rgba(6,11,20,0.75)',
+        background: scrolled ? 'rgba(255,255,255,0.97)' : 'rgba(248,250,252,0.75)',
         backdropFilter:'blur(24px)',
-        borderBottom:'1px solid rgba(255,255,255,0.06)',
+        borderBottom:'1px solid rgba(15,23,42,0.07)',
         transition:'background 0.3s',
         padding:'0 48px',
       }}>
@@ -71,14 +71,14 @@ export default function Nav() {
         <a href="/" style={{textDecoration:'none',flexShrink:0}}>
           <span style={{
             fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:20,
-            background:'linear-gradient(135deg,#00D4AA,#7C9EFF)',
+            background:'linear-gradient(135deg,#0EA5E9,#7C9EFF)',
             WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
             backgroundClip:'text', display:'flex', alignItems:'center', gap:9,
           }}>
             <svg width="26" height="30" viewBox="0 0 32 36" fill="none">
               <defs>
                 <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#00D4AA"/><stop offset="100%" stopColor="#7C9EFF"/>
+                  <stop offset="0%" stopColor="#0EA5E9"/><stop offset="100%" stopColor="#7C9EFF"/>
                 </linearGradient>
               </defs>
               <path d="M16 0 L32 6 L32 20 Q32 30 16 36 Q0 30 0 20 L0 6 Z" fill="url(#lg)" opacity="0.9"/>
@@ -93,9 +93,9 @@ export default function Nav() {
           {/* Tools dropdown */}
           <li ref={menuRef} style={{position:'relative'}}>
             <button onClick={()=>setToolsOpen(o=>!o)} style={{
-              background:toolsOpen?'rgba(0,212,170,0.1)':'none',
-              border:'1px solid', borderColor:toolsOpen?'rgba(0,212,170,0.3)':'transparent',
-              cursor:'pointer', fontSize:14, color:toolsOpen?'#00D4AA':'rgba(232,240,254,0.6)',
+              background:toolsOpen?'rgba(14,165,233,0.1)':'none',
+              border:'1px solid', borderColor:toolsOpen?'rgba(14,165,233,0.3)':'transparent',
+              cursor:'pointer', fontSize:14, color:toolsOpen?'#0EA5E9':'#475569',
               fontWeight:500, padding:'6px 12px', borderRadius:8,
               display:'flex', alignItems:'center', gap:5, transition:'all .15s',
               fontFamily:'Space Grotesk,sans-serif',
@@ -109,23 +109,23 @@ export default function Nav() {
             {toolsOpen && (
               <div style={{
                 position:'absolute', top:'calc(100% + 8px)', left:0,
-                background:'rgba(13,21,37,0.97)', border:'1px solid rgba(255,255,255,0.1)',
+                background:'rgba(255,255,255,0.97)', border:'1px solid rgba(15,23,42,0.09)',
                 borderRadius:16, padding:'8px',
-                boxShadow:'0 16px 48px rgba(0,0,0,.5), 0 0 0 1px rgba(0,212,170,0.1)',
+                boxShadow:'0 16px 48px rgba(15,23,42,0.12), 0 0 0 1px rgba(14,165,233,0.1)',
                 width:320, zIndex:200, backdropFilter:'blur(20px)',
               }}>
                 {TOOLS.map(t=>(
                   <a key={t.href} href={t.href} onClick={()=>setToolsOpen(false)} style={{
                     display:'flex', alignItems:'flex-start', gap:12,
                     padding:'10px 12px', borderRadius:10, textDecoration:'none',
-                    background:path===t.href?'rgba(0,212,170,0.08)':'transparent', transition:'background .15s',
+                    background:path===t.href?'rgba(14,165,233,0.08)':'transparent', transition:'background .15s',
                   }}
-                    onMouseEnter={e=>e.currentTarget.style.background='rgba(0,212,170,0.08)'}
-                    onMouseLeave={e=>e.currentTarget.style.background=path===t.href?'rgba(0,212,170,0.08)':'transparent'}>
+                    onMouseEnter={e=>e.currentTarget.style.background='rgba(14,165,233,0.08)'}
+                    onMouseLeave={e=>e.currentTarget.style.background=path===t.href?'rgba(14,165,233,0.08)':'transparent'}>
                     <span style={{fontSize:16, lineHeight:1.4}}>{t.icon}</span>
                     <div>
-                      <div style={{fontSize:13, fontWeight:600, color:'#E8F0FE', marginBottom:2}}>{t.label}</div>
-                      <div style={{fontSize:11, color:'rgba(232,240,254,0.45)'}}>{t.desc}</div>
+                      <div style={{fontSize:13, fontWeight:600, color:'#0F172A', marginBottom:2}}>{t.label}</div>
+                      <div style={{fontSize:11, color:'#64748B'}}>{t.desc}</div>
                     </div>
                   </a>
                 ))}
@@ -137,24 +137,24 @@ export default function Nav() {
             <li key={l.href}>
               <a href={l.href} style={{
                 fontSize:14,
-                color: l.highlight ? '#00D4AA' : path===l.href?'#00D4AA':'rgba(232,240,254,0.6)',
+                color: l.highlight ? '#0EA5E9' : path===l.href?'#0EA5E9':'#475569',
                 padding:'6px 12px', borderRadius:8, transition:'color .2s, background .2s',
-                background: l.highlight ? 'rgba(0,212,170,0.08)' : path===l.href?'rgba(0,212,170,0.08)':'transparent',
-                border: l.highlight ? '1px solid rgba(0,212,170,0.25)' : '1px solid transparent',
+                background: l.highlight ? 'rgba(14,165,233,0.08)' : path===l.href?'rgba(14,165,233,0.08)':'transparent',
+                border: l.highlight ? '1px solid rgba(14,165,233,0.25)' : '1px solid transparent',
                 fontWeight: l.highlight ? 600 : 400,
                 fontWeight:path===l.href?500:400,
               }}
-                onMouseEnter={e=>{e.currentTarget.style.color='#00D4AA';e.currentTarget.style.background='rgba(0,212,170,0.08)'}}
-                onMouseLeave={e=>{e.currentTarget.style.color=path===l.href?'#00D4AA':'rgba(232,240,254,0.6)';e.currentTarget.style.background=path===l.href?'rgba(0,212,170,0.08)':'transparent'}}>
+                onMouseEnter={e=>{e.currentTarget.style.color='#0EA5E9';e.currentTarget.style.background='rgba(14,165,233,0.08)'}}
+                onMouseLeave={e=>{e.currentTarget.style.color=path===l.href?'#0EA5E9':'#475569';e.currentTarget.style.background=path===l.href?'rgba(14,165,233,0.08)':'transparent'}}>
                 {l.label}
               </a>
             </li>
           ))}
 
           <li style={{marginLeft:8}}>
-            <a href="/login" style={{fontSize:14, color:'rgba(232,240,254,0.6)', padding:'6px 12px', borderRadius:8, transition:'color .2s'}}
-              onMouseEnter={e=>e.currentTarget.style.color='#00D4AA'}
-              onMouseLeave={e=>e.currentTarget.style.color='rgba(232,240,254,0.6)'}>
+            <a href="/login" style={{fontSize:14, color:'#475569', padding:'6px 12px', borderRadius:8, transition:'color .2s'}}
+              onMouseEnter={e=>e.currentTarget.style.color='#0EA5E9'}
+              onMouseLeave={e=>e.currentTarget.style.color='#475569'}>
               Log in
             </a>
           </li>
@@ -162,12 +162,12 @@ export default function Nav() {
             <a href="/signup" style={{
               display:'inline-flex', alignItems:'center', gap:6,
               padding:'8px 18px', borderRadius:9, fontSize:13, fontWeight:600,
-              background:'linear-gradient(135deg,#00D4AA,#00A882)',
-              color:'#06111E', textDecoration:'none',
-              boxShadow:'0 0 18px rgba(0,212,170,0.25)', transition:'all .2s',
+              background:'linear-gradient(135deg,#0EA5E9,#0284C7)',
+              color:'#FFFFFF', textDecoration:'none',
+              boxShadow:'0 0 18px rgba(14,165,233,0.25)', transition:'all .2s',
             }}
-              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-1px)';e.currentTarget.style.boxShadow='0 4px 24px rgba(0,212,170,0.4)'}}
-              onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 0 18px rgba(0,212,170,0.25)'}}>
+              onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-1px)';e.currentTarget.style.boxShadow='0 4px 24px rgba(14,165,233,0.4)'}}
+              onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 0 18px rgba(14,165,233,0.25)'}}>
               Get started free →
             </a>
           </li>
@@ -184,17 +184,17 @@ export default function Nav() {
           }}
           aria-label="Toggle menu">
           <span style={{
-            display:'block', width:22, height:2, background:'#E8F0FE', borderRadius:2,
+            display:'block', width:22, height:2, background:'#0F172A', borderRadius:2,
             transition:'transform .3s, opacity .3s',
             transform: mobileOpen ? 'translateY(7px) rotate(45deg)' : 'none',
           }}/>
           <span style={{
-            display:'block', width:22, height:2, background:'#E8F0FE', borderRadius:2,
+            display:'block', width:22, height:2, background:'#0F172A', borderRadius:2,
             transition:'opacity .3s',
             opacity: mobileOpen ? 0 : 1,
           }}/>
           <span style={{
-            display:'block', width:22, height:2, background:'#E8F0FE', borderRadius:2,
+            display:'block', width:22, height:2, background:'#0F172A', borderRadius:2,
             transition:'transform .3s, opacity .3s',
             transform: mobileOpen ? 'translateY(-7px) rotate(-45deg)' : 'none',
           }}/>

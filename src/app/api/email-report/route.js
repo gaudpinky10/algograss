@@ -7,7 +7,7 @@ export async function POST(request) {
 
   const resend = new Resend(process.env.RESEND_API_KEY)
   const sc = result.score
-  const scoreColor = sc >= 70 ? '#00D4AA' : sc >= 40 ? '#F59E0B' : '#EF4444'
+  const scoreColor = sc >= 70 ? '#0EA5E9' : sc >= 40 ? '#F59E0B' : '#EF4444'
   const scoreLabel = sc >= 70 ? 'Good' : sc >= 40 ? 'Needs Work' : 'At Risk'
 
   const highIssues   = result.issues.filter(i => i.sev === 'High')
@@ -24,9 +24,9 @@ export async function POST(request) {
         </span>
       </td>
       <td style="padding:12px 16px;border-bottom:1px solid #1e2d45;vertical-align:top">
-        <div style="color:#E8F0FE;font-weight:600;font-size:13px;margin-bottom:4px">${iss.title}</div>
+        <div style="color:#0F172A;font-weight:600;font-size:13px;margin-bottom:4px">${iss.title}</div>
         <div style="color:#94A3B8;font-size:12px;line-height:1.5;margin-bottom:6px">${iss.desc}</div>
-        <span style="background:rgba(0,212,170,0.1);color:#00D4AA;font-size:10px;padding:2px 8px;border-radius:4px">${iss.reg}</span>
+        <span style="background:rgba(14,165,233,0.1);color:#0EA5E9;font-size:10px;padding:2px 8px;border-radius:4px">${iss.reg}</span>
       </td>
     </tr>`
 
@@ -45,18 +45,18 @@ export async function POST(request) {
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#0D1525 0%,#0a1628 100%);padding:32px 40px;border-bottom:1px solid #1e2d45">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
-        <div style="width:32px;height:32px;background:linear-gradient(135deg,#00D4AA,#7C9EFF);border-radius:8px;display:flex;align-items:center;justify-content:center">
+        <div style="width:32px;height:32px;background:linear-gradient(135deg,#0EA5E9,#7C9EFF);border-radius:8px;display:flex;align-items:center;justify-content:center">
           <span style="color:white;font-weight:800;font-size:14px">AG</span>
         </div>
-        <span style="color:#00D4AA;font-weight:800;font-size:18px">AlgoGrass</span>
+        <span style="color:#0EA5E9;font-weight:800;font-size:18px">AlgoGrass</span>
       </div>
-      <h1 style="color:#E8F0FE;font-size:22px;font-weight:700;margin:16px 0 6px">GDPR Compliance Report</h1>
+      <h1 style="color:#0F172A;font-size:22px;font-weight:700;margin:16px 0 6px">GDPR Compliance Report</h1>
       <p style="color:#64748B;font-size:13px;margin:0">${result.url} · Scanned ${new Date(result.scannedAt).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' })}</p>
     </div>
 
     <!-- Score -->
     <div style="padding:32px 40px;background:#0D1525;border-bottom:1px solid #1e2d45;text-align:center">
-      <div style="display:inline-block;width:100px;height:100px;border-radius:50%;background:conic-gradient(${scoreColor} ${sc*3.6}deg,rgba(255,255,255,0.05) ${sc*3.6}deg);position:relative;margin-bottom:16px">
+      <div style="display:inline-block;width:100px;height:100px;border-radius:50%;background:conic-gradient(${scoreColor} ${sc*3.6}deg,rgba(15,23,42,0.05) ${sc*3.6}deg);position:relative;margin-bottom:16px">
         <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:74px;height:74px;background:#0D1525;border-radius:50%;display:flex;align-items:center;justify-content:center">
           <span style="font-size:26px;font-weight:800;color:${scoreColor}">${sc}</span>
         </div>
@@ -73,7 +73,7 @@ export async function POST(request) {
     <!-- Issues -->
     ${result.issues.length > 0 ? `
     <div style="padding:28px 40px 0;background:#060B14">
-      <h2 style="color:#E8F0FE;font-size:16px;font-weight:700;margin:0 0 16px">Compliance Issues</h2>
+      <h2 style="color:#0F172A;font-size:16px;font-weight:700;margin:0 0 16px">Compliance Issues</h2>
       <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #1e2d45;border-radius:12px;overflow:hidden;background:#0D1525">
         <tbody>
           ${highIssues.map(issueRow).join('')}
@@ -83,14 +83,14 @@ export async function POST(request) {
       </table>
     </div>` : `
     <div style="padding:28px 40px;background:#060B14;text-align:center">
-      <div style="background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.3);border-radius:12px;padding:24px">
-        <p style="color:#00D4AA;font-size:15px;font-weight:600;margin:0">🎉 No compliance issues found!</p>
+      <div style="background:rgba(14,165,233,0.1);border:1px solid rgba(14,165,233,0.3);border-radius:12px;padding:24px">
+        <p style="color:#0EA5E9;font-size:15px;font-weight:600;margin:0">🎉 No compliance issues found!</p>
       </div>
     </div>`}
 
     <!-- Checks -->
     <div style="padding:28px 40px 0;background:#060B14">
-      <h2 style="color:#E8F0FE;font-size:16px;font-weight:700;margin:0 0 16px">What We Checked</h2>
+      <h2 style="color:#0F172A;font-size:16px;font-weight:700;margin:0 0 16px">What We Checked</h2>
       <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #1e2d45;border-radius:12px;overflow:hidden;background:#0D1525">
         <tbody>
           ${checkRow('HTTPS encryption',          result.checks.https)}
@@ -109,10 +109,10 @@ export async function POST(request) {
 
     <!-- CTA -->
     <div style="padding:32px 40px;background:#060B14;text-align:center">
-      <div style="background:linear-gradient(135deg,rgba(0,212,170,0.1),rgba(124,158,255,0.1));border:1px solid rgba(0,212,170,0.2);border-radius:16px;padding:28px 32px">
-        <h3 style="color:#E8F0FE;font-size:18px;font-weight:700;margin:0 0 8px">Fix your compliance issues</h3>
+      <div style="background:linear-gradient(135deg,rgba(14,165,233,0.1),rgba(124,158,255,0.1));border:1px solid rgba(14,165,233,0.2);border-radius:16px;padding:28px 32px">
+        <h3 style="color:#0F172A;font-size:18px;font-weight:700;margin:0 0 8px">Fix your compliance issues</h3>
         <p style="color:#94A3B8;font-size:13px;margin:0 0 20px;line-height:1.6">AlgoGrass generates your privacy policy, cookie notice, and data processing agreements automatically — based on your actual scan results.</p>
-        <a href="https://algograss.com/signup" style="display:inline-block;background:linear-gradient(135deg,#00D4AA,#00A882);color:#06111E;font-weight:700;font-size:14px;padding:12px 28px;border-radius:10px;text-decoration:none">Create free account →</a>
+        <a href="https://algograss.com/signup" style="display:inline-block;background:linear-gradient(135deg,#0EA5E9,#0284C7);color:#FFFFFF;font-weight:700;font-size:14px;padding:12px 28px;border-radius:10px;text-decoration:none">Create free account →</a>
       </div>
     </div>
 

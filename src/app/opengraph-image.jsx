@@ -10,7 +10,7 @@ export default function Image() {
     (
       <div style={{
         width: '100%', height: '100%',
-        background: '#060B14',
+        background: '#FFFFFF',
         display: 'flex', flexDirection: 'column',
         justifyContent: 'center',
         padding: '80px 96px',
@@ -22,7 +22,7 @@ export default function Image() {
           position: 'absolute', top: 0, right: 0,
           width: 600, height: 600,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(0,212,170,0.15) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(14,165,233,0.15) 0%, transparent 70%)',
           filter: 'blur(60px)',
         }} />
         <div style={{
@@ -37,26 +37,26 @@ export default function Image() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 48 }}>
           <div style={{
             width: 56, height: 64,
-            background: 'linear-gradient(135deg, #00D4AA, #7C9EFF)',
+            background: 'linear-gradient(135deg, #0EA5E9, #7C9EFF)',
             borderRadius: 12,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 28, fontWeight: 800, color: 'white',
           }}>AG</div>
           <span style={{
             fontSize: 40, fontWeight: 800,
-            background: 'linear-gradient(135deg, #00D4AA, #7C9EFF)',
+            background: 'linear-gradient(135deg, #0EA5E9, #7C9EFF)',
             backgroundClip: 'text',
             color: 'transparent',
           }}>AlgoGrass</span>
         </div>
 
         {/* Headline */}
-        <div style={{ fontSize: 64, fontWeight: 800, color: '#E8F0FE', lineHeight: 1.1, marginBottom: 24 }}>
+        <div style={{ fontSize: 64, fontWeight: 800, color: '#0F172A', lineHeight: 1.1, marginBottom: 24 }}>
           GDPR Compliance{'\n'}Made Simple
         </div>
 
         {/* Description */}
-        <div style={{ fontSize: 26, color: 'rgba(232,240,254,0.55)', lineHeight: 1.5, marginBottom: 48, maxWidth: 800 }}>
+        <div style={{ fontSize: 26, color: '#475569', lineHeight: 1.5, marginBottom: 48, maxWidth: 800 }}>
           Free website scanner + compliance tools for UK & EU businesses.
           60 days free — no credit card required.
         </div>
@@ -67,9 +67,9 @@ export default function Image() {
             <div key={badge} style={{
               padding: '10px 22px',
               borderRadius: 24,
-              background: 'rgba(0,212,170,0.1)',
-              border: '1px solid rgba(0,212,170,0.25)',
-              color: '#00D4AA',
+              background: 'rgba(14,165,233,0.1)',
+              border: '1px solid rgba(14,165,233,0.25)',
+              color: '#0EA5E9',
               fontSize: 18,
               fontWeight: 600,
             }}>{badge}</div>
@@ -79,7 +79,7 @@ export default function Image() {
         {/* URL */}
         <div style={{
           position: 'absolute', bottom: 48, right: 96,
-          fontSize: 22, color: 'rgba(232,240,254,0.3)',
+          fontSize: 22, color: '#94A3B8',
         }}>algograss.com</div>
       </div>
     ),

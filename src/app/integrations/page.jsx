@@ -2,14 +2,14 @@
 import { useState, useEffect } from 'react'
 
 const S = {
-  page: { minHeight: '100vh', background: '#060B14', padding: '40px 20px', fontFamily: "'Segoe UI', sans-serif" },
+  page: { minHeight: '100vh', background: '#FFFFFF', padding: '40px 20px', fontFamily: "'Segoe UI', sans-serif" },
   wrap: { maxWidth: 860, margin: '0 auto' },
-  h1: { fontSize: 34, fontWeight: 800, color: '#E8F0FE', margin: '0 0 8px', letterSpacing: -0.5 },
+  h1: { fontSize: 34, fontWeight: 800, color: '#0F172A', margin: '0 0 8px', letterSpacing: -0.5 },
   sub: { color: '#94A3B8', fontSize: 15, margin: '0 0 36px' },
-  card: { background: '#0D1525', border: '1px solid #1e2d45', borderRadius: 16, padding: '24px 28px', marginBottom: 16 },
-  btn: { background: 'linear-gradient(135deg,#00D4AA,#00A882)', color: '#06111E', fontWeight: 700, fontSize: 13, padding: '9px 20px', borderRadius: 9, border: 'none', cursor: 'pointer' },
-  btnOutline: { background: 'transparent', color: '#00D4AA', fontWeight: 600, fontSize: 13, padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(0,212,170,0.3)', cursor: 'pointer' },
-  input: { background: '#060B14', border: '1.5px solid #1e2d45', borderRadius: 10, padding: '10px 14px', color: '#E8F0FE', fontSize: 13, outline: 'none', width: '100%', boxSizing: 'border-box' },
+  card: { background: '#F8FAFC', border: '1px solid rgba(15,23,42,0.1)', borderRadius: 16, padding: '24px 28px', marginBottom: 16 },
+  btn: { background: 'linear-gradient(135deg,#0EA5E9,#0284C7)', color: '#FFFFFF', fontWeight: 700, fontSize: 13, padding: '9px 20px', borderRadius: 9, border: 'none', cursor: 'pointer' },
+  btnOutline: { background: 'transparent', color: '#0EA5E9', fontWeight: 600, fontSize: 13, padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(14,165,233,0.3)', cursor: 'pointer' },
+  input: { background: '#FFFFFF', border: '1.5px solid rgba(15,23,42,0.1)', borderRadius: 10, padding: '10px 14px', color: '#0F172A', fontSize: 13, outline: 'none', width: '100%', boxSizing: 'border-box' },
 }
 
 const INTEGRATIONS = [
@@ -55,15 +55,15 @@ function SlackSetup() {
   )
 
   return (
-    <div style={{ marginTop: 16, padding: 16, background: '#060B14', border: '1px solid #1e2d45', borderRadius: 10 }}>
+    <div style={{ marginTop: 16, padding: 16, background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.1)', borderRadius: 10 }}>
       <p style={{ color: '#94A3B8', fontSize: 12, margin: '0 0 10px', lineHeight: 1.5 }}>
-        1. Go to <a href="https://api.slack.com/messaging/webhooks" target="_blank" rel="noopener noreferrer" style={{ color: '#00D4AA' }}>api.slack.com/messaging/webhooks</a><br/>
+        1. Go to <a href="https://api.slack.com/messaging/webhooks" target="_blank" rel="noopener noreferrer" style={{ color: '#0EA5E9' }}>api.slack.com/messaging/webhooks</a><br/>
         2. Create a new app → Enable Incoming Webhooks → Add to workspace<br/>
         3. Copy your Webhook URL and paste it below
       </p>
       <input style={{ ...S.input, marginBottom: 10 }} placeholder="https://hooks.slack.com/services/..." value={url} onChange={e => setUrl(e.target.value)} />
       {err && <p style={{ color: '#EF4444', fontSize: 12, marginBottom: 8 }}>{err}</p>}
-      {msg && <p style={{ color: '#00D4AA', fontSize: 12, marginBottom: 8 }}>{msg}</p>}
+      {msg && <p style={{ color: '#0EA5E9', fontSize: 12, marginBottom: 8 }}>{msg}</p>}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         <button style={S.btn} onClick={save} disabled={saving || !url}>{saving ? 'Saving...' : 'Save'}</button>
         <button style={S.btnOutline} onClick={test} disabled={testing || !url}>{testing ? 'Sending...' : 'Send test message'}</button>
@@ -91,9 +91,9 @@ export default function IntegrationsPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span style={{ fontSize: 28 }}>{integration.icon}</span>
                   <div>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: '#E8F0FE' }}>{integration.name}</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: '#0F172A' }}>{integration.name}</div>
                     <div style={{ marginTop: 4 }}>
-                      {integration.status === 'active' && <span style={{ background: 'rgba(0,212,170,0.1)', color: '#00D4AA', fontSize: 11, fontWeight: 700, padding: '2px 10px', borderRadius: 20 }}>Available</span>}
+                      {integration.status === 'active' && <span style={{ background: 'rgba(14,165,233,0.1)', color: '#0EA5E9', fontSize: 11, fontWeight: 700, padding: '2px 10px', borderRadius: 20 }}>Available</span>}
                       {integration.status === 'available' && <span style={{ background: 'rgba(124,158,255,0.1)', color: '#7C9EFF', fontSize: 11, fontWeight: 700, padding: '2px 10px', borderRadius: 20 }}>Available</span>}
                       {integration.status === 'coming' && <span style={{ background: 'rgba(245,158,11,0.1)', color: '#F59E0B', fontSize: 11, fontWeight: 700, padding: '2px 10px', borderRadius: 20 }}>Coming Soon</span>}
                     </div>
@@ -108,7 +108,7 @@ export default function IntegrationsPage() {
                 <div>
                   <p style={{ color: '#94A3B8', fontSize: 12, margin: '0 0 8px' }}>Your AlgoGrass Zapier webhook URL:</p>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <code style={{ background: '#060B14', border: '1px solid #1e2d45', borderRadius: 8, padding: '8px 12px', fontSize: 12, color: '#00D4AA', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{zapierUrl}</code>
+                    <code style={{ background: '#FFFFFF', border: '1px solid rgba(15,23,42,0.1)', borderRadius: 8, padding: '8px 12px', fontSize: 12, color: '#0EA5E9', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{zapierUrl}</code>
                     <button onClick={() => { navigator.clipboard.writeText(zapierUrl); setCopied(true); setTimeout(() => setCopied(false), 2000) }} style={S.btnOutline}>{copied ? '✓' : 'Copy'}</button>
                   </div>
                   <p style={{ color: '#475569', fontSize: 11, margin: '8px 0 0' }}>Use this URL as a Webhook trigger in your Zap. It accepts POST requests with complaint/scan data.</p>
@@ -116,16 +116,16 @@ export default function IntegrationsPage() {
               )}
 
               {integration.status === 'coming' && (
-                <button style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid #1e2d45', color: '#475569', fontSize: 13, fontWeight: 600, padding: '9px 20px', borderRadius: 9, cursor: 'default' }}>Coming Soon</button>
+                <button style={{ background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(15,23,42,0.1)', color: '#475569', fontSize: 13, fontWeight: 600, padding: '9px 20px', borderRadius: 9, cursor: 'default' }}>Coming Soon</button>
               )}
             </div>
           ))}
         </div>
 
-        <div style={{ ...S.card, marginTop: 8, background: 'linear-gradient(135deg,rgba(0,212,170,0.06),rgba(124,158,255,0.06))', textAlign: 'center' }}>
-          <p style={{ color: '#E8F0FE', fontWeight: 600, fontSize: 15, margin: '0 0 6px' }}>Need a custom integration?</p>
+        <div style={{ ...S.card, marginTop: 8, background: 'linear-gradient(135deg,rgba(14,165,233,0.06),rgba(124,158,255,0.06))', textAlign: 'center' }}>
+          <p style={{ color: '#0F172A', fontWeight: 600, fontSize: 15, margin: '0 0 6px' }}>Need a custom integration?</p>
           <p style={{ color: '#94A3B8', fontSize: 13, margin: '0 0 16px' }}>Use our Developer API to build any integration you need. Full scan results available via REST API.</p>
-          <a href="/api-access" style={{ display: 'inline-block', background: 'linear-gradient(135deg,#00D4AA,#00A882)', color: '#06111E', fontWeight: 700, fontSize: 13, padding: '10px 22px', borderRadius: 10, textDecoration: 'none' }}>View API docs →</a>
+          <a href="/api-access" style={{ display: 'inline-block', background: 'linear-gradient(135deg,#0EA5E9,#0284C7)', color: '#FFFFFF', fontWeight: 700, fontSize: 13, padding: '10px 22px', borderRadius: 10, textDecoration: 'none' }}>View API docs →</a>
         </div>
       </div>
     </div>
