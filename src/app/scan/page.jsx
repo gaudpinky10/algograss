@@ -5,10 +5,11 @@ import { useRouter, useSearchParams } from 'next/navigation'
 function ScanPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [url, setUrl]       = useState('')
-  const [status, setStatus] = useState('idle')
-  const [result, setResult] = useState(null)
-  const [error, setError]   = useState('')
+  const [url, setUrl]         = useState('')
+  const [resolvedUrl, setResolvedUrl] = useState('')
+  const [status, setStatus]   = useState('idle')
+  const [result, setResult]   = useState(null)
+  const [error, setError]     = useState('')
   const [email, setEmail]   = useState('')
   const [emailStatus, setEmailStatus] = useState('idle') // idle|sending|sent|error
   const [emailError, setEmailError]   = useState('')
@@ -24,11 +25,20 @@ function ScanPageInner() {
   }, [])
 
   async function runScan(target) {
-    const u = target || url
-    if (!u.trim()) return
-    setStatus('scanning'); setError(''); setResult(null); setEmailStatus('idle')
+    const raw = (target || url).trim()
+    if (!raw) return
+    setStatus('resolving'); setError(''); setResult(null); setEmailStatus('idle'); setResolvedUrl('')
     try {
-      const res  = await fetch('/api/scan', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ url: u.trim() }) })
+      // Step 1: resolve whatever the user typed to a real URL
+      const resolveRes  = await fetch('/api/resolve-url', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ input: raw }) })
+      const resolveData = await resolveRes.json()
+      if (resolveData.error) { setError('Could not find that website. Please check the name and try again.'); setStatus('error'); return }
+      const finalUrl = resolveData.resolved
+      setResolvedUrl(finalUrl)
+
+      // Step 2: scan the resolved URL
+      setStatus('scanning')
+      const res  = await fetch('/api/scan', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ url: finalUrl }) })
       const data = await res.json()
       if (data.error) { setError(data.error); setStatus('error'); return }
       setResult(data); setStatus('done')
@@ -207,21 +217,29 @@ function ScanPageInner() {
       <section style={{background:'var(--bg2)',padding:'56px 0 48px',borderBottom:'1px solid var(--border)'}}>
         <div className="wrap" style={{maxWidth:700,textAlign:'center'}}>
           <span style={{fontSize:11,fontWeight:600,letterSpacing:'.1em',textTransform:'uppercase',color:'var(--accent)',display:'block',marginBottom:12}}>Free compliance scanner</span>
-          <h1 style={{fontFamily:'Syne,sans-serif',fontSize:'clamp(26px,3.5vw,44px)',fontWeight:800,color:'var(--ink)',marginBottom:12,lineHeight:1.1}}>Scan your website for GDPR risks</h1>
-          <p style={{fontSize:16,color:'var(--ink2)',marginBottom:32,fontWeight:300,lineHeight:1.7}}>Enter your URL. We check for the most common GDPR compliance issues in seconds — free, no account needed.</p>
-          <div style={{maxWidth:560,margin:'0 auto 10px',textAlign:'left'}}>
-            <label style={{fontSize:12,fontWeight:600,color:'var(--ink2)',letterSpacing:'.06em',textTransform:'uppercase'}}>Your website URL</label>
-          </div>
+          <h1 style={{fontFamily:'Syne,sans-serif',fontSize:'clamp(26px,3.5vw,44px)',fontWeight:800,color:'var(--ink)',marginBottom:12,lineHeight:1.1}}>Scan any website for GDPR risks</h1>
+          <p style={{fontSize:16,color:'var(--ink2)',marginBottom:32,fontWeight:300,lineHeight:1.7}}>Type a brand name, partial URL, or full address — we'll find and scan the right site.</p>
           <form onSubmit={e=>{e.preventDefault();runScan()}} className="scan-form" style={{display:'flex',gap:8,background:'rgba(255,255,255,0.06)',border:'1.5px solid rgba(139,92,246,0.35)',borderRadius:12,padding:'6px 6px 6px 18px',maxWidth:560,margin:'0 auto'}}>
-            <span style={{fontSize:14,color:'var(--ink2)',alignSelf:'center',flexShrink:0,opacity:.5}}>https://</span>
-            <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="yourwebsite.co.uk" disabled={status==='scanning'}
+            <input value={url} onChange={e=>setUrl(e.target.value)}
+              placeholder="algograss · algograss.co.uk · https://..."
+              disabled={status==='scanning'||status==='resolving'}
               autoFocus
               style={{flex:1,border:'none',background:'transparent',fontSize:15,color:'var(--ink)',outline:'none',minWidth:0}}/>
-            <button type="submit" className="btn btn-primary" style={{padding:'11px 24px',borderRadius:9,flexShrink:0}} disabled={status==='scanning'}>
-              {status==='scanning'?'Scanning…':'Scan now →'}
+            <button type="submit" className="btn btn-primary" style={{padding:'11px 24px',borderRadius:9,flexShrink:0}} disabled={status==='scanning'||status==='resolving'}>
+              {status==='resolving'?'Finding…':status==='scanning'?'Scanning…':'Scan now →'}
             </button>
           </form>
-          <p style={{fontSize:11,color:'var(--ink2)',marginTop:12}}>Checks: HTTPS · Cookie consent · Privacy policy · Trackers · Data rights · Retention · DSAR</p>
+          {/* Show resolved URL once found */}
+          {resolvedUrl && status==='scanning' && (
+            <p style={{fontSize:12,color:'var(--accent)',marginTop:10}}>
+              ✓ Found: <span style={{fontWeight:600}}>{resolvedUrl}</span> — scanning now…
+            </p>
+          )}
+          {!resolvedUrl && (
+            <p style={{fontSize:11,color:'var(--ink2)',marginTop:12,opacity:.7}}>
+              Works with any format · Checks: HTTPS · Cookie consent · Privacy policy · Trackers · Data rights
+            </p>
+          )}
         </div>
       </section>
 
