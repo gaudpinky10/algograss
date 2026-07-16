@@ -19,7 +19,7 @@ export default function Footer() {
           {/* Brand column */}
           <div>
             <div style={{ marginBottom: 14 }}>
-              <img src="/logo.png" alt="AlgoGrass" style={{ height: 32, width: 'auto', display: 'block' }} />
+              <img src="/logo-white.png" alt="AlgoGrass" style={{ height: 32, width: 'auto', display: 'block' }} />
             </div>
 
             <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.8, maxWidth: 270, marginBottom: 20 }}>

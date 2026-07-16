@@ -69,7 +69,7 @@ export default function Nav() {
       }}>
         {/* Logo */}
         <a href="/" style={{textDecoration:'none',flexShrink:0}}>
-          <img src="/logo.png" alt="AlgoGrass" style={{height:36, width:'auto', display:'block'}} />
+          <img src="/logo-white.png" alt="AlgoGrass" style={{height:36, width:'auto', display:'block'}} />
         </a>
 
         {/* Desktop links */}
