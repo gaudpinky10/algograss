@@ -42,9 +42,8 @@ function ResetForm() {
     <section style={{ minHeight:'88vh', display:'flex', alignItems:'center', justifyContent:'center', padding:'40px 24px' }}>
       <div style={{ width:'100%', maxWidth:400 }}>
         <div style={{ textAlign:'center', marginBottom:36 }}>
-          <a href="/" style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:22, color:'var(--green)', textDecoration:'none', display:'inline-flex', alignItems:'center', gap:7, marginBottom:24 }}>
-            <svg width="22" height="25" viewBox="0 0 32 36" fill="none"><path d="M16 0 L32 6 L32 20 Q32 30 16 36 Q0 30 0 20 L0 6 Z" fill="#3D6B52"/><path d="M10 18 L14 22 L22 14" stroke="#B8D96A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            AlgoGrass
+          <a href="/" style={{ textDecoration:'none', display:'inline-block', marginBottom:24 }}>
+            <img src="/logo.png" alt="AlgoGrass" style={{ height:36, width:'auto' }} />
           </a>
           <h1 style={{ fontFamily:'Syne,sans-serif', fontSize:26, fontWeight:700, color:'var(--ink)', marginBottom:6 }}>Set new password</h1>
           <p style={{ fontSize:13, color:'var(--ink2)' }}>Choose a strong password for your account</p>

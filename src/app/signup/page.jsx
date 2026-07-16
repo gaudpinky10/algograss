@@ -130,15 +130,8 @@ export default function SignupPage() {
       <div style={{ width: '100%', maxWidth: 460, position: 'relative' }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
-          <a href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-            <svg width="28" height="32" viewBox="0 0 32 36" fill="none">
-              <defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#9B7BFA"/><stop offset="100%" stopColor="#C084FC"/></linearGradient></defs>
-              <path d="M16 0 L32 6 L32 20 Q32 30 16 36 Q0 30 0 20 L0 6 Z" fill="url(#lg2)" opacity="0.9"/>
-              <path d="M10 18 L14 22 L22 14" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span style={{ fontFamily: 'var(--f-head,Syne,sans-serif)', fontWeight: 800, fontSize: 22, background: 'linear-gradient(135deg,#9B7BFA,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              AlgoGrass
-            </span>
+          <a href="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 20 }}>
+            <img src="/logo.png" alt="AlgoGrass" style={{ height: 40, width: 'auto' }} />
           </a>
           <h1 style={{ fontFamily: 'var(--f-head,Syne,sans-serif)', fontWeight: 800, fontSize: 26, color: '#0F172A', marginBottom: 8 }}>Start for free</h1>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 100, padding: '6px 14px', marginBottom: 4 }}>

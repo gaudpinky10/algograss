@@ -54,15 +54,8 @@ export default function LoginPage() {
       <div style={{ width: '100%', maxWidth: 420, position: 'relative' }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
-          <a href="/" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 10, marginBottom: 28 }}>
-            <svg width="28" height="32" viewBox="0 0 32 36" fill="none">
-              <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#9B7BFA"/><stop offset="100%" stopColor="#C084FC"/></linearGradient></defs>
-              <path d="M16 0 L32 6 L32 20 Q32 30 16 36 Q0 30 0 20 L0 6 Z" fill="url(#lg)" opacity="0.9"/>
-              <path d="M10 18 L14 22 L22 14" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            <span style={{ fontFamily: 'var(--font-syne,"Syne"),sans-serif', fontWeight: 800, fontSize: 22, background: 'linear-gradient(135deg,#9B7BFA,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              AlgoGrass
-            </span>
+          <a href="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 28 }}>
+            <img src="/logo.png" alt="AlgoGrass" style={{ height: 40, width: 'auto' }} />
           </a>
           <h1 style={{ fontFamily: 'var(--font-syne,"Syne"),sans-serif', fontWeight: 800, fontSize: 28, color: '#0F172A', marginBottom: 8, lineHeight: 1.2 }}>
             Welcome back

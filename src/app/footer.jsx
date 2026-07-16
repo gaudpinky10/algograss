@@ -18,18 +18,8 @@ export default function Footer() {
 
           {/* Brand column */}
           <div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 22, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 9 }}>
-              <svg width="22" height="26" viewBox="0 0 32 36" fill="none">
-                <defs>
-                  <linearGradient id="fLogGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#9B7BFA"/>
-                    <stop offset="100%" stopColor="#C084FC"/>
-                  </linearGradient>
-                </defs>
-                <path d="M16 0 L32 6 L32 20 Q32 30 16 36 Q0 30 0 20 L0 6 Z" fill="url(#fLogGrad)" opacity="0.9"/>
-                <path d="M10 18 L14 22 L22 14" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span style={{ background: 'linear-gradient(135deg,#9B7BFA,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>AlgoGrass</span>
+            <div style={{ marginBottom: 14 }}>
+              <img src="/logo.png" alt="AlgoGrass" style={{ height: 32, width: 'auto', display: 'block' }} />
             </div>
 
             <p style={{ fontSize: 13, color: '#64748B', lineHeight: 1.8, maxWidth: 270, marginBottom: 20 }}>

@@ -69,23 +69,7 @@ export default function Nav() {
       }}>
         {/* Logo */}
         <a href="/" style={{textDecoration:'none',flexShrink:0}}>
-          <span style={{
-            fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:20,
-            background:'linear-gradient(135deg,#9B7BFA,#7C9EFF)',
-            WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
-            backgroundClip:'text', display:'flex', alignItems:'center', gap:9,
-          }}>
-            <svg width="26" height="30" viewBox="0 0 32 36" fill="none">
-              <defs>
-                <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stopColor="#9B7BFA"/><stop offset="100%" stopColor="#7C9EFF"/>
-                </linearGradient>
-              </defs>
-              <path d="M16 0 L32 6 L32 20 Q32 30 16 36 Q0 30 0 20 L0 6 Z" fill="url(#lg)" opacity="0.9"/>
-              <path d="M10 18 L14 22 L22 14" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            AlgoGrass
-          </span>
+          <img src="/logo.png" alt="AlgoGrass" style={{height:36, width:'auto', display:'block'}} />
         </a>
 
         {/* Desktop links */}
