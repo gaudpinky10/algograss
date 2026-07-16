@@ -2,7 +2,7 @@ import { cookies } from 'next/headers'
 import { parseUserCookie, trackActivity } from '@/lib/dbHelpers'
 import { initDb, getDbHealth } from '@/lib/db/initDb'
 
-const ALLOWED_EMAIL = 'gaudpinky10@gmail.com'
+const ALLOWED_EMAIL = 'pinkigaud11@algograss.com'
 
 function isAuthorized() {
   try {

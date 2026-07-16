@@ -18,7 +18,7 @@ export default function DeveloperPage() {
 
   useEffect(()=>{
     const u=getUser()
-    if(!u||u.email!=='gaudpinky10@gmail.com'){router.push('/login');return}
+    if(!u||u.email!=='pinkigaud11@algograss.com'){router.push('/login');return}
     setLoading(true)
     fetch('/api/admin/developer').then(r=>r.json()).then(d=>{setData(d);setLoading(false)}).catch(()=>setLoading(false))
   },[refresh])

@@ -1,7 +1,7 @@
 import { cookies } from 'next/headers'
 import { getCollection, parseUserCookie } from '@/lib/dbHelpers'
 
-const ALLOWED_EMAIL = 'gaudpinky10@gmail.com'
+const ALLOWED_EMAIL = 'pinkigaud11@algograss.com'
 
 function isAuthorized(cookieStore) {
   try {
