@@ -49,13 +49,13 @@ export default function Footer() {
               ))}
             </div>
 
-            <a href="mailto:hello@algograss.co.uk" style={{
+            <a href="mailto:contact@algograss.com" style={{
               fontSize: 13, color: '#9B7BFA', textDecoration: 'none',
               display: 'inline-flex', alignItems: 'center', gap: 6,
             }}
               onMouseEnter={e => e.currentTarget.style.opacity = '.75'}
               onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
-              ✉ hello@algograss.co.uk
+              ✉ contact@algograss.com
             </a>
           </div>
 

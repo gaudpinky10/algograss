@@ -93,7 +93,7 @@ export default function CookiePolicyPage() {
         </Section>
 
         <Section title="8. Contact us">
-          <P>Questions about our use of cookies? Email <a href="mailto:privacy@algograss.co.uk" style={{ color: 'var(--green)' }}>privacy@algograss.co.uk</a>.</P>
+          <P>Questions about our use of cookies? Email <a href="mailto:contact@algograss.com" style={{ color: 'var(--green)' }}>contact@algograss.com</a>.</P>
           <P>For complaints about cookies, you can also contact the ICO at <a href="https://ico.org.uk" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--green)' }}>ico.org.uk</a>.</P>
         </Section>
 

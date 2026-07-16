@@ -28,7 +28,7 @@ export default function PrivacyPolicyPage() {
           <P><strong style={{ color: 'var(--ink)' }}>Company name:</strong> AlgoGrass Ltd</P>
           <P><strong style={{ color: 'var(--ink)' }}>Registered in:</strong> England and Wales</P>
           <P><strong style={{ color: 'var(--ink)' }}>Registered address:</strong> 5 Jupp Road West, London, E15 2HS</P>
-          <P><strong style={{ color: 'var(--ink)' }}>Email:</strong> <a href="mailto:privacy@algograss.co.uk" style={{ color: 'var(--green)' }}>privacy@algograss.co.uk</a></P>
+          <P><strong style={{ color: 'var(--ink)' }}>Email:</strong> <a href="mailto:contact@algograss.com" style={{ color: 'var(--green)' }}>contact@algograss.com</a></P>
           <P>AlgoGrass Ltd is the data controller for personal data collected through algograss.com and the AlgoGrass compliance platform.</P>
         </Section>
 
@@ -99,7 +99,7 @@ export default function PrivacyPolicyPage() {
               <span style={{ color: 'var(--ink2)', fontSize: 13 }}> — {desc}</span>
             </div>
           ))}
-          <P style={{ marginTop: 16 }}>To exercise any right, email <a href="mailto:privacy@algograss.co.uk" style={{ color: 'var(--green)' }}>privacy@algograss.co.uk</a>. We respond within 30 days.</P>
+          <P style={{ marginTop: 16 }}>To exercise any right, email <a href="mailto:contact@algograss.com" style={{ color: 'var(--green)' }}>contact@algograss.com</a>. We respond within 30 days.</P>
         </Section>
 
         <Section title="8. Cookies">
@@ -107,7 +107,7 @@ export default function PrivacyPolicyPage() {
         </Section>
 
         <Section title="9. Security">
-          <P>We protect your data using HTTPS encryption, hashed passwords, secure HTTP headers (CSP, HSTS, X-Frame-Options), access controls, and regular security reviews. No system is 100% secure — if you believe your data has been compromised, contact us immediately at <a href="mailto:privacy@algograss.co.uk" style={{ color: 'var(--green)' }}>privacy@algograss.co.uk</a>.</P>
+          <P>We protect your data using HTTPS encryption, hashed passwords, secure HTTP headers (CSP, HSTS, X-Frame-Options), access controls, and regular security reviews. No system is 100% secure — if you believe your data has been compromised, contact us immediately at <a href="mailto:contact@algograss.com" style={{ color: 'var(--green)' }}>contact@algograss.com</a>.</P>
         </Section>
 
         <Section title="10. Children">
@@ -119,7 +119,7 @@ export default function PrivacyPolicyPage() {
         </Section>
 
         <Section title="12. Contact & complaints">
-          <P>For any privacy questions or to exercise your rights: <a href="mailto:privacy@algograss.co.uk" style={{ color: 'var(--green)' }}>privacy@algograss.co.uk</a></P>
+          <P>For any privacy questions or to exercise your rights: <a href="mailto:contact@algograss.com" style={{ color: 'var(--green)' }}>contact@algograss.com</a></P>
           <P>If you are not satisfied with our response, you have the right to lodge a complaint with the <strong style={{ color: 'var(--ink)' }}>Information Commissioner's Office (ICO)</strong>:</P>
           <P>🌐 <a href="https://ico.org.uk" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--green)' }}>ico.org.uk</a> · 📞 0303 123 1113 · Wycliffe House, Water Lane, Wilmslow, Cheshire, SK9 5AF</P>
         </Section>
