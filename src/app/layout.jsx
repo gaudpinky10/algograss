@@ -42,9 +42,9 @@ export const metadata = {
   creator: 'AlgoGrass',
   publisher: 'AlgoGrass',
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
-  icons: { icon: '/favicon.svg', apple: '/favicon.svg' },
+  icons: { icon: '/favicon.svg', apple: '/apple-icon.png' },
   manifest: '/manifest.json',
-  themeColor: '#9B7BFA',
+  themeColor: '#1A5E38',
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'AlgoGrass' },
   openGraph: {
     type: 'website',
