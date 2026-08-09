@@ -7,7 +7,7 @@ export async function GET(request) {
   const code  = searchParams.get('code')
   const error = searchParams.get('error')
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://algograss.com'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.algograss.co.uk'
 
   if (error || !code) {
     return NextResponse.redirect(`${appUrl}/login?error=google_denied`)

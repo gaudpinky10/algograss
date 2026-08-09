@@ -31,14 +31,14 @@ const barlowCondensed = Barlow_Condensed({
 })
 
 export const metadata = {
-  metadataBase: new URL('https://algograss.com'),
+  metadataBase: new URL('https://www.algograss.co.uk'),
   title: {
     default: 'AlgoGrass — GDPR Compliance Tools for UK & EU Businesses',
     template: '%s | AlgoGrass',
   },
   description: 'Free GDPR website scanner + compliance tools for UK and EU SMEs. Generate privacy policies, handle DSARs, manage data audits, and stay ICO-compliant — no legal background needed.',
   keywords: ['GDPR compliance', 'UK GDPR', 'ICO compliance', 'privacy policy generator', 'DSAR handler', 'data protection', 'GDPR scanner', 'SME compliance', 'cookie consent', 'data audit'],
-  authors: [{ name: 'AlgoGrass', url: 'https://algograss.com' }],
+  authors: [{ name: 'AlgoGrass', url: 'https://www.algograss.co.uk' }],
   creator: 'AlgoGrass',
   publisher: 'AlgoGrass',
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
@@ -49,7 +49,7 @@ export const metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_GB',
-    url: 'https://algograss.com',
+    url: 'https://www.algograss.co.uk',
     siteName: 'AlgoGrass',
     title: 'AlgoGrass — GDPR Compliance Tools for UK & EU Businesses',
     description: 'Free GDPR website scanner + compliance tools for UK and EU SMEs. 60 days free, no card required.',
@@ -62,7 +62,7 @@ export const metadata = {
     images: ['/og-image.png'],
     creator: '@algograss',
   },
-  alternates: { canonical: 'https://algograss.com' },
+  alternates: { canonical: 'https://www.algograss.co.uk' },
 }
 
 export default function RootLayout({ children }) {
@@ -74,7 +74,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${plusJakarta.variable} ${lora.variable} ${barlowCondensed.variable}`}>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#9B7BFA" />
+        <meta name="theme-color" content="#1A5E38" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="AlgoGrass" />

@@ -116,8 +116,8 @@ export default function SharePage() {
         <div style={{ ...card, textAlign: 'center', background: 'linear-gradient(135deg,rgba(139,92,246,0.06),rgba(124,158,255,0.06))' }}>
           <h3 style={{ color: '#0F172A', fontSize: 18, fontWeight: 700, margin: '0 0 8px' }}>Fix your compliance issues</h3>
           <p style={{ color: '#94A3B8', fontSize: 13, margin: '0 0 20px' }}>AlgoGrass helps you generate privacy policies, respond to DSARs, and stay GDPR compliant — automatically.</p>
-          <a href="https://algograss.com/signup" style={{ display: 'inline-block', background: 'linear-gradient(135deg,#9B7BFA,#7C3AED)', color: '#06060F', fontWeight: 700, fontSize: 14, padding: '12px 28px', borderRadius: 10, textDecoration: 'none' }}>Get your free account →</a>
-          <p style={{ color: '#475569', fontSize: 11, margin: '14px 0 0' }}>Powered by AlgoGrass · algograss.com</p>
+          <a href="https://www.algograss.co.uk/signup" style={{ display: 'inline-block', background: 'linear-gradient(135deg,#9B7BFA,#7C3AED)', color: '#06060F', fontWeight: 700, fontSize: 14, padding: '12px 28px', borderRadius: 10, textDecoration: 'none' }}>Get your free account →</a>
+          <p style={{ color: '#475569', fontSize: 11, margin: '14px 0 0' }}>Powered by AlgoGrass · algograss.co.uk</p>
         </div>
       </div>
     </div>

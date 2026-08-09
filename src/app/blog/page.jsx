@@ -17,7 +17,7 @@ export const metadata = {
   openGraph: {
     title: 'Blog — GDPR Guides & Compliance Resources | AlgoGrass',
     description: 'Free GDPR guides and compliance resources for UK and EU businesses.',
-    url: 'https://algograss.com/blog',
+    url: 'https://www.algograss.co.uk/blog',
   },
 }
 
