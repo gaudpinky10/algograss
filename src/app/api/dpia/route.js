@@ -1,3 +1,4 @@
+import { generateContent } from '@/lib/ai'
 import { cookies } from 'next/headers';
 import { getCollection, trackActivity, parseUserCookie } from '@/lib/dbHelpers';
 
@@ -22,25 +23,17 @@ export async function POST(request) {
     } catch {}
   })()
 
-  const apiKey = process.env.GOOGLE_GEMINI_API_KEY
+  const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
-    return Response.json({ error: 'AI not configured. Your DPIA data has been saved. Please add GOOGLE_GEMINI_API_KEY in Vercel to generate the document.' }, { status: 503 })
+    return Response.json({ error: 'AI not configured. Your DPIA data has been saved. Please add ANTHROPIC_API_KEY in Vercel to generate the document.' }, { status: 503 })
   }
 
   try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+    const data = await generateContent({
           systemInstruction: { parts: [{ text: 'You are a GDPR DPIA specialist. Generate complete, structured DPIAs for UK/EU businesses under GDPR Article 35. Use clear headings and [PLACEHOLDER] tags where business-specific details are needed. End with a disclaimer.' }] },
           contents: [{ role: 'user', parts: [{ text: `Generate a complete DPIA for:\nBusiness: ${businessName || '[BUSINESS NAME]'}\nProject/System: ${project}\nPurpose: ${purpose}\nPersonal data types: ${dataTypes}\nLegal basis: ${legalBasis}\nData recipients/processors: ${recipients}\nRetention period: ${retention}\nKnown risks: ${risks}\n\nInclude: 1) Project description 2) Data flows 3) Necessity & proportionality 4) Risk identification (likelihood × impact) 5) Risk mitigation 6) DPO consultation 7) Approval sign-off 8) Review schedule` }] }],
           generationConfig: { maxOutputTokens: 3000, temperature: 0.3 },
-        }),
-      }
-    )
-    const data = await res.json()
+        })
     if (data.error) return Response.json({ error: data.error.message }, { status: 500 })
     const dpia = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Generation failed.'
     return Response.json({ dpia, generatedAt: new Date().toISOString() })

@@ -70,7 +70,7 @@ export default function SecurityPage() {
             <Row label="Database" value="MongoDB Atlas (EU West — Ireland, eu-west-1)" note="All data stored and replicated within EU data centres. At-rest encryption enabled by default." />
             <Row label="Transactional email" value="Resend (EU region)" note="Used for account notifications, password resets, and compliance alerts only." />
             <Row label="Payments" value="Stripe (UK & EU regulated)" note="Stripe processes payment card data. AlgoGrass never stores card numbers. Stripe is PCI DSS Level 1 certified." />
-            <Row label="AI processing" value="Google Gemini API (EU data residency where available)" note="Scan descriptions and prompts sent for AI analysis do not include raw personal data from your users." />
+            <Row label="AI processing" value="Anthropic (Claude API)" note="Scan descriptions and prompts sent for AI analysis do not include raw personal data from your users. Anthropic may route inference to servers in the US, Europe, Asia or Australia; stored data is held in the US." />
           </div>
         </AnimateOnScroll>
       </S>
@@ -167,7 +167,7 @@ export default function SecurityPage() {
               { name: 'MongoDB Atlas (MongoDB Inc.)', role: 'Database (primary data store)', location: 'EU West (Ireland)', link: 'https://www.mongodb.com/legal/privacy-policy' },
               { name: 'Resend Inc.', role: 'Transactional email delivery', location: 'EU region', link: 'https://resend.com/privacy' },
               { name: 'Stripe Inc.', role: 'Payment processing (PCI DSS Level 1)', location: 'UK / EEA', link: 'https://stripe.com/gb/privacy' },
-              { name: 'Google LLC (Gemini API)', role: 'AI language model inference', location: 'EU data residency where applicable', link: 'https://policies.google.com/privacy' },
+              { name: 'Anthropic PBC (Claude API)', role: 'AI language model inference', location: 'Inference routed to US / Europe / Asia / Australia; data stored in the US', link: 'https://www.anthropic.com/legal/privacy' },
             ].map(({ name, role, location, link }) => (
               <div key={name} style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'flex-start', padding: '14px 0', borderBottom: '1px solid rgba(15,23,42,0.05)' }}>
                 <div style={{ minWidth: 220, flexShrink: 0 }}>

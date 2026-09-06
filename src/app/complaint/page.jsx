@@ -364,7 +364,7 @@ export default function ComplaintPage() {
               <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--lime)', marginBottom: 12 }}>Required Vercel environment variables</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {[
-                  ['GOOGLE_GEMINI_API_KEY', 'Already set — powers complaint classification'],
+                  ['ANTHROPIC_API_KEY', 'Powers complaint classification'],
                   ['FORMSPREE_ID', 'Already set — sends email notifications to you'],
                   ['WHATSAPP_VERIFY_TOKEN', 'Any random string — used to verify Meta webhook handshake'],
                   ['WHATSAPP_TOKEN', 'Your Meta WhatsApp access token — enables auto-reply acknowledgements'],

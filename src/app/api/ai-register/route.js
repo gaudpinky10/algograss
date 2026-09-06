@@ -1,3 +1,4 @@
+import { generateContent } from '@/lib/ai'
 import { cookies } from 'next/headers';
 import { getCollection } from '@/lib/dbHelpers';
 
@@ -27,23 +28,15 @@ export async function POST(request) {
   const body = await request.json()
   const { systemName, purpose, dataTypes, riskLevel, vendor, internalOwner, dpiaRequired } = body
   if (!systemName) return Response.json({ error: 'System name required' }, { status: 400 })
-  const apiKey = process.env.GOOGLE_GEMINI_API_KEY
+  const apiKey = process.env.ANTHROPIC_API_KEY
   let aiAssessment = null
   if (apiKey) {
     try {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+      const data = await generateContent({
             systemInstruction: { parts: [{ text: 'You are a GDPR AI Act compliance expert. Return ONLY valid JSON with no markdown: {"gdprRisk":"High|Medium|Low","aiActCategory":"High-Risk|Limited-Risk|Minimal-Risk","keyRisks":["risk1","risk2"],"recommendations":["rec1","rec2"],"dpiaNeeded":true}' }] },
             contents: [{ role: 'user', parts: [{ text: `AI System: ${systemName}\nPurpose: ${purpose}\nData types: ${dataTypes}\nVendor: ${vendor}\nRisk level: ${riskLevel}\nDPIA flagged: ${dpiaRequired}` }] }],
             generationConfig: { maxOutputTokens: 800, temperature: 0.1 },
-          }),
-        }
-      )
-      const data = await res.json()
+          })
       if (!data.error) {
         let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || ''
         rawText = rawText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()

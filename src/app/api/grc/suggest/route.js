@@ -1,3 +1,4 @@
+import { generateContent } from '@/lib/ai'
 import { cookies } from 'next/headers'
 import { trackActivity, parseUserCookie } from '@/lib/dbHelpers'
 
@@ -8,25 +9,17 @@ export async function POST(request) {
   const userCookie = cookies().get('algograss_user')
   const user = userCookie ? parseUserCookie(userCookie.value) : null
 
-  const apiKey = process.env.GOOGLE_GEMINI_API_KEY
+  const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
     return Response.json({ suggestion: getFallbackSuggestion(controlId, controlName, status) })
   }
 
   try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+    const data = await generateContent({
           systemInstruction: { parts: [{ text: 'You are a UK GDPR and GRC compliance expert. Give practical, concise action plans.' }] },
           contents: [{ role: 'user', parts: [{ text: `A user's compliance control is "${status}".\n\nControl: ${controlName}\nCategory: ${category}\nStatus: ${status}\n\nGive a practical, concise action plan (3-5 bullet points) for what they should do RIGHT NOW to fix or improve this control. Focus on UK GDPR, ICO guidance, and UK government standards. Each bullet should be one concrete action. Keep it under 200 words. Format as plain bullet points starting with •` }] }],
           generationConfig: { maxOutputTokens: 600, temperature: 0.3 },
-        }),
-      }
-    )
-    const data = await res.json()
+        })
     const suggestion = data.candidates?.[0]?.content?.parts?.[0]?.text || getFallbackSuggestion(controlId, controlName, status)
     await trackActivity({ userEmail: user?.email, tool: 'grc', action: 'ai_suggestion', detail: controlName, meta: { status, category } })
     return Response.json({ suggestion })

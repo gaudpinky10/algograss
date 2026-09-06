@@ -1,7 +1,6 @@
+import { generateContent } from '@/lib/ai'
 import { cookies } from 'next/headers';
 import { getCollection, trackActivity, parseUserCookie } from '@/lib/dbHelpers';
-
-const GEMINI = (key) => `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`
 
 export async function POST(request) {
   const { requestText, businessName, dataTypes, requesterName, requesterEmail, requestType } = await request.json()
@@ -10,20 +9,15 @@ export async function POST(request) {
   const userCookie = cookies().get('algograss_user')
   const user = userCookie ? parseUserCookie(userCookie.value) : null
 
-  const apiKey = process.env.GOOGLE_GEMINI_API_KEY
+  const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) return Response.json({ error: 'AI not configured.' }, { status: 503 })
 
   try {
-    const res = await fetch(GEMINI(apiKey), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    const data = await generateContent({
         systemInstruction: { parts: [{ text: 'You are a GDPR Subject Access Request assistant. Help UK/EU businesses handle DSARs correctly under GDPR Art. 15. Be practical and clear.' }] },
         contents: [{ role: 'user', parts: [{ text: `Business: ${businessName || 'Unknown'}\nData types held: ${dataTypes || 'Not specified'}\n\nSAR Request:\n${requestText}\n\nProvide: 1) Is this a valid DSAR 2) Response deadline 3) What data to provide 4) Identity verification steps 5) Draft acknowledgement email 6) Draft response template with [PLACEHOLDER] tags 7) Any exemptions 8) Step checklist` }] }],
         generationConfig: { maxOutputTokens: 2000, temperature: 0.3 },
-      }),
-    })
-    const data = await res.json()
+      })
     if (data.error) return Response.json({ error: data.error.message }, { status: 500 })
     const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated.'
 

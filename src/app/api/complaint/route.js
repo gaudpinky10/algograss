@@ -1,3 +1,4 @@
+import { generateContent } from '@/lib/ai'
 import { cookies } from 'next/headers';
 import { getCollection, trackActivity, parseUserCookie } from '@/lib/dbHelpers';
 
@@ -20,7 +21,7 @@ export async function POST(request) {
   const userCookie = cookies().get('algograss_user')
   const user = userCookie ? parseUserCookie(userCookie.value) : null
 
-  const apiKey = process.env.GOOGLE_GEMINI_API_KEY
+  const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) return Response.json({ error: 'AI not configured.' }, { status: 503 })
 
   try {
@@ -36,18 +37,10 @@ Return exactly this JSON:
 category must be one of: Subject Access Request, Erasure Request, Marketing Consent, Data Breach, Cookie Complaint, Data Portability, Rectification Request, Restriction Request, Objection to Processing, Employee/HR Data, Vendor Compliance, General Privacy, Not GDPR Related
 urgency: High, Medium, or Low. riskLevel: High, Medium, or Low.`
 
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+    const data = await generateContent({
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
           generationConfig: { maxOutputTokens: 1000, temperature: 0.1 },
-        }),
-      }
-    )
-    const data = await res.json()
+        })
     if (data.error) return Response.json({ error: data.error.message }, { status: 500 })
 
     let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || ''

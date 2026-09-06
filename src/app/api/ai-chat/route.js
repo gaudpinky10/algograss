@@ -1,3 +1,4 @@
+import { generateContent } from '@/lib/ai'
 import { cookies } from 'next/headers'
 import { getCollection, parseUserCookie, trackActivity } from '@/lib/dbHelpers'
 
@@ -120,12 +121,12 @@ function buildRagContext(docs) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// POST handler — uses Google Gemini (free tier)
+// POST handler — uses Claude (Anthropic)
 // ─────────────────────────────────────────────────────────────────────────────
 export async function POST(request) {
-  const apiKey = process.env.GOOGLE_GEMINI_API_KEY
+  const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
-    return Response.json({ error: 'AI not configured. Add GOOGLE_GEMINI_API_KEY to Vercel environment variables.' }, { status: 503 })
+    return Response.json({ error: 'AI not configured. Add ANTHROPIC_API_KEY to Vercel environment variables.' }, { status: 503 })
   }
 
   const userCookie = cookies().get('algograss_user')
@@ -159,33 +160,24 @@ export async function POST(request) {
     } catch {}
   })()
 
-  // ── Call Gemini API ───────────────────────────────────────────
+  // ── Call Claude ───────────────────────────────────────────────
   try {
-    // Convert messages to Gemini format (alternating user/model)
+    // Convert messages to the shared AI client's format
     const contents = messages.map(m => ({
       role: m.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: m.content }],
     }))
 
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: systemPrompt }] },
-          contents,
-          generationConfig: { maxOutputTokens: 2048, temperature: 0.3 },
-        }),
-      }
-    )
+    const data = await generateContent({
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      contents,
+      generationConfig: { maxOutputTokens: 2048, temperature: 0.3 },
+    })
 
-    if (!res.ok) {
-      const err = await res.json()
-      return Response.json({ error: err.error?.message || 'AI error' }, { status: 500 })
+    if (data.error) {
+      return Response.json({ error: data.error.message || 'AI error' }, { status: 500 })
     }
 
-    const data = await res.json()
     const fullResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response received.'
 
     // ── Stream the response word-by-word ─────────────────────────

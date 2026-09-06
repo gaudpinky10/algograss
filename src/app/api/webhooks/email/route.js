@@ -1,3 +1,4 @@
+import { generateContent } from '@/lib/ai'
 /**
  * Inbound email webhook — compatible with Mailgun, SendGrid, and Postmark.
  *
@@ -10,19 +11,11 @@
  */
 
 async function classifyComplaint(text, apiKey) {
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+  const data = await generateContent({
         systemInstruction: { parts: [{ text: 'You are a GDPR complaint classification AI. Return ONLY valid JSON with no markdown: {"isGdprComplaint":true,"category":"Subject Access Request|Erasure Request|Marketing Consent|Data Breach|Cookie Complaint|Data Portability|Rectification Request|Restriction Request|Objection to Processing|Employee/HR Data|Vendor Compliance|General Privacy|Not GDPR Related","urgency":"High|Medium|Low","responseDays":30,"regulationRef":"string","summary":"string","recommendedAction":"string","templateResponse":"string"}' }] },
         contents: [{ role: 'user', parts: [{ text }] }],
         generationConfig: { maxOutputTokens: 1200, temperature: 0.1 },
-      }),
-    }
-  )
-  const data = await res.json()
+      })
   if (data.error) throw new Error(data.error.message)
   let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || ''
   rawText = rawText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
@@ -42,7 +35,7 @@ async function notifyAdmin(from, subject, body, classification, formspreeId) {
 }
 
 export async function POST(request) {
-  const apiKey = process.env.GOOGLE_GEMINI_API_KEY
+  const apiKey = process.env.ANTHROPIC_API_KEY
   const formspreeId = process.env.FORMSPREE_ID
 
   const contentType = request.headers.get('content-type') || ''

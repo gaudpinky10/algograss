@@ -1,9 +1,10 @@
+import { generateContent } from '@/lib/ai'
 import { NextResponse } from 'next/server';
 import { getCollection, trackActivity } from '@/lib/dbHelpers';
 import { cookies } from 'next/headers';
 
 export async function POST(request) {
-  const apiKey = process.env.GOOGLE_GEMINI_API_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY;
   const body = await request.json();
   const { breachDescription, dataTypes, individualsAffected, consequences, measuresTaken, controllerName, dpoContact, breachDate } = body;
 
@@ -32,19 +33,11 @@ Write a complete, formal ICO breach notification letter. Include:
 Use formal UK GDPR legal language. Reference the relevant Articles (Article 33, Article 34 if applicable). Include a reference number placeholder [REF-YYYY-MM-DD]. Make it ready to submit to the ICO.`;
 
   try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+    const data = await generateContent({
           systemInstruction: { parts: [{ text: 'You are a senior UK data protection solicitor specialising in GDPR breach notifications. Write formal, legally precise letters.' }] },
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
           generationConfig: { maxOutputTokens: 2000, temperature: 0.2 },
-        }),
-      }
-    );
-    const data = await res.json();
+        })
     if (data.error) throw new Error(data.error.message);
     const letter = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
