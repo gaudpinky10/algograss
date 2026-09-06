@@ -24,6 +24,7 @@ export async function POST(request) {
     if (err.status === 503) {
       return Response.json({ reply: 'The AI assistant needs an ANTHROPIC_API_KEY configured in Vercel Environment Variables.' })
     }
-    return Response.json({ reply: 'The assistant is temporarily unavailable. Please try again in a moment.' })
+    // TEMPORARY DIAGNOSTIC — surfaces the real error. Revert after debugging.
+    return Response.json({ reply: `Diagnostic [status ${err.status || 'none'}]: ${err.message}` })
   }
 }

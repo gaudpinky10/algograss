@@ -29,12 +29,34 @@ const NAV_LINKS = [
   { href: '/settings',    label: 'Settings' },
 ]
 
+function getUser() {
+  try {
+    const cookies = document.cookie.split(';').map(c => c.trim())
+    const cookie = cookies.find(c => c.startsWith('algograss_user='))
+    if (!cookie) return null
+    return JSON.parse(atob(cookie.split('=')[1]))
+  } catch { return null }
+}
+
 export default function Nav() {
   const path = usePathname()
   const [toolsOpen, setToolsOpen]   = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled]     = useState(false)
   const menuRef = useRef(null)
+  const [user, setUser]           = useState(null)
+  const [authReady, setAuthReady] = useState(false)
+
+  useEffect(() => { setUser(getUser()); setAuthReady(true) }, [path])
+
+  async function signOut() {
+    try { await fetch('/api/auth/logout', { method: 'POST' }) } catch {}
+    setUser(null)
+    window.location.href = '/'
+  }
+
+  const displayName = user ? (user.name || (user.email || '').split('@')[0]) : ''
+  const initial = (displayName || '?').charAt(0).toUpperCase()
 
   useEffect(() => {
     function handleClick(e) {
@@ -135,6 +157,7 @@ export default function Nav() {
             </li>
           ))}
 
+          {authReady && !user && (<>
           <li style={{marginLeft:8}}>
             <a href="/login" style={{fontSize:14, color:'#94A3B8', padding:'6px 12px', borderRadius:8, transition:'color .2s'}}
               onMouseEnter={e=>e.currentTarget.style.color='#9B7BFA'}
@@ -155,6 +178,45 @@ export default function Nav() {
               Get started free →
             </a>
           </li>
+          </>)}
+
+          {authReady && user && (<>
+          <li style={{marginLeft:8}}>
+            <a href="/dashboard" style={{fontSize:14, color: path==='/dashboard' ? '#9B7BFA' : '#94A3B8', padding:'6px 12px', borderRadius:8, transition:'color .2s'}}
+              onMouseEnter={e=>e.currentTarget.style.color='#9B7BFA'}
+              onMouseLeave={e=>e.currentTarget.style.color=path==='/dashboard'?'#9B7BFA':'#94A3B8'}>
+              Dashboard
+            </a>
+          </li>
+          <li style={{marginLeft:4}}>
+            <a href="/settings" title={user.email || ''} style={{
+              display:'inline-flex', alignItems:'center', gap:8,
+              padding:'5px 14px 5px 5px', borderRadius:999, textDecoration:'none',
+              background:'rgba(139,92,246,0.10)', border:'1px solid rgba(139,92,246,0.25)',
+              transition:'all .2s',
+            }}
+              onMouseEnter={e=>e.currentTarget.style.background='rgba(139,92,246,0.18)'}
+              onMouseLeave={e=>e.currentTarget.style.background='rgba(139,92,246,0.10)'}>
+              <span style={{
+                width:26, height:26, borderRadius:'50%', flexShrink:0,
+                background:'linear-gradient(135deg,#9B7BFA,#7C3AED)', color:'#FFFFFF',
+                fontSize:12, fontWeight:700, display:'inline-flex', alignItems:'center', justifyContent:'center',
+              }}>{initial}</span>
+              <span style={{fontSize:13, color:'#E2E8F0', maxWidth:130, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{displayName}</span>
+            </a>
+          </li>
+          <li style={{marginLeft:4}}>
+            <button onClick={signOut} style={{
+              fontSize:13, color:'#94A3B8', background:'transparent', border:'none',
+              padding:'6px 10px', borderRadius:8, cursor:'pointer', transition:'color .2s',
+            }}
+              onMouseEnter={e=>e.currentTarget.style.color='#9B7BFA'}
+              onMouseLeave={e=>e.currentTarget.style.color='#94A3B8'}>
+              Sign out
+            </button>
+          </li>
+          </>)}
+
         </ul>
 
         {/* Hamburger button — hidden on desktop via CSS */}
@@ -199,8 +261,15 @@ export default function Nav() {
           {NAV_LINKS.map(l=>(
             <a key={l.href} href={l.href} className={`nav-drawer-link${path===l.href?' active':''}`}>{l.label}</a>
           ))}
-          <a href="/login"  className="nav-drawer-link">Log in</a>
-          <a href="/signup" className="nav-drawer-cta">Get started free →</a>
+          {authReady && !user && (<>
+            <a href="/login"  className="nav-drawer-link">Log in</a>
+            <a href="/signup" className="nav-drawer-cta">Get started free →</a>
+          </>)}
+          {authReady && user && (<>
+            <a href="/dashboard" className="nav-drawer-link">Dashboard</a>
+            <a href="/settings"  className="nav-drawer-link">{displayName}</a>
+            <a href="#" className="nav-drawer-link" onClick={e=>{e.preventDefault(); signOut()}}>Sign out</a>
+          </>)}
         </div>
       )}
     </>
