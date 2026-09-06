@@ -138,16 +138,7 @@ export async function POST(request) {
       'osano','admiral','crownpeak','evidon','sourcepoint','bigcommerce-cookie',
     ]
     const detectedPlatform = COMPLIANT_PLATFORMS.find(p => mainHtml.toLowerCase().includes(p))
-    const hasCookieBanner  = !!detectedPlatform || detect(mainHtml, [
-      /cookie[\s_-]?(banner|notice|consent|bar|popup|modal|wall|dialog|overlay)/i,
-      'cookie-consent', 'cookieconsent', 'cookie_consent', 'cookie_banner',
-      /gdpr[\s_-]?consent/i, /acceptcookies/i,
-      /we use cookies/i, /this (site|website|we) use[s]? cookies/i,
-      'cookie-law', 'cookie-notice', /manage[\s_-]?(my[\s_-]?)?cookie/i,
-      'cookie preferences', 'cookie settings', 'cookie choices',
-      /by (using|continuing|browsing|clicking).{0,60}(cookies|consent)/i,
-    ])
-    const hasCookieReject  = !!detectedPlatform || detect(mainHtml, [
+    const rejectControlPatterns = [
       /data-reject-all="true"/i,
       /reject[\s_-]?all/i, /reject[\s_-]?cookies/i, 'rejectAll', 'reject-all', 'reject_all',
       /decline[\s_-]?(all[\s_-]?)?cookies/i, /refuse[\s_-]?cookies/i,
@@ -156,7 +147,31 @@ export async function POST(request) {
       /customise[\s_-]?cookies/i, /customize[\s_-]?cookies/i,
       'opt out', 'opt-out', /decline[\s_-]?all/i, 'no thanks',
       /only (necessary|essential|required) cookies/i,
+    ]
+    const hasCookieRejectSignal = detect(mainHtml, rejectControlPatterns)
+    // A page can only offer a "reject all" / "manage preferences" control if a
+    // cookie banner exists to attach it to — so finding one of those controls
+    // is itself proof of a banner, even if the banner's own wrapper text
+    // (e.g. a bespoke, non-third-party implementation like Google's own
+    // consent screen) doesn't match the phrase list below.
+    const hasCookieBanner  = !!detectedPlatform || hasCookieRejectSignal || detect(mainHtml, [
+      /cookie[\s_-]?(banner|notice|consent|bar|popup|modal|wall|dialog|overlay)/i,
+      'cookie-consent', 'cookieconsent', 'cookie_consent', 'cookie_banner',
+      /gdpr[\s_-]?consent/i, /acceptcookies/i,
+      /we use cookies/i, /this (site|website|we) use[s]? cookies/i,
+      'cookie-law', 'cookie-notice', /manage[\s_-]?(my[\s_-]?)?cookie/i,
+      'cookie preferences', 'cookie settings', 'cookie choices',
+      /by (using|continuing|browsing|clicking).{0,60}(cookies|consent)/i,
+      // Bespoke/in-house consent screens (e.g. Google's own implementation)
+      // often skip generic "cookie banner" phrasing entirely in favour of
+      // wording like this:
+      /before you continue/i,
+      /we use cookies and data/i,
+      /use cookies and data to/i,
+      /cookies and similar technologies/i,
+      /consent to (our|the) use of cookies/i,
     ])
+    const hasCookieReject  = !!detectedPlatform || hasCookieRejectSignal
 
     // ─── TERMS ───────────────────────────────────────────────────────────────
     const hasTerms        = detect(allText, [
