@@ -41,5 +41,5 @@
   <rect x="518" y="520" width="220" height="44" rx="22" fill="rgba(0,212,170,0.08)" stroke="rgba(0,212,170,0.2)" stroke-width="1"/>
   <text x="628" y="547" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#00D4AA" text-anchor="middle" font-weight="600">Free Scanner</text>
   <!-- URL -->
-  <text x="1104" y="580" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="rgba(232,240,254,0.35)" text-anchor="end">algograss.co.uk</text>
+  <text x="1104" y="580" font-family="system-ui, -apple-system, sans-serif" font-size="22" fill="rgba(232,240,254,0.35)" text-anchor="end">algograss.com</text>
 </svg>

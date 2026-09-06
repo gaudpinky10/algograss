@@ -282,8 +282,8 @@ export default function ComplaintPage() {
               <div style={{ background: 'var(--cream)', borderRadius: 10, padding: '14px 16px', marginBottom: 14 }}>
                 <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink2)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.06em' }}>Webhook URL</div>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <code style={{ flex: 1, fontSize: 13, color: 'var(--green)', fontFamily: 'monospace', wordBreak: 'break-all' }}>https://www.algograss.co.uk/api/webhooks/email</code>
-                  <button onClick={() => navigator.clipboard?.writeText('https://www.algograss.co.uk/api/webhooks/email')}
+                  <code style={{ flex: 1, fontSize: 13, color: 'var(--green)', fontFamily: 'monospace', wordBreak: 'break-all' }}>https://www.algograss.com/api/webhooks/email</code>
+                  <button onClick={() => navigator.clipboard?.writeText('https://www.algograss.com/api/webhooks/email')}
                     style={{ fontSize: 11, padding: '5px 10px', borderRadius: 6, border: '1px solid var(--green-m)', background: 'var(--white)', color: 'var(--green)', cursor: 'pointer', whiteSpace: 'nowrap' }}>Copy</button>
                 </div>
               </div>
@@ -313,8 +313,8 @@ export default function ComplaintPage() {
               <div style={{ background: 'var(--cream)', borderRadius: 10, padding: '14px 16px', marginBottom: 14 }}>
                 <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink2)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.06em' }}>Webhook URL</div>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <code style={{ flex: 1, fontSize: 13, color: 'var(--green)', fontFamily: 'monospace', wordBreak: 'break-all' }}>https://www.algograss.co.uk/api/webhooks/whatsapp</code>
-                  <button onClick={() => navigator.clipboard?.writeText('https://www.algograss.co.uk/api/webhooks/whatsapp')}
+                  <code style={{ flex: 1, fontSize: 13, color: 'var(--green)', fontFamily: 'monospace', wordBreak: 'break-all' }}>https://www.algograss.com/api/webhooks/whatsapp</code>
+                  <button onClick={() => navigator.clipboard?.writeText('https://www.algograss.com/api/webhooks/whatsapp')}
                     style={{ fontSize: 11, padding: '5px 10px', borderRadius: 6, border: '1px solid var(--green-m)', background: 'var(--white)', color: 'var(--green)', cursor: 'pointer', whiteSpace: 'nowrap' }}>Copy</button>
                 </div>
               </div>
@@ -339,8 +339,8 @@ export default function ComplaintPage() {
               <div style={{ background: 'var(--cream)', borderRadius: 10, padding: '14px 16px', marginBottom: 14 }}>
                 <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink2)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.06em' }}>Webhook URL</div>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <code style={{ flex: 1, fontSize: 13, color: 'var(--green)', fontFamily: 'monospace', wordBreak: 'break-all' }}>https://www.algograss.co.uk/api/webhooks/social</code>
-                  <button onClick={() => navigator.clipboard?.writeText('https://www.algograss.co.uk/api/webhooks/social')}
+                  <code style={{ flex: 1, fontSize: 13, color: 'var(--green)', fontFamily: 'monospace', wordBreak: 'break-all' }}>https://www.algograss.com/api/webhooks/social</code>
+                  <button onClick={() => navigator.clipboard?.writeText('https://www.algograss.com/api/webhooks/social')}
                     style={{ fontSize: 11, padding: '5px 10px', borderRadius: 6, border: '1px solid var(--green-m)', background: 'var(--white)', color: 'var(--green)', cursor: 'pointer', whiteSpace: 'nowrap' }}>Copy</button>
                 </div>
               </div>

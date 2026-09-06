@@ -18,7 +18,7 @@
  * }
  *
  * For Facebook/Instagram pages:
- *   Set webhook URL to: https://www.algograss.co.uk/api/webhooks/social
+ *   Set webhook URL to: https://www.algograss.com/api/webhooks/social
  *   Verify token: value of SOCIAL_VERIFY_TOKEN env var
  *   Subscribe to: messages, feed, mentions
  *

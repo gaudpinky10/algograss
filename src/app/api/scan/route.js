@@ -123,6 +123,10 @@ export async function POST(request) {
       /how we (use|handle|process|collect) (your )?(personal )?(data|information)/i,
       'your privacy', 'privacy rights', 'your personal information',
       'data we collect', 'information we collect',
+      // Bare "Privacy" footer links (no "Policy"/"Notice" suffix in the link
+      // text) are extremely common and were previously missed entirely —
+      // this catches them via the href path instead of the link text.
+      /href=["'][^"']{0,80}\/privacy(?:-policy|-notice|-statement)?\/?["']/i,
     ])
 
     // ─── COOKIE CONSENT ──────────────────────────────────────────────────────
@@ -323,15 +327,33 @@ export async function POST(request) {
     if (!isHttps)
       issues.push({ sev:'High', title:'Website not using HTTPS', desc:'HTTPS is required under GDPR Art. 32 to encrypt data in transit. All modern websites should use HTTPS.', reg:'GDPR Art. 32' })
 
-    if (!hasCookieBanner && trackers.length > 0)
-      issues.push({ sev:'High', title:'Tracking scripts without cookie consent', desc:`${trackers.join(', ')} detected but no cookie consent banner found in page source. Consent must be obtained before dropping non-essential cookies.`, reg:'ePrivacy / PECR Reg. 6' })
-    else if (!hasCookieBanner)
-      issues.push({ sev:'Medium', title:'No cookie consent mechanism detected', desc:'No cookie consent banner found. Required under PECR before setting non-essential cookies. Note: JS-rendered banners may not appear in a static HTML scan.', reg:'ePrivacy Reg. 6' })
-    else if (hasCookieBanner && !hasCookieReject)
+    // isSpa sites render some/all content client-side after a plain HTTP GET,
+    // so a genuinely missing element and an element this scan simply can't
+    // see are indistinguishable from "not found in the fetched HTML" alone.
+    // Downgrade to Low + a verification note rather than reporting a false High.
+    if (!hasCookieBanner && trackers.length > 0) {
+      if (isSpa) {
+        issues.push({ sev:'Low', title:'Verify cookie consent \u2014 could not confirm on this JS-rendered site', desc:`${trackers.join(', ')} detected, but this site renders content with JavaScript, so a consent banner injected after page load would not appear in this scan. Verify manually that consent is obtained before these trackers fire.`, reg:'ePrivacy / PECR Reg. 6' })
+      } else {
+        issues.push({ sev:'High', title:'Tracking scripts without cookie consent', desc:`${trackers.join(', ')} detected but no cookie consent banner found in page source. Consent must be obtained before dropping non-essential cookies.`, reg:'ePrivacy / PECR Reg. 6' })
+      }
+    } else if (!hasCookieBanner) {
+      if (isSpa) {
+        issues.push({ sev:'Low', title:'Could not confirm cookie consent mechanism (JS-rendered site)', desc:'This site renders content with JavaScript, so a cookie banner added after page load would not appear in this scan. Verify manually.', reg:'ePrivacy Reg. 6' })
+      } else {
+        issues.push({ sev:'Medium', title:'No cookie consent mechanism detected', desc:'No cookie consent banner found. Required under PECR before setting non-essential cookies.', reg:'ePrivacy Reg. 6' })
+      }
+    } else if (hasCookieBanner && !hasCookieReject) {
       issues.push({ sev:'Medium', title:'Cookie banner may lack a "Reject All" option', desc:'A cookie banner was detected but no "Reject All" button found in page source. ICO 2023 guidance requires this to be as easy as accepting. If your banner is JS-rendered, verify manually.', reg:'ICO Cookie Guidance 2023' })
+    }
 
-    if (!hasPrivacyLink)
-      issues.push({ sev:'High', title:'No privacy policy detected', desc:'No privacy policy link found in page source or common URL paths. A privacy notice is required under GDPR Art. 13 & 14.', reg:'GDPR Art. 13 & 14' })
+    if (!hasPrivacyLink) {
+      if (isSpa) {
+        issues.push({ sev:'Low', title:'Could not confirm privacy policy (JS-rendered site)', desc:'No privacy policy link found in the fetched HTML or common URL paths, but this site renders content with JavaScript \u2014 a link added by client-side code would not appear in this scan. Verify manually before treating this as a genuine gap.', reg:'GDPR Art. 13 & 14' })
+      } else {
+        issues.push({ sev:'High', title:'No privacy policy detected', desc:'No privacy policy link found in page source or common URL paths. A privacy notice is required under GDPR Art. 13 & 14.', reg:'GDPR Art. 13 & 14' })
+      }
+    }
 
     // Only flag processor/content issues if we found privacy policy content to read
     if (trackers.length > 0 && hasPrivacyLink && !hasSubprocessors) {

@@ -16,4 +16,4 @@ Disallow: /breach/
 Disallow: /complaint/
 Disallow: /share/
 
-Sitemap: https://algograss.co.uk/sitemap.xml
+Sitemap: https://algograss.com/sitemap.xml

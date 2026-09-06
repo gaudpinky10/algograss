@@ -13,7 +13,7 @@ export async function POST(request) {
     const user = userCookie ? JSON.parse(Buffer.from(userCookie.value, 'base64').toString()) : null;
     const token = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
     await col.insertOne({ token, scanResult, userEmail: user?.email || 'anonymous', createdAt: new Date(), viewCount: 0, expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) });
-    const base = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.algograss.co.uk';
+    const base = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.algograss.com';
     return NextResponse.json({ token, shareUrl: `${base}/share/${token}` });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });

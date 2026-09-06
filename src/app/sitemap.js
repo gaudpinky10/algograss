@@ -1,5 +1,5 @@
 export default function sitemap() {
-  const base = 'https://www.algograss.co.uk'
+  const base = 'https://www.algograss.com'
   const now = new Date().toISOString()
 
   const pages = [

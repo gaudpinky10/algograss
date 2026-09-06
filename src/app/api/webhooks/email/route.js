@@ -6,7 +6,7 @@
  * Postmark: POST with JSON — fields: From, Subject, TextBody
  *
  * Set your provider's inbound webhook URL to:
- *   https://www.algograss.co.uk/api/webhooks/email
+ *   https://www.algograss.com/api/webhooks/email
  */
 
 async function classifyComplaint(text, apiKey) {

@@ -3,7 +3,7 @@
  *
  * Setup:
  * 1. In Meta Developer Console → WhatsApp → Configuration
- * 2. Set Webhook URL to: https://www.algograss.co.uk/api/webhooks/whatsapp
+ * 2. Set Webhook URL to: https://www.algograss.com/api/webhooks/whatsapp
  * 3. Set Verify Token to the value of WHATSAPP_VERIFY_TOKEN in your env
  * 4. Subscribe to: messages
  *

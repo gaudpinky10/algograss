@@ -25,12 +25,12 @@ export async function POST(request) {
     await resets.insertOne({ email: email.toLowerCase(), token, expires, createdAt: new Date() })
 
     // Send reset email via Resend
-    const base = process.env.NEXT_PUBLIC_URL || 'https://www.algograss.co.uk'
+    const base = process.env.NEXT_PUBLIC_URL || 'https://www.algograss.com'
     const resetLink = `${base}/reset-password?token=${token}`
 
     const resend = new Resend(process.env.RESEND_API_KEY)
     await resend.emails.send({
-      from:    'AlgoGrass <noreply@algograss.co.uk>',
+      from:    'AlgoGrass <noreply@algograss.com>',
       to:      email,
       subject: 'Reset your AlgoGrass password',
       html: `

@@ -5,7 +5,7 @@ export const metadata = {
   openGraph: {
     title: 'Free GDPR Website Scanner | AlgoGrass',
     description: 'Scan your website for GDPR compliance issues in seconds — free, no account needed. Checks HTTPS, cookie consent, privacy policy, trackers, data rights, and more.',
-    url: 'https://www.algograss.co.uk/scan',
+    url: 'https://www.algograss.com/scan',
   },
 }
 
