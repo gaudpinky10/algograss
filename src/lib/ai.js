@@ -23,7 +23,7 @@ export async function askClaude({
   messages,
   prompt,
   maxTokens = 2048,
-  temperature = 0.3,
+  temperature, // accepted for backwards compatibility; not sent — deprecated on current models
   model = DEFAULT_MODEL,
 }) {
   const apiKey = process.env.ANTHROPIC_API_KEY
@@ -50,7 +50,6 @@ export async function askClaude({
     body: JSON.stringify({
       model,
       max_tokens: maxTokens,
-      temperature,
       system,
       messages: finalMessages,
     }),
