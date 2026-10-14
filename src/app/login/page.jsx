@@ -81,12 +81,12 @@ export default function LoginPage() {
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
               width: '100%', padding: '12px 20px', borderRadius: 12,
-              background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(255,255,255,0.09)',
+              background: 'rgba(15,23,42,0.05)', border: '1px solid #E2E8F0',
               color: '#0F172A', fontSize: 14, fontWeight: 500, textDecoration: 'none',
               transition: 'all .2s', marginBottom: 20, cursor: 'pointer',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.09)' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#F1F5F9'; e.currentTarget.style.borderColor = '#94A3B8' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.05)'; e.currentTarget.style.borderColor = '#E2E8F0' }}
           >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.566 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
@@ -99,9 +99,9 @@ export default function LoginPage() {
 
           {/* Divider */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+            <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
             <span style={{ fontSize: 12, color: '#94A3B8' }}>or sign in with email</span>
-            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+            <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
           </div>
 
           {/* Not found banner */}
@@ -136,12 +136,12 @@ export default function LoginPage() {
                 value={form.email} onChange={set('email')} required
                 style={{
                   width: '100%', padding: '12px 14px', borderRadius: 10, fontSize: 14,
-                  background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                  background: '#F8FAFC', border: '1px solid #CBD5E1',
                   color: '#0F172A', outline: 'none', boxSizing: 'border-box', transition: 'border-color .2s',
                   fontFamily: 'var(--font-space-grotesk,"Space Grotesk"),sans-serif',
                 }}
-                onFocus={e => e.target.style.borderColor = 'rgba(139,92,246,0.5)'}
-                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                onFocus={e => e.target.style.borderColor = '#8B5CF6'}
+                onBlur={e => e.target.style.borderColor = '#CBD5E1'}
               />
             </div>
             <div style={{ marginBottom: 10 }}>
@@ -154,12 +154,12 @@ export default function LoginPage() {
                   value={form.password} onChange={set('password')} required
                   style={{
                     width: '100%', padding: '12px 44px 12px 14px', borderRadius: 10, fontSize: 14,
-                    background: 'rgba(15,23,42,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                    background: '#F8FAFC', border: '1px solid #CBD5E1',
                     color: '#0F172A', outline: 'none', boxSizing: 'border-box', transition: 'border-color .2s',
-                    fontFamily: 'var(--f-body,Lora,serif)',
+                    fontFamily: 'var(--font-space-grotesk,"Space Grotesk"),sans-serif',
                   }}
-                  onFocus={e => e.target.style.borderColor = 'rgba(139,92,246,0.5)'}
-                  onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                  onFocus={e => e.target.style.borderColor = '#8B5CF6'}
+                  onBlur={e => e.target.style.borderColor = '#CBD5E1'}
                 />
                 <button
                   type="button"

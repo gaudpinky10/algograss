@@ -372,11 +372,10 @@ function SocialProof() {
   useEffect(() => {
     fetch('/api/scan/count').then(r=>r.json()).then(d=>setScanCount(d.count)).catch(()=>{})
   }, [])
-  const reviews = [
-    {q:'Found our contact form had no privacy notice. Fixed it in an afternoon.',       name:'Sarah M.',  role:'Founder · Bristol'},
-    {q:'The AI privacy policy was actually readable. Our old template was 12 pages.',   name:'James C.',  role:'Ops Director · London'},
-    {q:'Showed us exactly where our data gaps were. DSAR handler alone saved us hours.',name:'Priya S.',  role:'Partner · Manchester'},
-    {q:'Found 4 issues I didn\'t know about. Plain English explanations throughout.',   name:'Tom R.',    role:'Director · Leeds'},
+  const features = [
+    {icon:'🔍', title:'Instant free scan', desc:'Paste your URL and get a real GDPR compliance score in under 60 seconds — no account needed.'},
+    {icon:'🤖', title:'AI-powered insights', desc:'Our AI explains every issue in plain English and tells you exactly how to fix it, citing ICO guidance.'},
+    {icon:'📄', title:'Auto-generate documents', desc:'Privacy policy, cookie notice, and DPA generated from your scan results — ready to publish immediately.'},
   ]
   return (
     <section className="section-white" style={{position:'relative',overflow:'hidden'}}>
@@ -384,35 +383,27 @@ function SocialProof() {
       <div className="wrap" style={{position:'relative',zIndex:1}}>
         <AnimateOnScroll>
           <div style={{textAlign:'center',marginBottom:44}}>
-            {/* Live scan counter */}
-            <div style={{display:'inline-flex',alignItems:'center',gap:10,background:'rgba(139,92,246,0.08)',border:'1px solid rgba(139,92,246,0.22)',borderRadius:100,padding:'8px 22px',marginBottom:20}}>
-              <span style={{width:7,height:7,background:'#9B7BFA',borderRadius:'50%'}} className="animate-pulse-glow"/>
-              <span style={{fontFamily:'Syne,sans-serif',fontSize:20,fontWeight:800,color:'#9B7BFA'}}>
-                {scanCount != null ? (scanCount + 47).toLocaleString() : '100+'}
-              </span>
-              <span style={{fontSize:13,color:'var(--ink2)'}}>businesses scanned</span>
-            </div>
-            <h2 className="heading" style={{fontSize:'clamp(26px,3vw,40px)',marginBottom:4}}>Trusted by UK businesses</h2>
+            {scanCount != null && scanCount > 0 && (
+              <div style={{display:'inline-flex',alignItems:'center',gap:10,background:'rgba(139,92,246,0.08)',border:'1px solid rgba(139,92,246,0.22)',borderRadius:100,padding:'8px 22px',marginBottom:20}}>
+                <span style={{width:7,height:7,background:'#9B7BFA',borderRadius:'50%'}} className="animate-pulse-glow"/>
+                <span style={{fontFamily:'Syne,sans-serif',fontSize:20,fontWeight:800,color:'#9B7BFA'}}>
+                  {scanCount.toLocaleString()}
+                </span>
+                <span style={{fontSize:13,color:'var(--ink2)'}}>scans completed</span>
+              </div>
+            )}
+            <h2 className="heading" style={{fontSize:'clamp(26px,3vw,40px)',marginBottom:4}}>Built for UK small businesses</h2>
+            <p style={{fontSize:14,color:'var(--ink2)',marginTop:8}}>Early access — join founders getting GDPR-ready from day one.</p>
           </div>
         </AnimateOnScroll>
 
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:14,marginBottom:28}}>
-          {reviews.map(({q,name,role,init},i)=>(
-            <AnimateOnScroll key={name} delay={(i%3)+1}>
-              <div className="card" style={{padding:'20px 20px'}}>
-                <div style={{display:'flex',gap:2,marginBottom:12}}>
-                  {[0,1,2,3,4].map(si=><svg key={si} width="12" height="12" viewBox="0 0 24 24" fill="#F59E0B"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
-                </div>
-                <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.65,marginBottom:14,fontStyle:'italic'}}>"{q}"</p>
-                <div style={{display:'flex',alignItems:'center',gap:10,borderTop:'1px solid rgba(255,255,255,0.06)',paddingTop:12}}>
-                  <div style={{width:32,height:32,borderRadius:'50%',background:'linear-gradient(135deg,#9B7BFA,#C084FC)',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'Syne,sans-serif',fontWeight:700,fontSize:11,color:'#06060F',flexShrink:0}}>
-                    {name.charAt(0)+name.split(' ')[1]?.charAt(0)}
-                  </div>
-                  <div>
-                    <div style={{fontSize:12,fontWeight:600,color:'var(--ink)'}}>{name}</div>
-                    <div style={{fontSize:11,color:'var(--ink3)'}}>{role}</div>
-                  </div>
-                </div>
+          {features.map(({icon,title,desc},i)=>(
+            <AnimateOnScroll key={title} delay={(i%3)+1}>
+              <div className="card" style={{padding:'24px 20px',textAlign:'center'}}>
+                <div style={{fontSize:36,marginBottom:14}}>{icon}</div>
+                <h3 style={{fontFamily:'Syne,sans-serif',fontSize:16,fontWeight:700,color:'var(--ink)',marginBottom:8}}>{title}</h3>
+                <p style={{fontSize:13,color:'var(--ink2)',lineHeight:1.65}}>{desc}</p>
               </div>
             </AnimateOnScroll>
           ))}

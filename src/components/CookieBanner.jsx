@@ -7,8 +7,12 @@ export default function CookieBanner() {
   const [prefs,    setPrefs]    = useState({ analytics: false, marketing: false })
 
   useEffect(() => {
-    const consent = localStorage.getItem('algograss_cookie_consent')
-    if (!consent) setVisible(true)
+    try {
+      const consent = localStorage.getItem('algograss_cookie_consent')
+      if (!consent) setVisible(true)
+    } catch {
+      setVisible(true) // private/incognito window — storage blocked, show banner
+    }
   }, [])
 
   function save(type, customPrefs) {
@@ -19,7 +23,7 @@ export default function CookieBanner() {
       marketing:  type === 'all' || (customPrefs?.marketing ?? false),
       savedAt:    new Date().toISOString(),
     }
-    localStorage.setItem('algograss_cookie_consent', JSON.stringify(data))
+    try { localStorage.setItem('algograss_cookie_consent', JSON.stringify(data)) } catch {}
     setVisible(false)
     setManaging(false)
   }

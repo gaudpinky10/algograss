@@ -107,6 +107,16 @@ export async function POST(request) {
 
     const mainHtml = mainResult.text
     const finalUrl = mainResult.finalUrl
+
+    // Extract inline JS and script src references so tracker detection works
+    // on JS-rendered (Next.js / React / Vue / Nuxt) sites that inject scripts
+    // at runtime rather than embedding them in the initial HTML body.
+    const inlineScripts = (mainHtml.match(/<script[^>]*>([\s\S]*?)<\/script>/gi) || []).join('\n')
+    const scriptSrcs    = (mainHtml.match(/src=["']([^"']+\.js[^"']*)/gi) || []).join('\n')
+    const jsContent     = inlineScripts + '\n' + scriptSrcs
+    // Combined text used for all tracker / banner detection
+    const allScanText  = mainHtml + '\n' + jsContent
+
     const allText  = mainHtml + '\n' + subText
     // Separate privacy-specific content (more strict matching within sub-pages)
     const privacyText = subText.length > 500 ? subText : ''
@@ -137,7 +147,7 @@ export async function POST(request) {
       'klaro','osano','cookie-script','cookiehub','privy','algograss-cookie-consent',
       'osano','admiral','crownpeak','evidon','sourcepoint','bigcommerce-cookie',
     ]
-    const detectedPlatform = COMPLIANT_PLATFORMS.find(p => mainHtml.toLowerCase().includes(p))
+    const detectedPlatform = COMPLIANT_PLATFORMS.find(p => allScanText.toLowerCase().includes(p))
     const rejectControlPatterns = [
       /data-reject-all="true"/i,
       /reject[\s_-]?all/i, /reject[\s_-]?cookies/i, 'rejectAll', 'reject-all', 'reject_all',
@@ -148,13 +158,13 @@ export async function POST(request) {
       'opt out', 'opt-out', /decline[\s_-]?all/i, 'no thanks',
       /only (necessary|essential|required) cookies/i,
     ]
-    const hasCookieRejectSignal = detect(mainHtml, rejectControlPatterns)
+    const hasCookieRejectSignal = detect(allScanText, rejectControlPatterns)
     // A page can only offer a "reject all" / "manage preferences" control if a
     // cookie banner exists to attach it to — so finding one of those controls
     // is itself proof of a banner, even if the banner's own wrapper text
     // (e.g. a bespoke, non-third-party implementation like Google's own
     // consent screen) doesn't match the phrase list below.
-    const hasCookieBanner  = !!detectedPlatform || hasCookieRejectSignal || detect(mainHtml, [
+    const hasCookieBanner  = !!detectedPlatform || hasCookieRejectSignal || detect(allScanText, [
       /cookie[\s_-]?(banner|notice|consent|bar|popup|modal|wall|dialog|overlay)/i,
       'cookie-consent', 'cookieconsent', 'cookie_consent', 'cookie_banner',
       /gdpr[\s_-]?consent/i, /acceptcookies/i,
@@ -314,25 +324,30 @@ export async function POST(request) {
     ])
 
     // ─── SPA DETECTION ───────────────────────────────────────────────────────
-    const isSpa = detect(mainHtml, [
+    const isSpa = detect(allScanText, [
       /__NEXT_DATA__/i, 'window.__nuxt', '__vue__', 'data-reactroot',
       'id="__next"', 'id="app"', 'ng-version', 'data-n-head',
+      /next\/dist\/client/i, /webpack-runtime/i, /chunks\/main/i,
+      /_app-[a-f0-9]+\.js/i, /static\/chunks/i,
     ])
 
     // ─── TRACKERS ────────────────────────────────────────────────────────────
     const trackers = []
-    if (detect(mainHtml, [/google[\s-]?analytics|googletagmanager|gtag\(|google-analytics/i, /['"](G|UA)-[A-Z0-9]{4,}/])) trackers.push('Google Analytics')
-    if (detect(mainHtml, [/facebook[\s-]?pixel|fbq\(|connect\.facebook\.net|meta[\s-]?pixel/i]))                          trackers.push('Meta Pixel')
-    if (detect(mainHtml, [/hotjar|hjid/i]))                                                                                 trackers.push('Hotjar')
-    if (detect(mainHtml, [/linkedin[\s-]?insight|snap\.licdn|linkedin\.com\/px/i]))                                        trackers.push('LinkedIn Insight')
-    if (detect(mainHtml, [/_hsq\s*=|js\.hs-scripts\.com|js\.hubspot\.com|hs-analytics\.net|hubspot\.com\/hs\/hsstatic/i])) trackers.push('HubSpot')
-    if (detect(mainHtml, [/\bintercom\b/i, /intercomcdn|widget\.intercom/i]))                                              trackers.push('Intercom')
-    if (detect(mainHtml, [/mixpanel\.com|mixpanel\.init/i]))                                                               trackers.push('Mixpanel')
-    if (detect(mainHtml, [/segment\.com\/analytics|segment\.io\/analytics/i]))                                             trackers.push('Segment')
-    if (detect(mainHtml, [/analytics\.tiktok\.com|tiktok[\s-]?pixel|ttq\./i]))                                            trackers.push('TikTok Pixel')
-    if (detect(mainHtml, [/microsoft[\s-]?clarity|clarity\.ms\/tag/i]))                                                   trackers.push('Microsoft Clarity')
-    if (detect(mainHtml, [/\bpinterest\.com\/ct\//i]))                                                                     trackers.push('Pinterest Tag')
-    if (detect(mainHtml, [/static\.ads-twitter|ads\.twitter\.com|twq\(|t\.co\/i\//i]))                                    trackers.push('X/Twitter Pixel')
+    if (detect(allScanText, [/google[\s-]?analytics|googletagmanager|gtag\(|google-analytics/i, /['"](G|UA)-[A-Z0-9]{4,}/])) trackers.push('Google Analytics')
+    if (detect(allScanText, [/facebook[\s-]?pixel|fbq\(|connect\.facebook\.net|meta[\s-]?pixel/i]))                          trackers.push('Meta Pixel')
+    if (detect(allScanText, [/hotjar|hjid/i]))                                                                                 trackers.push('Hotjar')
+    if (detect(allScanText, [/linkedin[\s-]?insight|snap\.licdn|linkedin\.com\/px/i]))                                        trackers.push('LinkedIn Insight')
+    if (detect(allScanText, [/_hsq\s*=|js\.hs-scripts\.com|js\.hubspot\.com|hs-analytics\.net|hubspot\.com\/hs\/hsstatic/i])) trackers.push('HubSpot')
+    if (detect(allScanText, [/\bintercom\b/i, /intercomcdn|widget\.intercom/i]))                                              trackers.push('Intercom')
+    if (detect(allScanText, [/mixpanel\.com|mixpanel\.init/i]))                                                               trackers.push('Mixpanel')
+    if (detect(allScanText, [/segment\.com\/analytics|segment\.io\/analytics/i]))                                             trackers.push('Segment')
+    if (detect(allScanText, [/analytics\.tiktok\.com|tiktok[\s-]?pixel|ttq\./i]))                                            trackers.push('TikTok Pixel')
+    if (detect(allScanText, [/microsoft[\s-]?clarity|clarity\.ms\/tag/i]))                                                   trackers.push('Microsoft Clarity')
+    if (detect(allScanText, [/\bpinterest\.com\/ct\//i]))                                                                     trackers.push('Pinterest Tag')
+    if (detect(allScanText, [/static\.ads-twitter|ads\.twitter\.com|twq\(|t\.co\/i\//i]))                                    trackers.push('X/Twitter Pixel')
+    if (detect(allScanText, [/amplitude\.com\/libs|amplitude\.getInstance/i]))                                                trackers.push('Amplitude')
+    if (detect(allScanText, [/posthog\.com\/static|posthog\.init/i]))                                                         trackers.push('PostHog')
+    if (detect(allScanText, [/crisp\.chat|client\.crisp\.chat/i]))                                                            trackers.push('Crisp Chat')
 
     // ─── BUILD ISSUES ────────────────────────────────────────────────────────
     // Only raise policy-content issues when we actually read privacy policy pages

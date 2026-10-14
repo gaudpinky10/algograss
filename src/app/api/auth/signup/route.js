@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { getCollection, hashPassword, trackActivity } from '@/lib/dbHelpers';
-import { sendWelcomeEmail } from '@/lib/emails';
 
 export async function POST(request) {
   try {
@@ -37,11 +36,11 @@ export async function POST(request) {
 
     await trackActivity({ userEmail: email.toLowerCase(), tool: 'auth', action: 'signup', detail: `New signup — plan: ${plan || 'free'}`, meta: { plan: plan || 'free', website: website || '' } });
 
-    // Send welcome email (non-blocking — don't fail signup if email fails)
+    // Send welcome email (non-blocking — don't fail signup if email/Resend fails)
     if (process.env.RESEND_API_KEY) {
-      sendWelcomeEmail(name, email.toLowerCase(), plan || 'free').catch(err =>
-        console.error('Welcome email failed:', err.message)
-      );
+      import('@/lib/emails').then(({ sendWelcomeEmail }) =>
+        sendWelcomeEmail(name, email.toLowerCase(), plan || 'free')
+      ).catch(err => console.error('Welcome email failed:', err.message));
     }
 
     // Apply referral code (non-blocking)
