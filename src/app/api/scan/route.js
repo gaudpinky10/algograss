@@ -35,7 +35,20 @@ async function fetchPage(url, timeoutMs = 15000) {
   return result || { ok: false, text: '', status: 0, headers: new Headers(), finalUrl: url }
 }
 
-async function fetchSubPages(baseUrl) {
+// Remove scripts/styles/tags so policy checks only see human-readable text
+function visibleText(html) {
+  return (html || '')
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;|&amp;|&#\d+;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+const PRIVACY_PATH = /privacy|data-protection|data-privacy|personal-data|gdpr|your-data|data-rights|ccpa|california/i
+
+async function fetchSubPages(baseUrl, mainHtml = '') {
   // Comprehensive list covering SMEs, corporates, SaaS, e-commerce, and international sites
   const paths = [
     '/privacy-policy', '/privacy', '/privacy-notice', '/privacy-statement', '/privacy-center',
@@ -59,8 +72,29 @@ async function fetchSubPages(baseUrl) {
     Promise.allSettled(batch1),
     Promise.allSettled(batch2),
   ])
+  const allPaths = paths
   const all = [...res1, ...res2]
-  return all.filter(r => r.status === 'fulfilled' && r.value?.ok && r.value?.status < 400).map(r => r.value.text).join('\n')
+  // Many sites (SPAs, catch-all routers) answer 200 for every path and just
+  // return the homepage. Drop those "soft 404" pages so they are not mistaken
+  // for a real privacy policy.
+  const mainSig = visibleText(mainHtml).slice(0, 600)
+  const pages = []
+  all.forEach((r, i) => {
+    if (r.status !== 'fulfilled' || !r.value?.ok || r.value.status >= 400) return
+    const html = r.value.text
+    if (!html || html.length < 300) return
+    const vis = visibleText(html)
+    if (vis.length < 200) return
+    if (mainSig.length > 200 && vis.slice(0, 600) === mainSig) return // same as homepage
+    pages.push({ path: allPaths[i], html, vis })
+  })
+  // A page found on a privacy-style path only counts as a policy if it reads like one
+  const policyPages = pages.filter(pg => PRIVACY_PATH.test(pg.path) && /privacy|personal (data|information)|data protection/i.test(pg.vis) && pg.vis.length > 800)
+  return {
+    text: pages.map(pg => pg.html).join('\n'),
+    policyText: policyPages.map(pg => pg.vis).join('\n'),
+    policyPaths: policyPages.map(pg => pg.path),
+  }
 }
 
 function detect(text, patterns) {
@@ -99,7 +133,9 @@ export async function POST(request) {
   const user = userCookie ? parseUserCookie(userCookie.value) : null
 
   try {
-    const [mainResult, subText] = await Promise.all([fetchPage(targetUrl), fetchSubPages(targetUrl)])
+    const mainResult = await fetchPage(targetUrl)
+    const sub = mainResult.ok ? await fetchSubPages(targetUrl, mainResult.text) : { text: '', policyText: '', policyPaths: [] }
+    const subText = sub.text
     if (!mainResult.ok) {
       await trackActivity({ userEmail: user?.email, tool: 'scan', action: 'scan_failed', detail: targetUrl })
       return Response.json({ error: 'Could not reach that website. Please check the URL and try again.' }, { status: 400 })
@@ -119,8 +155,12 @@ export async function POST(request) {
 
     const allText  = mainHtml + '\n' + subText
     // Separate privacy-specific content (more strict matching within sub-pages)
-    const privacyText = subText.length > 500 ? subText : ''
-    const hasReadPrivacyPage = privacyText.length > 1000 // we actually got meaningful privacy page content
+    // Only text from pages that really look like a privacy policy counts.
+    const privacyText = sub.policyText
+    const hasReadPrivacyPage = privacyText.length > 1000 // we actually read a real policy
+    // Policy-content checks (lawful basis, rights, retention...) must be run
+    // against the policy itself when we have it, not the marketing homepage.
+    const policyScope = hasReadPrivacyPage ? privacyText : allText
 
     // ─── HTTPS ───────────────────────────────────────────────────────────────
     const isHttps         = finalUrl.startsWith('https://')
@@ -155,7 +195,7 @@ export async function POST(request) {
       /necessary[\s_-]?only/i, /essential[\s_-]?only/i,
       /manage[\s_-]?preferences/i, /cookie[\s_-]?settings/i,
       /customise[\s_-]?cookies/i, /customize[\s_-]?cookies/i,
-      'opt out', 'opt-out', /decline[\s_-]?all/i, 'no thanks',
+      /decline[\s_-]?all/i,
       /only (necessary|essential|required) cookies/i,
     ]
     const hasCookieRejectSignal = detect(allScanText, rejectControlPatterns)
@@ -192,11 +232,11 @@ export async function POST(request) {
 
     // ─── LAWFUL BASIS ────────────────────────────────────────────────────────
     // Only flag if we actually read the privacy policy AND couldn't find it
-    const hasLawfulBasis  = detect(allText, [
+    const hasLawfulBasis  = detect(policyScope, [
       /lawful[\s_-]?basis/i, /legal[\s_-]?basis/i, /legal[\s_-]?ground/i,
       /legitimate[\s_-]?interest/i, /legal[\s_-]?obligation/i,
       /basis (for|of) processing/i, /grounds (for|of) processing/i,
-      'article 6', /art\.?\s*6/i,
+      /\barticle\s*6\b/i, /\bart\.\s*6\b/i,
       // Broad synonyms used by big companies
       /we (collect|process|use) (your |this )?(personal )?(data|information) (because|to|for|in order)/i,
       /we need (to process|your data|this information)/i,
@@ -214,18 +254,18 @@ export async function POST(request) {
     ])
 
     // ─── DATA SUBJECT RIGHTS ─────────────────────────────────────────────────
-    const hasDataRights   = detect(allText, [
+    const hasDataRights   = detect(policyScope, [
       /right[\s_-]?to[\s_-]?(access|erasure|deletion|rectification|portability|object|restrict)/i,
       /subject[\s_-]?access[\s_-]?request/i, /data[\s_-]?subject[\s_-]?rights?/i,
       'right to be forgotten', 'article 15', 'article 17', 'article 21',
-      /art\.?\s*1[5-9]|art\.?\s*2[0-2]/i,
+      /\bart(icle|\.)\s*(1[5-9]|2[0-2])\b/i,
       // Broad synonyms
-      'your rights', 'your privacy rights', 'your data rights', 'your choices',
-      'individual rights', 'privacy rights',
+      'your rights', 'your privacy rights', 'your data rights',
+      'individual rights',
       /access (your|to your) (personal )?(data|information)/i,
       /request (a copy|deletion|removal|correction|rectification) of (your )?(personal )?(data|information)/i,
       /delete (your|account|personal) (data|information|account)/i,
-      /opt.out (of|from)/i, 'unsubscribe', 'withdraw consent',
+      /opt.out (of|from)/i, 'withdraw consent',
       /manage (your )?(data|privacy|preferences|personal information)/i,
       /control (your )?(data|personal information|privacy)/i,
       /data (portability|request|access request)/i,
@@ -237,7 +277,7 @@ export async function POST(request) {
     ])
 
     // ─── DATA RETENTION ──────────────────────────────────────────────────────
-    const hasRetentionPolicy = detect(allText, [
+    const hasRetentionPolicy = detect(policyScope, [
       /retention[\s_-]?period/i,
       /how[\s_-]?long[\s_-]?(we[\s_-]?)?(keep|hold|store|retain)/i,
       /data[\s_-]?retention/i,
@@ -252,13 +292,12 @@ export async function POST(request) {
       /minimum (necessary|retention) period/i,
       /we will (delete|remove|erase|destroy) (your |personal )?(data|information)/i,
       /automatically (deleted|removed|erased|purged)/i,
-      /for [0-9]+ (day|month|year)/i,
-      /within [0-9]+ (day|month|year)/i,
-      /up to [0-9]+ (day|month|year)/i,
+      /(kept|retained|stored|held|deleted|erased) (for|after|within) (up to )?[0-9]+ (day|month|year)/i,
+      /for (up to )?[0-9]+ (day|month|year)s? (after|from|following)/i,
     ])
 
     // ─── DSAR CONTACT ────────────────────────────────────────────────────────
-    const hasDsarContact  = detect(allText, [
+    const hasDsarContact  = detect(policyScope, [
       /dpo@/i, /privacy@/i, /data[\s_-]?protection@/i, /sar@/i, /gdpr@/i,
       /subject[\s_-]?access[\s_-]?request/i,
       /contact[\s_-]?(our[\s_-]?)?dpo/i, 'data protection officer',
@@ -268,14 +307,12 @@ export async function POST(request) {
       /data (request|access) (form|portal|page)/i,
       /submit (a |your )?(privacy|data) request/i,
       /to (exercise|make) (a |your )?request/i,
-      /email[\s_-]?us (at|to|about)/i,
-      /reach (us|our team) (at|via)/i,
       /privacy (team|department|office)/i,
       'data request', /request your (data|information)/i,
     ])
 
     // ─── DPO ─────────────────────────────────────────────────────────────────
-    const hasDpo          = detect(allText, [
+    const hasDpo          = detect(policyScope, [
       /data[\s_-]?protection[\s_-]?officer/i, /\bdpo\b/i,
       'data protection representative', 'EU representative', 'UK representative',
     ])
@@ -290,7 +327,7 @@ export async function POST(request) {
     // ─── SUBPROCESSORS / DATA SHARING ────────────────────────────────────────
     // A privacy policy that mentions "third parties", "advertising partners", "service providers"
     // OR mentions the tracker brands by name counts as disclosing processors
-    const hasSubprocessors = detect(allText, [
+    const hasSubprocessors = detect(policyScope, [
       /third[\s_-]?party[\s_-]?(processor|provider|service|partner)/i,
       /subprocessor/i, /sub[\s_-]?processor/i, 'data processor',
       // Broad synonyms for third-party sharing/disclosure
@@ -320,7 +357,6 @@ export async function POST(request) {
     // ─── ACCESSIBILITY ───────────────────────────────────────────────────────
     const hasAccessibility = detect(allText, [
       /accessibility[\s_-]?statement/i, 'wcag', 'screen reader',
-      /aria-/i, 'alt text', 'accessible',
     ])
 
     // ─── SPA DETECTION ───────────────────────────────────────────────────────
@@ -349,6 +385,14 @@ export async function POST(request) {
     if (detect(allScanText, [/posthog\.com\/static|posthog\.init/i]))                                                         trackers.push('PostHog')
     if (detect(allScanText, [/crisp\.chat|client\.crisp\.chat/i]))                                                            trackers.push('Crisp Chat')
 
+    // ─── COOKIES SET ON FIRST VISIT (real header check, not text matching) ─────
+    let setCookieNames = []
+    try {
+      const raw = typeof mainResult.headers.getSetCookie === 'function' ? mainResult.headers.getSetCookie() : []
+      setCookieNames = raw.map(c => c.split('=')[0].trim()).filter(Boolean)
+    } catch {}
+    const nonEssentialCookies = setCookieNames.filter(n => /^(_ga|_gid|_gat|_fbp|_fbc|_hj|_clck|_clsk|_uet|_pin_|__hs|hubspotutk|ajs_|mp_|_tt_|_ttp|ph_|amp_|IDE|NID|fr$|_gcl)/i.test(n))
+
     // ─── BUILD ISSUES ────────────────────────────────────────────────────────
     // Only raise policy-content issues when we actually read privacy policy pages
     // (prevents false positives on JS-heavy or bot-protected sites)
@@ -376,6 +420,9 @@ export async function POST(request) {
     } else if (hasCookieBanner && !hasCookieReject) {
       issues.push({ sev:'Medium', title:'Cookie banner may lack a "Reject All" option', desc:'A cookie banner was detected but no "Reject All" button found in page source. ICO 2023 guidance requires this to be as easy as accepting. If your banner is JS-rendered, verify manually.', reg:'ICO Cookie Guidance 2023' })
     }
+
+    if (nonEssentialCookies.length > 0 && !hasCookieBanner)
+      issues.push({ sev:'High', title:'Tracking cookies set on first visit without a consent banner', desc:`The server set non-essential cookies (${nonEssentialCookies.slice(0,5).join(', ')}) on the very first request, and no cookie consent mechanism was found. PECR requires consent before these are set.`, reg:'ePrivacy / PECR Reg. 6' })
 
     if (!hasPrivacyLink) {
       if (isSpa) {
@@ -439,6 +486,7 @@ export async function POST(request) {
     // ─── NOTE ────────────────────────────────────────────────────────────────
     let note = 'This is an automated scan of publicly visible HTML. JS-rendered content, authenticated areas, and dynamically loaded privacy policies may not be fully captured.'
     if (isSpa) note = 'This site uses a JavaScript framework. Content rendered after page load (including some cookie banners and privacy policy text) may not be captured in this scan.'
+    if (hasReadPrivacyPage) note += ' Policy content checks were run against the privacy policy page itself.'
     if (!hasReadPrivacyPage && hasPrivacyLink) note += ' Privacy policy pages could not be fully read — some checks may be marked Low severity as a result.'
 
     const result = {
@@ -450,9 +498,14 @@ export async function POST(request) {
         dataRights: hasDataRights, retentionPolicy: hasRetentionPolicy,
         dsarContact: hasDsarContact, dpo: hasDpo,
         securityHeaders: hasSecurityHeaders, subprocessorsList: hasSubprocessors,
+        // No trackers found means there is nothing to disclose, so this passes
+        trackersDisclosed: trackers.length === 0 ? true : hasSubprocessors,
+        policyPageRead: hasReadPrivacyPage,
         accessibilityStatement: hasAccessibility,
       },
       consentPlatform: detectedPlatform || null,
+      cookiesSetOnFirstVisit: setCookieNames,
+      policyPagesRead: sub.policyPaths,
       scannedAt: new Date().toISOString(),
       note,
     }
