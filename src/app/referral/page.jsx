@@ -18,7 +18,7 @@ export default function ReferralPage() {
     try {
       const c = document.cookie.split(';').find(x => x.trim().startsWith('algograss_user='))
       if (c) {
-        const u = JSON.parse(atob(c.split('=')[1]))
+        const u = JSON.parse(atob(decodeURIComponent(c.slice(c.indexOf('=')+1).trim())))
         setUser(u)
         loadStats(u.email)
       } else setLoading(false)

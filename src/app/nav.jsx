@@ -34,7 +34,7 @@ function getUser() {
     const cookies = document.cookie.split(';').map(c => c.trim())
     const cookie = cookies.find(c => c.startsWith('algograss_user='))
     if (!cookie) return null
-    return JSON.parse(atob(cookie.split('=')[1]))
+    return JSON.parse(atob(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
   } catch { return null }
 }
 

@@ -30,7 +30,7 @@ export default function SettingsPage() {
   useEffect(() => {
     try {
       const c = document.cookie.split(';').find(x => x.trim().startsWith('algograss_user='))
-      if (c) { const u = JSON.parse(atob(c.split('=')[1].trim())); setUser(u); setForm(f => ({ ...f, name: u.name || '', website: u.website || '' })) }
+      if (c) { const u = JSON.parse(atob(decodeURIComponent(c.slice(c.indexOf('=')+1).trim()))); setUser(u); setForm(f => ({ ...f, name: u.name || '', website: u.website || '' })) }
     } catch {}
     fetch('/api/user/settings').then(r => r.json()).then(d => {
       if (d.settings) {
