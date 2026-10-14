@@ -1,4 +1,4 @@
-import { generateContent } from '@/lib/ai'
+import { streamClaude } from '@/lib/ai'
 import { cookies } from 'next/headers'
 import { getCollection, parseUserCookie, trackActivity } from '@/lib/dbHelpers'
 
@@ -138,9 +138,13 @@ export async function POST(request) {
   const lastUserMsg = messages[messages.length - 1]
 
   // ── RAG: fetch relevant knowledge base docs ───────────────────
-  const ragDocs    = await searchKnowledge(lastUserMsg.content)
+  // Never let the knowledge-base lookup hold the answer up: cap it at 700ms
+  const ragDocs    = await Promise.race([
+    searchKnowledge(lastUserMsg.content),
+    new Promise(r => setTimeout(() => r([]), 700)),
+  ])
   const ragContext = buildRagContext(ragDocs)
-  const systemPrompt = BASE_SYSTEM_PROMPT + ragContext
+  const systemPrompt = BASE_SYSTEM_PROMPT + ragContext + '\n\n## Reply length\nBe concise and direct: aim for under 180 words unless the user asks for detail. Lead with the answer.'
 
   // ── Save user message to DB ───────────────────────────────────
   ;(async () => {
@@ -160,37 +164,28 @@ export async function POST(request) {
     } catch {}
   })()
 
-  // ── Call Claude ───────────────────────────────────────────────
+  // ── Call Claude (true streaming) ──────────────────────────────
   try {
-    // Convert messages to the shared AI client's format
-    const contents = messages.map(m => ({
-      role: m.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: m.content }],
-    }))
-
-    const data = await generateContent({
-      systemInstruction: { parts: [{ text: systemPrompt }] },
-      contents,
-      generationConfig: { maxOutputTokens: 2048, temperature: 0.3 },
+    const up = await streamClaude({
+      system: systemPrompt,
+      messages,
+      maxTokens: 900,
+      model: process.env.AI_CHAT_MODEL || 'claude-haiku-5-5',
     })
-
-    if (data.error) {
-      return Response.json({ error: data.error.message || 'AI error' }, { status: 500 })
+    if (!up.ok) {
+      return Response.json({ error: up.error || 'AI error' }, { status: up.status >= 400 ? up.status : 500 })
     }
 
-    const fullResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response received.'
-
-    // ── Stream the response word-by-word ─────────────────────────
     const encoder = new TextEncoder()
-    const words   = fullResponse.split(/(\s+)/)
-
+    let fullResponse = ''
     const stream = new ReadableStream({
       async start(controller) {
-        for (const word of words) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: word })}\n\n`))
-          // Small delay to simulate streaming effect
-          await new Promise(r => setTimeout(r, 8))
-        }
+        try {
+          for await (const text of up.body) {
+            fullResponse += text
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`))
+          }
+        } catch {}
         controller.enqueue(encoder.encode(`data: [DONE]\n\n`))
         controller.close()
 
