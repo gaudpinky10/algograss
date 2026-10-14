@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 function getUser() {
-  try { const c=document.cookie.split(';').map(x=>x.trim()).find(x=>x.startsWith('algograss_user=')); return c?JSON.parse(atob(c.split('=')[1])):null } catch { return null }
+  try { const c=document.cookie.split(';').map(x=>x.trim()).find(x=>x.startsWith('algograss_user=')); return c?JSON.parse(atob(decodeURIComponent(c.slice(c.indexOf('=')+1).trim()))):null } catch { return null }
 }
 function fmt(d){if(!d)return'—';try{return new Date(d).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}catch{return'—'}}
 

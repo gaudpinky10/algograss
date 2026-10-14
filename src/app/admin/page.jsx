@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 function getUser() {
-  try { const c=document.cookie.split(';').map(x=>x.trim()).find(x=>x.startsWith('algograss_user=')); return c?JSON.parse(atob(c.split('=')[1])):null } catch { return null }
+  try { const c=document.cookie.split(';').map(x=>x.trim()).find(x=>x.startsWith('algograss_user=')); return c?JSON.parse(atob(decodeURIComponent(c.slice(c.indexOf('=')+1).trim()))):null } catch { return null }
 }
 
 export default function AdminHub() {

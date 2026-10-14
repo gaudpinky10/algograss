@@ -87,7 +87,7 @@ export default function BreachPage() {
     try {
       const c = document.cookie.split(';').find(x => x.trim().startsWith('algograss_user='))
       if (c) {
-        const u = JSON.parse(atob(c.split('=')[1].trim()))
+        const u = JSON.parse(atob(decodeURIComponent(c.slice(c.indexOf('=')+1).trim())))
         setForm(f => ({ ...f, controllerName: u.name || '' }))
       }
     } catch {}
