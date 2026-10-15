@@ -108,3 +108,53 @@ export async function generateContent({ systemInstruction, contents = [], genera
     return { error: { message: err.message || 'AI request failed' } }
   }
 }
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Real streaming for chat. Opens the Anthropic request with stream:true and
+// returns { ok, status, error } or { ok:true, body } where body is an async
+// generator of text deltas. The first words reach the user as soon as the
+// model produces them instead of after the whole answer is finished.
+// ─────────────────────────────────────────────────────────────────────────────
+export async function streamClaude({ system, messages, maxTokens = 900, model }) {
+  const apiKey = process.env.ANTHROPIC_API_KEY
+  if (!apiKey) return { ok: false, status: 503, error: 'AI not configured.' }
+  const finalMessages = normaliseMessages(messages)
+  if (!finalMessages.length) return { ok: false, status: 400, error: 'No message to send.' }
+
+  const call = (m) => fetch(ANTHROPIC_URL, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({ model: m, max_tokens: maxTokens, system, messages: finalMessages, stream: true }),
+  })
+
+  let res = await call(model || DEFAULT_MODEL)
+  // If the fast model name is not available on this account, fall back once
+  if (res.status === 404 && model && model !== DEFAULT_MODEL) res = await call(DEFAULT_MODEL)
+  if (!res.ok || !res.body) {
+    let detail = ''
+    try { detail = (await res.json())?.error?.message || '' } catch {}
+    return { ok: false, status: res.status || 500, error: detail || `AI request failed (${res.status})` }
+  }
+
+  async function* deltas() {
+    const reader = res.body.getReader()
+    const decoder = new TextDecoder()
+    let buf = ''
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      buf += decoder.decode(value, { stream: true })
+      const lines = buf.split('\n')
+      buf = lines.pop()
+      for (const line of lines) {
+        if (!line.startsWith('data:')) continue
+        try {
+          const ev = JSON.parse(line.slice(5).trim())
+          if (ev.type === 'content_block_delta' && ev.delta?.type === 'text_delta' && ev.delta.text) yield ev.delta.text
+        } catch {}
+      }
+    }
+  }
+  return { ok: true, body: deltas() }
+}
