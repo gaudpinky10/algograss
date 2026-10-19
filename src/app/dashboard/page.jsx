@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef, useEffect, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
+import Markdown from '@/components/Markdown'
 
 const HISTORY_KEY = 'algograss_scan_history'
 const MAX_HISTORY = 10
@@ -939,7 +940,7 @@ function Dashboard() {
                   <div ref={chatRef} style={{ padding: '20px 22px', minHeight: 340, maxHeight: 420, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
                     {messages.map((m, i) => (
                       <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
-                        <div style={{ maxWidth: '82%', padding: '11px 15px', borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', background: m.role === 'user' ? 'var(--green)' : 'var(--green-p)', color: m.role === 'user' ? '#fff' : 'var(--ink)', fontSize: 13, lineHeight: 1.65, whiteSpace: 'pre-wrap' }}>{m.text}</div>
+                        <div style={{ maxWidth: '82%', padding: '11px 15px', borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', background: m.role === 'user' ? 'var(--green)' : 'var(--green-p)', color: m.role === 'user' ? '#fff' : 'var(--ink)', fontSize: 13, lineHeight: 1.65, whiteSpace: m.role === 'user' ? 'pre-wrap' : 'normal' }}>{m.role === 'user' ? m.text : <Markdown text={m.text} />}</div>
                       </div>
                     ))}
                     {aiLoading && <div style={{ display: 'flex' }}><div style={{ padding: '11px 15px', borderRadius: '16px 16px 16px 4px', background: 'var(--green-p)', fontSize: 13, color: 'var(--ink2)' }}>Thinking...</div></div>}
