@@ -21,11 +21,21 @@ function renderInline(text, keyPrefix) {
   return parts
 }
 
+function splitRow(line) {
+  let t = line.trim()
+  if (t.startsWith('|')) t = t.slice(1)
+  if (t.endsWith('|')) t = t.slice(0, -1)
+  return t.split('|').map((c) => c.trim())
+}
+const isTableRow = (t) => t.startsWith('|') && t.split('|').length >= 3
+const isSepRow = (t) => /^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?$/.test(t)
+
 export default function Markdown({ text }) {
   const lines = String(text || '').replace(/\r\n/g, '\n').split('\n')
   const blocks = []
   let para = []
   let list = null // { ordered, items: [] }
+  let table = null // { rows: [] }
 
   const flushPara = () => {
     if (para.length) {
@@ -40,10 +50,25 @@ export default function Markdown({ text }) {
     }
   }
 
+  const flushTable = () => {
+    if (table) {
+      const rows = table.rows.filter((r) => !isSepRow(r.join('|')) )
+      if (rows.length) blocks.push({ type: 'table', head: rows[0], body: rows.slice(1) })
+      table = null
+    }
+  }
+
   for (const raw of lines) {
     const line = raw.trimEnd()
     const t = line.trim()
     let m
+    if (isTableRow(t)) {
+      flushPara(); flushList()
+      if (!table) table = { rows: [] }
+      table.rows.push(splitRow(t))
+      continue
+    }
+    flushTable()
     if (!t) { flushPara(); flushList(); continue }
     if (/^(-{3,}|\*{3,}|_{3,})$/.test(t)) { flushPara(); flushList(); blocks.push({ type: 'hr' }); continue }
     if ((m = t.match(/^(#{1,6})\s+(.*)$/))) { flushPara(); flushList(); blocks.push({ type: 'h', level: m[1].length, text: m[2] }); continue }
@@ -64,11 +89,23 @@ export default function Markdown({ text }) {
   }
   flushPara()
   flushList()
+  flushTable()
 
   const hSize = { 1: 17, 2: 16, 3: 15 }
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {blocks.map((b, i) => {
+        if (b.type === 'table') {
+          const cell = { padding: '6px 10px', border: '1px solid rgba(125,125,125,.3)', textAlign: 'left', verticalAlign: 'top' }
+          return (
+            <div key={i} style={{ overflowX: 'auto' }}>
+              <table style={{ borderCollapse: 'collapse', fontSize: '0.92em', width: '100%' }}>
+                <thead><tr>{b.head.map((c, j) => <th key={j} style={{ ...cell, background: 'rgba(125,125,125,.15)', fontWeight: 700 }}>{renderInline(c, `th${i}-${j}`)}</th>)}</tr></thead>
+                <tbody>{b.body.map((r, k) => <tr key={k}>{r.map((c, j) => <td key={j} style={cell}>{renderInline(c, `td${i}-${k}-${j}`)}</td>)}</tr>)}</tbody>
+              </table>
+            </div>
+          )
+        }
         if (b.type === 'hr') return <hr key={i} style={{ border: 0, borderTop: '1px solid rgba(125,125,125,.3)', margin: '4px 0', width: '100%' }} />
         if (b.type === 'h') return <div key={i} style={{ fontWeight: 700, fontSize: hSize[b.level] || 14, marginTop: 4 }}>{renderInline(b.text, `h${i}`)}</div>
         if (b.type === 'ul' || b.type === 'ol') {
