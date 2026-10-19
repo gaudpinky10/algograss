@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Markdown from '@/components/Markdown'
 
 const SUGGESTED = [
   'Do I need a DPO for my UK SME?',
@@ -51,10 +52,10 @@ function Message({ msg }) {
         color: isUser ? '#06060F' : '#E8E6F5',
         fontSize: 14,
         lineHeight: 1.65,
-        whiteSpace: 'pre-wrap',
+        whiteSpace: isUser ? 'pre-wrap' : 'normal',
         fontWeight: isUser ? 500 : 400,
       }}>
-        {msg.content}
+        {isUser ? msg.content : <Markdown text={msg.content} />}
         {msg.streaming && <TypingDots />}
       </div>
       {isUser && (
