@@ -9,7 +9,7 @@ function Layout({meta,children}){return(<><section style={{padding:'56px 0 32px'
 
 export default function GdprChecklist(){
   return(
-    <Layout meta={{cat:'GDPR',date:'15 Jan 2025',read:'8 min',title:'The 2025 GDPR Compliance Checklist for UK SMEs'}}>
+    <Layout meta={{cat:'GDPR',date:'30 May 2026',read:'8 min',title:'The 2025 GDPR Compliance Checklist for UK SMEs'}}>
       <P>If your website collects any personal data from UK or EU residents — an email address, a name, an IP address tracked by analytics — you are subject to UK GDPR. Non-compliance carries fines of up to £17.5 million or 4% of global turnover, and the ICO is increasingly active against SMEs. This checklist covers the 12 things every UK small business must have in place.</P>
       <Callout>This checklist covers UK GDPR under the Data Protection Act 2018. EU GDPR applies if you also process data from EU residents. The requirements are nearly identical — see our UK GDPR vs EU GDPR article for the differences.</Callout>
 

@@ -29,7 +29,7 @@ function Layout({meta,children}){return(<><section style={{padding:'56px 0 32px'
 
 export default function UkGdprVsEuGdpr(){
   return(
-    <Layout meta={{cat:'UK Law',date:'12 Mar 2025',read:'9 min',title:'UK GDPR vs EU GDPR: Key Differences for UK Businesses'}}>
+    <Layout meta={{cat:'UK Law',date:'30 May 2026',read:'9 min',title:'UK GDPR vs EU GDPR: Key Differences for UK Businesses'}}>
       <P>Since Brexit, UK data protection law has diverged from its EU equivalent. For most businesses operating solely within the UK, UK GDPR works almost identically to EU GDPR. But if you collect data from EU residents, transfer data internationally, or work with EU partners, the differences matter. This guide explains what changed, what stayed the same, and what UK businesses need to do.</P>
 
       <H2>Background: How the Laws Relate</H2>

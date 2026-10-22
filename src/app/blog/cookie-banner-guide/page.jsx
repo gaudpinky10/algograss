@@ -33,7 +33,7 @@ const Callout = ({children,type='info'})=>{
 
 export default function CookieBannerGuide(){
   return(
-    <Layout meta={{cat:'Cookies',date:'28 Jan 2025',read:'6 min',title:'How to Set Up a Legally Compliant Cookie Banner'}}>
+    <Layout meta={{cat:'Cookies',date:'30 May 2026',read:'6 min',title:'How to Set Up a Legally Compliant Cookie Banner'}}>
       <P>Cookie banners are not optional. Under UK and EU law, any website that sets non-essential cookies — analytics, advertising, personalisation — must obtain freely given, specific, informed, and unambiguous consent before those cookies fire. Getting this wrong is one of the most common GDPR violations the ICO investigates.</P>
       <Callout type="warn">The ICO fined a UK company £200,000 for placing analytics cookies before obtaining consent. Cookie compliance is actively enforced — not a theoretical risk.</Callout>
 

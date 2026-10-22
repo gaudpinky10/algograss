@@ -10,7 +10,7 @@ function Layout({meta,children}){return(<><section style={{padding:'56px 0 32px'
 
 export default function IcoFinesGuide(){
   return(
-    <Layout meta={{cat:'Compliance',date:'12 Feb 2025',read:'7 min',title:'Understanding ICO Fines: What Gets UK Businesses Fined?'}}>
+    <Layout meta={{cat:'Compliance',date:'30 May 2026',read:'7 min',title:'Understanding ICO Fines: What Gets UK Businesses Fined?'}}>
       <P>The Information Commissioner's Office has fined organisations hundreds of millions of pounds since UK GDPR took effect. Across the EU, GDPR enforcement has been even more sweeping: <strong style={{color:'var(--ink)'}}>3,202 enforcement cases and over €6.31 billion in total fines</strong> across 32 countries since 2018. The single largest fine: €1.2 billion against Meta Platforms Ireland. While headlines focus on household names, regulators in both the UK and EU regularly investigate and fine small and medium businesses. Understanding what triggers an investigation — and how fines are calculated — is essential for any business handling personal data.</P>
       <Callout type="danger">The ICO can fine organisations up to £17.5 million or 4% of global annual turnover (whichever is higher) for serious violations. For less serious breaches, fines can reach £8.7 million or 2% of turnover. EU DPAs can fine up to €20 million or 4% of global annual turnover.</Callout>
 

@@ -10,7 +10,7 @@ function Layout({meta,children}){return(<><section style={{padding:'56px 0 32px'
 
 export default function PrivacyPolicyRequirements(){
   return(
-    <Layout meta={{cat:'GDPR',date:'5 Feb 2025',read:'10 min',title:'What Must Be in Your Privacy Policy Under GDPR'}}>
+    <Layout meta={{cat:'GDPR',date:'30 May 2026',read:'10 min',title:'What Must Be in Your Privacy Policy Under GDPR'}}>
       <P>A privacy policy is not a formality — it is a legal requirement under GDPR Articles 13 and 14, and it must contain specific information written in plain, clear language. A vague or boilerplate document does not satisfy the law. This guide covers every element your privacy policy must include, with plain-English explanations of why each is required.</P>
       <Callout>GDPR requires your privacy notice to be provided at the time personal data is collected — not buried in a link nobody clicks. Both Articles 13 and 14 apply: Art. 13 covers data collected directly from individuals; Art. 14 covers data obtained indirectly.</Callout>
 

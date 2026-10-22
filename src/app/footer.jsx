@@ -30,7 +30,7 @@ export default function Footer() {
               {[
                 ['✓', 'GDPR & UK DPA 2018 compliant'],
                 ['✓', 'ICO guidance aligned'],
-                ['✓', 'Trusted by UK & EU SMEs'],
+                ['✓', 'Built for UK & EU SMEs'],
                 ['✓', 'AI-powered · Always up to date'],
               ].map(([icon, text]) => (
                 <span key={text} style={{ fontSize: 12, color: '#64748B', display: 'flex', alignItems: 'center', gap: 7 }}>
