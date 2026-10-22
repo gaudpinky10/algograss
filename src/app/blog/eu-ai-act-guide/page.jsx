@@ -8,7 +8,7 @@ function Layout({meta,children}){return(<><section style={{padding:'56px 0 32px'
 
 export default function EuAiActGuide(){
   return(
-    <Layout meta={{cat:'AI Act',date:'10 Mar 2025',read:'11 min',title:'EU AI Act: What UK Businesses Need to Know in 2025'}}>
+    <Layout meta={{cat:'AI Act',date:'2 Jul 2026',read:'11 min',title:'EU AI Act: What UK Businesses Need to Know in 2025'}}>
       <P>The EU AI Act is now in force — the world's first comprehensive AI regulation. For UK businesses, it's more relevant than it may first appear: if you deploy AI-powered tools to EU customers, serve EU residents, or use AI systems that interact with EU data, the Act likely applies to you. And with the UK developing its own AI framework, understanding the EU's approach is essential groundwork.</P>
       <Callout>The EU AI Act entered into force on 1 August 2024. Phased implementation means most obligations apply from August 2026, but high-risk AI provisions and the AI literacy requirement began applying earlier. Don't assume you have unlimited time.</Callout>
 

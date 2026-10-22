@@ -9,7 +9,7 @@ function Layout({meta,children}){return(<><section style={{padding:'56px 0 32px'
 
 export default function DataProcessingAgreement(){
   return(
-    <Layout meta={{cat:'GDPR',date:'20 Feb 2025',read:'5 min',title:'When Does Your Business Need a Data Processing Agreement?'}}>
+    <Layout meta={{cat:'GDPR',date:'30 May 2026',read:'5 min',title:'When Does Your Business Need a Data Processing Agreement?'}}>
       <P>If you use any third-party tool that processes personal data on your behalf — a cloud hosting provider, an email marketing platform, a payroll system, a CRM — you almost certainly need a Data Processing Agreement (DPA) in place. This is a legal requirement under Article 28 of UK GDPR, and the absence of a DPA is routinely cited in ICO enforcement actions.</P>
       <Callout type="warn">Using Google Workspace, Mailchimp, HubSpot, AWS, Xero, or any SaaS tool that stores or processes your customers' or employees' data without a DPA in place is a GDPR violation — regardless of the size of your business.</Callout>
 

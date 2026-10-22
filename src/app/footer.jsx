@@ -28,9 +28,9 @@ export default function Footer() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 22 }}>
               {[
-                ['✓', 'GDPR & UK DPA 2018 compliant'],
+                ['✓', 'Built around UK GDPR and DPA 2018'],
                 ['✓', 'ICO guidance aligned'],
-                ['✓', 'Trusted by UK & EU SMEs'],
+                ['✓', 'Built for UK & EU SMEs'],
                 ['✓', 'AI-powered · Always up to date'],
               ].map(([icon, text]) => (
                 <span key={text} style={{ fontSize: 12, color: '#64748B', display: 'flex', alignItems: 'center', gap: 7 }}>

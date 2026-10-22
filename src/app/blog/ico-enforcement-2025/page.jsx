@@ -11,7 +11,7 @@ const StatGrid=({stats})=><div style={{display:'grid',gridTemplateColumns:'repea
 
 export default function IcoEnforcement2025(){
   return(
-    <Layout meta={{cat:'Compliance',date:'5 Jun 2026',read:'10 min',title:'ICO Enforcement in 2025–26: Key Lessons for UK SMEs'}}>
+    <Layout meta={{cat:'Compliance',date:'2 Jul 2026',read:'10 min',title:'ICO Enforcement in 2025–26: Key Lessons for UK SMEs'}}>
       <P>The Information Commissioner's Office (ICO) continues to fine businesses of all sizes — and size is no defence. Meanwhile, across the EU, regulators have issued over <strong style={{color:'var(--ink)'}}>€6.31 billion in GDPR fines across 3,202 cases</strong> since enforcement began in 2018. The most common failures are consistent: no lawful basis for processing, weak security measures, and inadequate transparency. Here's what UK businesses can learn from both ICO enforcement and the EU-wide picture.</P>
       <StatGrid stats={[
         {val:'3,202',label:'Total EU+UK enforcement cases (2018–2026)'},

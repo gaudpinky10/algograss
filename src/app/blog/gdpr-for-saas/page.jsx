@@ -9,7 +9,7 @@ function Layout({meta,children}){return(<><section style={{padding:'56px 0 32px'
 
 export default function GdprForSaas(){
   return(
-    <Layout meta={{cat:'GDPR',date:'25 Mar 2025',read:'12 min',title:'GDPR for SaaS Founders: Data Protection by Design'}}>
+    <Layout meta={{cat:'GDPR',date:'2 Jul 2026',read:'12 min',title:'GDPR for SaaS Founders: Data Protection by Design'}}>
       <P>Building a SaaS product means building a data processing business — whether you intend to or not. Every signup, every user session, every piece of usage data is personal data under UK and EU GDPR. As a founder, getting data protection right from the start is significantly cheaper than retrofitting compliance after you scale, and increasingly expected by enterprise customers during due diligence.</P>
       <P>This guide is for SaaS founders in the UK and EU building products that process user data. It covers what you must do legally, what enterprise customers will ask about, and how to build with privacy by design rather than adding compliance as an afterthought.</P>
       <Callout>Privacy by design isn't just good practice — it's a legal requirement under GDPR Article 25. Controllers must implement data protection by design and by default, integrating privacy into technical and organisational measures from the beginning.</Callout>
