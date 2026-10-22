@@ -6,6 +6,8 @@ import ParticleCanvas from '@/components/ParticleCanvas'
 import CountUp from '@/components/CountUp'
 import TiltCard from '@/components/TiltCard'
 
+const SHOW_SCAN_COUNT = false
+
 export default function Home() {
   return (<><Hero/><Logos/><Stats/><HowItWorks/><Features/><SocialProof/><CtaBanner/></>)
 }
@@ -383,7 +385,8 @@ function SocialProof() {
       <div className="wrap" style={{position:'relative',zIndex:1}}>
         <AnimateOnScroll>
           <div style={{textAlign:'center',marginBottom:44}}>
-            {scanCount != null && scanCount > 0 && (
+            {/* Scan counter hidden until it reflects real customer scans (current count is mostly internal testing) */}
+            {SHOW_SCAN_COUNT && scanCount != null && scanCount > 0 && (
               <div style={{display:'inline-flex',alignItems:'center',gap:10,background:'rgba(139,92,246,0.08)',border:'1px solid rgba(139,92,246,0.22)',borderRadius:100,padding:'8px 22px',marginBottom:20}}>
                 <span style={{width:7,height:7,background:'#9B7BFA',borderRadius:'50%'}} className="animate-pulse-glow"/>
                 <span style={{fontFamily:'Syne,sans-serif',fontSize:20,fontWeight:800,color:'#9B7BFA'}}>
@@ -412,7 +415,7 @@ function SocialProof() {
         {/* Trust badges */}
         <AnimateOnScroll>
           <div style={{display:'flex',flexWrap:'wrap',gap:8,justifyContent:'center'}}>
-            {['🔒 GDPR compliant','🇬🇧 UK-based','⚡ Real-time scan','🤖 AI-powered','📄 Auto-docs','🎁 60 days free'].map(b=>(
+            {['🔒 Built around UK GDPR','🇬🇧 UK-based','⚡ Real-time scan','🤖 AI-powered','📄 Auto-docs','🎁 60 days free'].map(b=>(
               <span key={b} style={{fontSize:12,color:'var(--ink2)',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:100,padding:'4px 12px'}}>{b}</span>
             ))}
           </div>

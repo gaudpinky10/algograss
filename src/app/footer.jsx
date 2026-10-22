@@ -28,7 +28,7 @@ export default function Footer() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 22 }}>
               {[
-                ['✓', 'GDPR & UK DPA 2018 compliant'],
+                ['✓', 'Built around UK GDPR and DPA 2018'],
                 ['✓', 'ICO guidance aligned'],
                 ['✓', 'Built for UK & EU SMEs'],
                 ['✓', 'AI-powered · Always up to date'],
