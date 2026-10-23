@@ -108,8 +108,27 @@ function findLegalLinks(mainHtml, pageUrl, limit = 8) {
   return out
 }
 
+// Bot-protection screens and refusals are not the real page
+const BLOCK_PAGE = /<title>\s*(just a moment|attention required|access denied|request rejected|pardon our interruption)|window\._cf_chl_opt|sorry, you have been blocked|_Incapsula_Resource/i
+function isBlocked(res) {
+  return !!res?.ok && ([401, 403, 429, 503].includes(res.status) || BLOCK_PAGE.test((res.text || '').slice(0, 30000)))
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms))
+
+// One retry for a page that was briefly unavailable or rate-limited
+async function fetchWithRetry(url, timeoutMs) {
+  let r = await fetchPage(url, timeoutMs)
+  if (!r.ok || r.status === 429 || r.status === 503) {
+    await sleep(800)
+    r = await fetchPage(url, timeoutMs)
+  }
+  return r
+}
+
+const TERMS_FALLBACK = ['/terms', '/terms-of-service', '/terms-and-conditions', '/terms-of-use', '/legal', '/legal/terms', '/legal/terms-of-service', '/policies/terms']
+
 async function fetchSubPages(baseUrl, mainHtml = '', pageUrl = baseUrl) {
-  // Comprehensive list covering SMEs, corporates, SaaS, e-commerce, and international sites
   const paths = [
     '/privacy-policy', '/privacy', '/privacy-notice', '/privacy-statement', '/privacy-center',
     '/data-protection', '/data-privacy', '/personal-data',
@@ -126,22 +145,12 @@ async function fetchSubPages(baseUrl, mainHtml = '', pageUrl = baseUrl) {
   ]
   const origin = (() => { try { return new URL(baseUrl).origin } catch { return baseUrl } })()
   const pageOrigin = (() => { try { return new URL(pageUrl).origin } catch { return origin } })()
-  // Policy/legal pages the site itself links to, if not already in the fixed list
   const fixed = new Set(paths)
   const legalLinks = findLegalLinks(mainHtml, pageUrl)
   const linkKinds = new Map(legalLinks.map(l => [l.path, l.kind]))
-  const linked = legalLinks.map(l => l.path).filter(p => !fixed.has(p))
-  const batch0 = linked.map(p => fetchPage(pageOrigin + p, 6000))
-  // Run in batches to avoid timeout — first 16 in parallel, then remaining
-  const batch1 = paths.slice(0, 16).map(p => fetchPage(origin + p, 6000))
-  const batch2 = paths.slice(16).map(p => fetchPage(origin + p, 5000))
-  const [res0, res1, res2] = await Promise.all([
-    Promise.allSettled(batch0),
-    Promise.allSettled(batch1),
-    Promise.allSettled(batch2),
-  ])
-  const allPaths = [...linked, ...paths]
-  const all = [...res0, ...res1, ...res2]
+  // "linked" pages are judged a little more strictly (see privacyByPath)
+  const linkedOnly = new Set(legalLinks.map(l => l.path).filter(p => !fixed.has(p)))
+
   // Many sites (SPAs, catch-all routers) answer 200 for every path and just
   // return the homepage. Drop those "soft 404" pages so they are not mistaken
   // for a real privacy policy.
@@ -149,38 +158,64 @@ async function fetchSubPages(baseUrl, mainHtml = '', pageUrl = baseUrl) {
   const pages = []
   // Privacy/terms links on the homepage that lead to "page not found"
   const broken = { privacy: [], terms: [] }
-  all.forEach((r, i) => {
-    const kind = linkKinds.get(allPaths[i])
+  let blocked = 0
+  const take = (list, results) => results.forEach((r, i) => {
+    const path = list[i]
+    const v = r.status === 'fulfilled' ? r.value : null
+    if (isBlocked(v)) { blocked++; return } // bot protection, not the real page
+    const kind = linkKinds.get(path)
     if (kind === 'privacy' || kind === 'terms') {
-      const v = r.status === 'fulfilled' ? r.value : null
       if (v?.ok && (v.status === 404 || v.status === 410 || (v.status < 400 && NOT_FOUND.test(pageHeading(v.text || '')))))
-        broken[kind].push(allPaths[i])
+        broken[kind].push(path)
     }
-    if (r.status !== 'fulfilled' || !r.value?.ok || r.value.status >= 400) return
-    const html = r.value.text
+    if (!v?.ok || v.status >= 400) return
+    const html = v.text
     if (!html || html.length < 300) return
     const vis = visibleText(html)
     if (vis.length < 200) return
     if (mainSig.length > 200 && vis.slice(0, 600) === mainSig) return // same as homepage
     const heading = pageHeading(html)
     if (NOT_FOUND.test(heading)) return // a "page not found" page served with status 200
-    pages.push({ path: allPaths[i], finalPath: pathOf(r.value.finalUrl), html, vis, heading, linked: i < linked.length })
+    pages.push({ path, finalPath: pathOf(v.finalUrl), html, vis, heading, linked: linkedOnly.has(path) })
   })
+
   // A page counts as a privacy policy if its web address or its title says so,
   // and its content reads like one
   const isPrivacyHeading = h => PRIVACY_TITLE.test(h) && /polic|notice|statement|charter/i.test(h)
   const privacyByPath = pg => pg.linked
     ? PRIVACY_SLUG.test(pg.path) || PRIVACY_SLUG.test(pg.finalPath)
     : PRIVACY_PATH.test(pg.path) // fixed list: unchanged behaviour
-  const policyPages = pages.filter(pg =>
-    (privacyByPath(pg) || isPrivacyHeading(pg.heading)) &&
-    /privacy|personal (data|information)|data protection/i.test(pg.vis) && pg.vis.length > 800)
   // Terms are often published under another name (e.g. "No Guarantee Policy" at
   // /terms), so a real page at a terms-style address counts, as does a linked
   // page titled as terms or conditions
-  const termsPages = pages.filter(pg =>
-    (TERMS_PATH.test(pg.path) || TERMS_PATH.test(pg.finalPath) || (pg.linked && TERMS_TITLE.test(pg.heading))) &&
-    LEGAL_TITLE.test(pg.heading + ' ' + pg.vis.slice(0, 300)))
+  const classify = () => ({
+    policyPages: pages.filter(pg =>
+      (privacyByPath(pg) || isPrivacyHeading(pg.heading)) &&
+      /privacy|personal (data|information)|data protection/i.test(pg.vis) && pg.vis.length > 800),
+    termsPages: pages.filter(pg =>
+      (TERMS_PATH.test(pg.path) || TERMS_PATH.test(pg.finalPath) || (pg.linked && TERMS_TITLE.test(pg.heading))) &&
+      LEGAL_TITLE.test(pg.heading + ' ' + pg.vis.slice(0, 300))),
+  })
+
+  // 1. The site's own policy links first. That is usually only a few requests,
+  //    so bot protection is rarely triggered and results stay the same between scans.
+  const phase1 = legalLinks.map(l => l.path)
+  take(phase1, await Promise.allSettled(phase1.map(p => fetchWithRetry(pageOrigin + p, 8000))))
+  let { policyPages, termsPages } = classify()
+
+  // 2. Only if those links gave no privacy policy (or no terms), guess common
+  //    addresses. Skipped if the site is already refusing our requests.
+  const tried = new Set(phase1)
+  const fallback = policyPages.length === 0 ? paths : termsPages.length === 0 ? TERMS_FALLBACK : []
+  const phase2 = blocked > 0 ? [] : fallback.filter(p => !tried.has(p))
+  if (phase2.length) {
+    const b1 = phase2.slice(0, 16).map(p => fetchPage(origin + p, 6000))
+    const b2 = phase2.slice(16).map(p => fetchPage(origin + p, 5000))
+    const [r1, r2] = await Promise.all([Promise.allSettled(b1), Promise.allSettled(b2)])
+    take(phase2, [...r1, ...r2])
+    ;({ policyPages, termsPages } = classify())
+  }
+
   return {
     text: pages.map(pg => pg.html).join('\n'),
     policyText: policyPages.map(pg => pg.vis).join('\n'),
@@ -188,6 +223,8 @@ async function fetchSubPages(baseUrl, mainHtml = '', pageUrl = baseUrl) {
     termsPaths: termsPages.map(pg => pg.path),
     brokenPrivacyLinks: broken.privacy,
     brokenTermsLinks: broken.terms,
+    blockedCount: blocked,
+    requestCount: phase1.length + phase2.length,
   }
 }
 
@@ -227,8 +264,21 @@ export async function POST(request) {
   const user = userCookie ? parseUserCookie(userCookie.value) : null
 
   try {
-    const mainResult = await fetchPage(targetUrl)
-    const sub = mainResult.ok ? await fetchSubPages(targetUrl, mainResult.text, mainResult.finalUrl) : { text: '', policyText: '', policyPaths: [], termsPaths: [], brokenPrivacyLinks: [], brokenTermsLinks: [] }
+    let mainResult = await fetchPage(targetUrl)
+    // Rate-limited or shown a bot-protection screen: wait and try once more
+    if (mainResult.ok && (mainResult.status === 429 || mainResult.status === 503 || isBlocked(mainResult))) {
+      await sleep(1500)
+      mainResult = await fetchPage(targetUrl)
+    }
+    // Never score a refusal or error page as if it were the website
+    if (mainResult.ok && (isBlocked(mainResult) || mainResult.status >= 400)) {
+      await trackActivity({ userEmail: user?.email, tool: 'scan', action: 'scan_blocked', detail: `${targetUrl} (HTTP ${mainResult.status})` })
+      const error = mainResult.status === 404
+        ? 'That page could not be found. Please check the URL and try again.'
+        : 'This website blocked our automated scan (many sites use bot protection). Please try again in a few minutes. If it keeps happening, the site blocks automated checks, so we cannot give an accurate result.'
+      return Response.json({ error, blocked: true }, { status: 422 })
+    }
+    const sub = mainResult.ok ? await fetchSubPages(targetUrl, mainResult.text, mainResult.finalUrl) : { text: '', policyText: '', policyPaths: [], termsPaths: [], brokenPrivacyLinks: [], brokenTermsLinks: [], blockedCount: 0, requestCount: 0 }
     const subText = sub.text
     if (!mainResult.ok) {
       await trackActivity({ userEmail: user?.email, tool: 'scan', action: 'scan_failed', detail: targetUrl })
@@ -602,6 +652,7 @@ export async function POST(request) {
     if (isSpa) note = 'This site uses a JavaScript framework. Content rendered after page load (including some cookie banners and privacy policy text) may not be captured in this scan.'
     if (hasReadPrivacyPage) note += ' Policy content checks were run against the privacy policy page itself.'
     if (!hasReadPrivacyPage && hasPrivacyLink) note += ' Privacy policy pages could not be fully read — some checks may be marked Low severity as a result.'
+    if (sub.blockedCount > 0) note += ' Some pages on this site refused automated access, so a few checks may be incomplete.'
 
     const result = {
       url: finalUrl, score, isHttps, trackers, issues, isSpa,

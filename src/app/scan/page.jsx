@@ -108,19 +108,20 @@ function ScanPageInner() {
   <title>GDPR Compliance Report — ${result.url}</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Segoe UI',Arial,sans-serif; background:#fff; color:#0D0D1E; font-size:13px; }
+    body { font-family:'Segoe UI',Arial,sans-serif; background:#fff; color:#0D0D1E; font-size:13px; max-width:820px; margin:0 auto; padding:76px 24px 40px; }
     @page { margin:20mm 18mm; size:A4; }
     @media print {
       .no-print { display:none !important; }
-      body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+      body { -webkit-print-color-adjust:exact; print-color-adjust:exact; max-width:none; padding:0; }
+      .header { border-radius:12px; }
     }
-    .header { background:linear-gradient(135deg,#9B7BFA,#7C3AED); color:white; padding:28px 32px; border-radius:0 0 16px 16px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; }
+    .header { background:linear-gradient(135deg,#9B7BFA,#7C3AED); color:white; padding:24px 28px; border-radius:16px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; gap:16px; }
     .logo { display:flex; align-items:center; gap:10px; }
-    .logo-icon { width:36px; height:36px; background:linear-gradient(135deg,#9B7BFA,#C084FC); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:14px; }
-    .logo-text { color:#9B7BFA; font-weight:800; font-size:18px; }
+    .logo-icon { width:36px; height:36px; background:rgba(255,255,255,.2); border-radius:8px; display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:14px; }
+    .logo-text { color:#fff; font-weight:800; font-size:18px; }
     .header-right { text-align:right; }
-    .header-right h1 { font-size:20px; font-weight:700; color:#0F172A; margin-bottom:4px; }
-    .header-right p { font-size:12px; color:#94A3B8; }
+    .header-right h1 { font-size:20px; font-weight:700; color:#fff; margin-bottom:4px; }
+    .header-right p { font-size:12px; color:rgba(255,255,255,.85); word-break:break-all; }
     .score-section { display:flex; align-items:center; gap:28px; background:#F9FAFB; border:1px solid #E5E7EB; border-radius:14px; padding:20px 24px; margin-bottom:20px; }
     .score-ring { flex-shrink:0; }
     .score-info h2 { font-size:22px; font-weight:800; color:${scoreColor}; margin-bottom:4px; }
@@ -134,7 +135,7 @@ function ScanPageInner() {
     .cta p { font-size:12px; color:rgba(255,255,255,.8); margin-bottom:14px; line-height:1.5; }
     .cta a { background:white; color:#065F46; font-weight:700; font-size:13px; padding:10px 24px; border-radius:8px; text-decoration:none; display:inline-block; }
     .footer { text-align:center; margin-top:24px; color:#9CA3AF; font-size:10px; line-height:1.6; border-top:1px solid #E5E7EB; padding-top:14px; }
-    .print-btn { position:fixed; top:20px; right:20px; background:#9B7BFA; color:#06060F; border:none; padding:12px 24px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; }
+    .print-btn { position:fixed; top:16px; right:max(16px, calc(50% - 410px)); z-index:10; background:#7C3AED; color:#fff; box-shadow:0 4px 14px rgba(124,58,237,.35); border:none; padding:12px 24px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; }
   </style>
 </head>
 <body>
