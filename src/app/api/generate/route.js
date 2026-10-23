@@ -32,7 +32,7 @@ Use professional, clear language. Include [INSERT: ...] tags for business-specif
 
     cookie: `Draft a comprehensive Cookie Policy for "${domain}".
 
-Trackers detected: ${trackers.join(', ') || 'none'}. Cookie banner: ${checks.cookieBanner}. Reject option: ${checks.cookieReject}.
+Trackers detected: ${trackers.join(', ') || 'none'}. Cookie banner: ${checks.cookieBannerFound ?? checks.cookieBanner}. Reject option: ${checks.cookieRejectFound ?? checks.cookieReject}.${checks.cookieConsentNeeded === false ? ' No non-essential cookies or trackers were detected, so a consent banner may not be needed.' : ''}
 
 Include:
 1. What cookies are and how we use them

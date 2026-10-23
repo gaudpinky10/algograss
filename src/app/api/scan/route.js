@@ -47,8 +47,56 @@ function visibleText(html) {
 }
 
 const PRIVACY_PATH = /privacy|data-protection|data-privacy|personal-data|gdpr|your-data|data-rights|ccpa|california/i
+// Footer/nav links worth following: policy and legal pages are often at paths
+// we would never guess (e.g. /website-verification/policy), so we use the
+// site's own links as well as the fixed list of common paths.
+const LEGAL_LINK    = /privacy|data[\s_-]?protection|personal[\s_-]?data|gdpr|cookie|terms|conditions|legal|polic(y|ies)|disclaimer/i
+const TERMS_PATH    = /\/(terms|tos|terms-of-service|terms-and-conditions|terms-of-use|conditions|legal\/terms|legal\/terms-of-service|policies\/terms)\/?$/i
+// For linked pages, "privacy" anywhere in the address is not enough (a blog post
+// at /blog/privacy-tips is not a policy), so the last part of the path must be
+// policy-like, or the page title must say it is a privacy policy/notice
+const PRIVACY_SLUG  = /\/(privacy|privacy[-_]?(policy|notice|statement|center|centre)|data[-_]?(protection|privacy)([-_]?(policy|notice))?|personal[-_]?data|gdpr([-_]?policy)?|your[-_]?data|data[-_]?rights)\/?$/i
+const TERMS_TITLE   = /terms[\s_-]*(of[\s_-]*(service|use|business|sale)|and[\s_-]*conditions|&(amp;)?[\s_-]*conditions)|conditions of (use|sale|service)|user agreement/i
+const CONTENT_PATH  = /\/(blog|news|articles?|posts?|insights|resources|guides?|stories)\//i
+const PRIVACY_TITLE = /privacy|data protection|personal (data|information)/i
+const LEGAL_TITLE   = /terms|conditions|polic(y|ies)|legal|agreement|disclaimer/i
+const NOT_FOUND     = /not found|\b404\b|page (doesn.?t|does not) exist|can.?t be found|cannot be found/i
 
-async function fetchSubPages(baseUrl, mainHtml = '') {
+// The page's <title> and first <h1>, as plain text
+function pageHeading(html) {
+  const title = (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || ''
+  const h1    = (html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i) || [])[1] || ''
+  return visibleText(title + ' | ' + h1)
+}
+
+function pathOf(url) {
+  try { return new URL(url).pathname.replace(/\/+$/, '') || '/' } catch { return '' }
+}
+
+// Same-site links whose address or link text looks like a policy/legal page
+function findLegalLinks(mainHtml, pageUrl, limit = 8) {
+  const out = []
+  let origin
+  try { origin = new URL(pageUrl).origin } catch { return out }
+  const re = /<a\b[^>]*?href=["']([^"'#]+)["'][^>]*>([\s\S]*?)<\/a>/gi
+  let m
+  while ((m = re.exec(mainHtml || '')) && out.length < limit) {
+    const href = m[1]
+    const text = visibleText(m[2])
+    if (!LEGAL_LINK.test(href) && !LEGAL_LINK.test(text)) continue
+    let u
+    try { u = new URL(href, pageUrl) } catch { continue }
+    if (u.origin !== origin) continue
+    if (/\.(pdf|png|jpe?g|gif|svg|webp|zip|docx?)$/i.test(u.pathname)) continue
+    if (CONTENT_PATH.test(u.pathname + '/')) continue // articles about privacy are not policies
+    const p = u.pathname.replace(/\/+$/, '') || '/'
+    if (p === '/' || out.includes(p)) continue
+    out.push(p)
+  }
+  return out
+}
+
+async function fetchSubPages(baseUrl, mainHtml = '', pageUrl = baseUrl) {
   // Comprehensive list covering SMEs, corporates, SaaS, e-commerce, and international sites
   const paths = [
     '/privacy-policy', '/privacy', '/privacy-notice', '/privacy-statement', '/privacy-center',
@@ -65,15 +113,21 @@ async function fetchSubPages(baseUrl, mainHtml = '') {
     '/ccpa', '/california-privacy', '/accessibility',
   ]
   const origin = (() => { try { return new URL(baseUrl).origin } catch { return baseUrl } })()
+  const pageOrigin = (() => { try { return new URL(pageUrl).origin } catch { return origin } })()
+  // Policy/legal pages the site itself links to, if not already in the fixed list
+  const fixed = new Set(paths)
+  const linked = findLegalLinks(mainHtml, pageUrl).filter(p => !fixed.has(p))
+  const batch0 = linked.map(p => fetchPage(pageOrigin + p, 6000))
   // Run in batches to avoid timeout — first 16 in parallel, then remaining
   const batch1 = paths.slice(0, 16).map(p => fetchPage(origin + p, 6000))
   const batch2 = paths.slice(16).map(p => fetchPage(origin + p, 5000))
-  const [res1, res2] = await Promise.all([
+  const [res0, res1, res2] = await Promise.all([
+    Promise.allSettled(batch0),
     Promise.allSettled(batch1),
     Promise.allSettled(batch2),
   ])
-  const allPaths = paths
-  const all = [...res1, ...res2]
+  const allPaths = [...linked, ...paths]
+  const all = [...res0, ...res1, ...res2]
   // Many sites (SPAs, catch-all routers) answer 200 for every path and just
   // return the homepage. Drop those "soft 404" pages so they are not mistaken
   // for a real privacy policy.
@@ -86,14 +140,30 @@ async function fetchSubPages(baseUrl, mainHtml = '') {
     const vis = visibleText(html)
     if (vis.length < 200) return
     if (mainSig.length > 200 && vis.slice(0, 600) === mainSig) return // same as homepage
-    pages.push({ path: allPaths[i], html, vis })
+    const heading = pageHeading(html)
+    if (NOT_FOUND.test(heading)) return // a "page not found" page served with status 200
+    pages.push({ path: allPaths[i], finalPath: pathOf(r.value.finalUrl), html, vis, heading, linked: i < linked.length })
   })
-  // A page found on a privacy-style path only counts as a policy if it reads like one
-  const policyPages = pages.filter(pg => PRIVACY_PATH.test(pg.path) && /privacy|personal (data|information)|data protection/i.test(pg.vis) && pg.vis.length > 800)
+  // A page counts as a privacy policy if its web address or its title says so,
+  // and its content reads like one
+  const isPrivacyHeading = h => PRIVACY_TITLE.test(h) && /polic|notice|statement|charter/i.test(h)
+  const privacyByPath = pg => pg.linked
+    ? PRIVACY_SLUG.test(pg.path) || PRIVACY_SLUG.test(pg.finalPath)
+    : PRIVACY_PATH.test(pg.path) // fixed list: unchanged behaviour
+  const policyPages = pages.filter(pg =>
+    (privacyByPath(pg) || isPrivacyHeading(pg.heading)) &&
+    /privacy|personal (data|information)|data protection/i.test(pg.vis) && pg.vis.length > 800)
+  // Terms are often published under another name (e.g. "No Guarantee Policy" at
+  // /terms), so a real page at a terms-style address counts, as does a linked
+  // page titled as terms or conditions
+  const termsPages = pages.filter(pg =>
+    (TERMS_PATH.test(pg.path) || TERMS_PATH.test(pg.finalPath) || (pg.linked && TERMS_TITLE.test(pg.heading))) &&
+    LEGAL_TITLE.test(pg.heading + ' ' + pg.vis.slice(0, 300)))
   return {
     text: pages.map(pg => pg.html).join('\n'),
     policyText: policyPages.map(pg => pg.vis).join('\n'),
     policyPaths: policyPages.map(pg => pg.path),
+    termsPaths: termsPages.map(pg => pg.path),
   }
 }
 
@@ -134,7 +204,7 @@ export async function POST(request) {
 
   try {
     const mainResult = await fetchPage(targetUrl)
-    const sub = mainResult.ok ? await fetchSubPages(targetUrl, mainResult.text) : { text: '', policyText: '', policyPaths: [] }
+    const sub = mainResult.ok ? await fetchSubPages(targetUrl, mainResult.text, mainResult.finalUrl) : { text: '', policyText: '', policyPaths: [], termsPaths: [] }
     const subText = sub.text
     if (!mainResult.ok) {
       await trackActivity({ userEmail: user?.email, tool: 'scan', action: 'scan_failed', detail: targetUrl })
@@ -177,7 +247,7 @@ export async function POST(request) {
       // text) are extremely common and were previously missed entirely —
       // this catches them via the href path instead of the link text.
       /href=["'][^"']{0,80}\/privacy(?:-policy|-notice|-statement)?\/?["']/i,
-    ])
+    ]) || sub.policyPaths.length > 0 // a policy page found by its address or title
 
     // ─── COOKIE CONSENT ──────────────────────────────────────────────────────
     const COMPLIANT_PLATFORMS = [
@@ -228,7 +298,7 @@ export async function POST(request) {
       /terms[\s_-]?(of[\s_-]?(service|use)|and[\s_-]?conditions)/i,
       /terms[\s_-]?&[\s_-]?conditions/i, 't&cs', 'terms of business',
       'user agreement', 'usage policy', 'acceptable use',
-    ])
+    ]) || sub.termsPaths.length > 0 // a terms page found by its address or title
 
     // ─── LAWFUL BASIS ────────────────────────────────────────────────────────
     // Only flag if we actually read the privacy policy AND couldn't find it
@@ -398,6 +468,11 @@ export async function POST(request) {
     // (prevents false positives on JS-heavy or bot-protected sites)
     const issues = []
 
+    // PECR only requires consent for non-essential cookies and tracking. If the
+    // scan found no trackers and no non-essential cookies, a missing banner is
+    // not a gap, so it is not flagged.
+    const cookieConsentNeeded = trackers.length > 0 || nonEssentialCookies.length > 0
+
     if (!isHttps)
       issues.push({ sev:'High', title:'Website not using HTTPS', desc:'HTTPS is required under GDPR Art. 32 to encrypt data in transit. All modern websites should use HTTPS.', reg:'GDPR Art. 32' })
 
@@ -411,7 +486,7 @@ export async function POST(request) {
       } else {
         issues.push({ sev:'High', title:'Tracking scripts without cookie consent', desc:`${trackers.join(', ')} detected but no cookie consent banner found in page source. Consent must be obtained before dropping non-essential cookies.`, reg:'ePrivacy / PECR Reg. 6' })
       }
-    } else if (!hasCookieBanner) {
+    } else if (!hasCookieBanner && cookieConsentNeeded) {
       if (isSpa) {
         issues.push({ sev:'Low', title:'Could not confirm cookie consent mechanism (JS-rendered site)', desc:'This site renders content with JavaScript, so a cookie banner added after page load would not appear in this scan. Verify manually.', reg:'ePrivacy Reg. 6' })
       } else {
@@ -428,7 +503,7 @@ export async function POST(request) {
       if (isSpa) {
         issues.push({ sev:'Low', title:'Could not confirm privacy policy (JS-rendered site)', desc:'No privacy policy link found in the fetched HTML or common URL paths, but this site renders content with JavaScript \u2014 a link added by client-side code would not appear in this scan. Verify manually before treating this as a genuine gap.', reg:'GDPR Art. 13 & 14' })
       } else {
-        issues.push({ sev:'High', title:'No privacy policy detected', desc:'No privacy policy link found in page source or common URL paths. A privacy notice is required under GDPR Art. 13 & 14.', reg:'GDPR Art. 13 & 14' })
+        issues.push({ sev:'High', title:'No privacy policy detected', desc:'No privacy policy found in page source, the site\'s own policy links, or common URL paths. A privacy notice is required under GDPR Art. 13 & 14.', reg:'GDPR Art. 13 & 14' })
       }
     }
 
@@ -472,7 +547,7 @@ export async function POST(request) {
       issues.push({ sev:'Low', title:'No clear DSAR contact method found', desc:'No dedicated privacy contact email or data request form found. Make it easy for individuals to submit Subject Access Requests.', reg:'GDPR Art. 12' })
 
     if (!hasTerms)
-      issues.push({ sev:'Low', title:'No terms of service detected', desc:'Terms of Service not found in common URL paths. Recommended for all commercial websites.', reg:'Best practice' })
+      issues.push({ sev:'Low', title:'No terms of service detected', desc:'No terms page found in the site\'s own links or common URL paths. Recommended for all commercial websites.', reg:'Best practice' })
 
     if (!hasSecurityHeaders)
       issues.push({ sev:'Low', title:'Missing HTTP security headers', desc:'No security headers (X-Frame-Options, CSP, X-Content-Type-Options) detected. These help protect users and demonstrate security measures under GDPR Art. 32.', reg:'GDPR Art. 32' })
@@ -493,7 +568,11 @@ export async function POST(request) {
       url: finalUrl, score, isHttps, trackers, issues, isSpa,
       checks: {
         https: isHttps, hsts: hasHsts, privacyPolicy: hasPrivacyLink,
-        cookieBanner: hasCookieBanner, cookieReject: hasCookieReject,
+        // No trackers or non-essential cookies means no consent is needed, so these pass
+        cookieBanner: hasCookieBanner || !cookieConsentNeeded,
+        cookieReject: hasCookieReject || (!hasCookieBanner && !cookieConsentNeeded),
+        cookieConsentNeeded,
+        cookieBannerFound: hasCookieBanner, cookieRejectFound: hasCookieReject,
         termsOfService: hasTerms, lawfulBasis: hasLawfulBasis,
         dataRights: hasDataRights, retentionPolicy: hasRetentionPolicy,
         dsarContact: hasDsarContact, dpo: hasDpo,
@@ -506,6 +585,7 @@ export async function POST(request) {
       consentPlatform: detectedPlatform || null,
       cookiesSetOnFirstVisit: setCookieNames,
       policyPagesRead: sub.policyPaths,
+      termsPagesFound: sub.termsPaths,
       scannedAt: new Date().toISOString(),
       note,
     }
