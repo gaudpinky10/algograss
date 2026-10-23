@@ -3,7 +3,10 @@ import { Resend } from 'resend'
 export async function POST(request) {
   const { email, result } = await request.json()
   if (!email || !result) return Response.json({ error: 'Missing email or result' }, { status: 400 })
-  if (!process.env.RESEND_API_KEY) return Response.json({ error: 'Email service not configured. Please add RESEND_API_KEY to your environment variables.' }, { status: 503 })
+  if (!process.env.RESEND_API_KEY) {
+    console.error('email-report: RESEND_API_KEY is not set') // visible in Vercel logs, not to users
+    return Response.json({ error: "Emailing reports isn't available right now. Please use Download Report instead." }, { status: 503 })
+  }
 
   const resend = new Resend(process.env.RESEND_API_KEY)
   const sc = result.score
@@ -137,6 +140,7 @@ export async function POST(request) {
     return Response.json({ success: true })
   } catch (err) {
     console.error('Email error:', err)
-    return Response.json({ error: 'Failed to send email: ' + (err.message || 'unknown error') }, { status: 500 })
+    console.error('email-report: send failed', err)
+    return Response.json({ error: "We couldn't send the email just now. Please try again, or use Download Report instead." }, { status: 500 })
   }
 }
