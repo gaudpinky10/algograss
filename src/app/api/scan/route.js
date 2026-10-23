@@ -35,6 +35,11 @@ async function fetchPage(url, timeoutMs = 15000) {
   return result || { ok: false, text: '', status: 0, headers: new Headers(), finalUrl: url }
 }
 
+// Drop the body of base64 data URIs (embedded images/fonts), keeping "data:"
+function stripDataUris(html) {
+  return (html || '').replace(/data:[a-z0-9.+\/-]+;base64,[A-Za-z0-9+\/=]+/gi, 'data:')
+}
+
 // Remove scripts/styles/tags so policy checks only see human-readable text
 function visibleText(html) {
   return (html || '')
@@ -217,11 +222,15 @@ export async function POST(request) {
     // Extract inline JS and script src references so tracker detection works
     // on JS-rendered (Next.js / React / Vue / Nuxt) sites that inject scripts
     // at runtime rather than embedding them in the initial HTML body.
-    const inlineScripts = (mainHtml.match(/<script[^>]*>([\s\S]*?)<\/script>/gi) || []).join('\n')
-    const scriptSrcs    = (mainHtml.match(/src=["']([^"']+\.js[^"']*)/gi) || []).join('\n')
+    // Embedded images and fonts (base64 data URIs) are long runs of random
+    // letters that can contain short tracker IDs by pure chance (e.g. "CHJid"
+    // matching Hotjar's "hjid"), so they are removed before detection.
+    const scanHtml      = stripDataUris(mainHtml)
+    const inlineScripts = (scanHtml.match(/<script[^>]*>([\s\S]*?)<\/script>/gi) || []).join('\n')
+    const scriptSrcs    = (scanHtml.match(/src=["']([^"']+\.js[^"']*)/gi) || []).join('\n')
     const jsContent     = inlineScripts + '\n' + scriptSrcs
     // Combined text used for all tracker / banner detection
-    const allScanText  = mainHtml + '\n' + jsContent
+    const allScanText  = scanHtml + '\n' + jsContent
 
     const allText  = mainHtml + '\n' + subText
     // Separate privacy-specific content (more strict matching within sub-pages)
@@ -419,9 +428,12 @@ export async function POST(request) {
     ])
 
     // ─── CONTACT FORM ────────────────────────────────────────────────────────
-    const hasContactForm  = detect(mainHtml, [
-      /<form[^>]*>/i, 'contact-form', 'contactform', 'wpcf7',
-      'gravityform', 'type="email"', 'formspree', 'typeform',
+    // Look for real form fields, not CSS: a stylesheet rule like ".contact-form"
+    // on a page with no form at all is not a data-collection form
+    const formHtml        = scanHtml.replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    const hasContactForm  = detect(formHtml, [
+      /<form[\s>]/i, /<textarea[\s>]/i, /<input[^>]*type=["']?email/i,
+      'wpcf7', 'gravityform', /formspree\.io/i, /typeform\.com/i,
     ])
 
     // ─── ACCESSIBILITY ───────────────────────────────────────────────────────
@@ -441,7 +453,7 @@ export async function POST(request) {
     const trackers = []
     if (detect(allScanText, [/google[\s-]?analytics|googletagmanager|gtag\(|google-analytics/i, /['"](G|UA)-[A-Z0-9]{4,}/])) trackers.push('Google Analytics')
     if (detect(allScanText, [/facebook[\s-]?pixel|fbq\(|connect\.facebook\.net|meta[\s-]?pixel/i]))                          trackers.push('Meta Pixel')
-    if (detect(allScanText, [/hotjar|hjid/i]))                                                                                 trackers.push('Hotjar')
+    if (detect(allScanText, [/static\.hotjar\.com|script\.hotjar\.com|_hjSettings|\bhjid\s*:\s*\d/i]))                     trackers.push('Hotjar')
     if (detect(allScanText, [/linkedin[\s-]?insight|snap\.licdn|linkedin\.com\/px/i]))                                        trackers.push('LinkedIn Insight')
     if (detect(allScanText, [/_hsq\s*=|js\.hs-scripts\.com|js\.hubspot\.com|hs-analytics\.net|hubspot\.com\/hs\/hsstatic/i])) trackers.push('HubSpot')
     if (detect(allScanText, [/\bintercom\b/i, /intercomcdn|widget\.intercom/i]))                                              trackers.push('Intercom')
