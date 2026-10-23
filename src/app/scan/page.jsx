@@ -81,7 +81,7 @@ function ScanPageInner() {
     const checksObj = {
       'HTTPS encryption':        result.checks.https,
       'Privacy policy':          result.checks.privacyPolicy,
-      'Cookie consent banner':   result.checks.cookieBanner,
+      'Cookie consent':          result.checks.cookieBanner,
       'Cookie reject option':    result.checks.cookieReject,
       'Terms of service':        result.checks.termsOfService,
       'Lawful basis stated':     result.checks.lawfulBasis,
@@ -346,7 +346,7 @@ function ScanPageInner() {
               <div>
                 <h2 style={{fontFamily:'Syne,sans-serif',fontSize:16,fontWeight:700,color:'var(--ink)',marginBottom:14}}>What we checked</h2>
                 <div style={{background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:14,overflow:'hidden',marginBottom:14}}>
-                  {Object.entries({'HTTPS encryption':result.checks.https,'Privacy policy':result.checks.privacyPolicy,'Cookie banner':result.checks.cookieBanner,'Cookie reject option':result.checks.cookieReject,'Terms of service':result.checks.termsOfService,'Lawful basis stated':result.checks.lawfulBasis,'Data subject rights':result.checks.dataRights,'Trackers disclosed':result.checks.trackersDisclosed,'Retention period':result.checks.retentionPolicy,'DSAR contact':result.checks.dsarContact}).map(([label,passed])=>(
+                  {Object.entries({'HTTPS encryption':result.checks.https,'Privacy policy':result.checks.privacyPolicy,'Cookie consent':result.checks.cookieBanner,'Cookie reject option':result.checks.cookieReject,'Terms of service':result.checks.termsOfService,'Lawful basis stated':result.checks.lawfulBasis,'Data subject rights':result.checks.dataRights,'Trackers disclosed':result.checks.trackersDisclosed,'Retention period':result.checks.retentionPolicy,'DSAR contact':result.checks.dsarContact}).map(([label,passed])=>(
                     <div key={label} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 14px',borderBottom:'1px solid var(--border)'}}>
                       <span style={{fontSize:12,color:'var(--ink)'}}>{label}</span>
                       <span style={{fontSize:14}}>{passed?'✅':'❌'}</span>

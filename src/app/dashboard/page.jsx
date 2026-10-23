@@ -165,7 +165,7 @@ async function downloadPDF(result) {
   const checks = [
     ['HTTPS Encryption', result.checks?.https],
     ['Privacy Policy', result.checks?.privacyPolicy],
-    ['Cookie Banner', result.checks?.cookieBanner],
+    ['Cookie Consent', result.checks?.cookieBanner],
     ['Cookie Reject Option', result.checks?.cookieReject],
     ['Terms of Service', result.checks?.termsOfService],
     ['Lawful Basis Stated', result.checks?.lawfulBasis],
@@ -805,7 +805,7 @@ function Dashboard() {
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 2 }}>
                         {Object.entries({
                           'HTTPS encryption': result.checks.https, 'Privacy policy': result.checks.privacyPolicy,
-                          'Cookie banner': result.checks.cookieBanner, 'Cookie reject option': result.checks.cookieReject,
+                          'Cookie consent': result.checks.cookieBanner, 'Cookie reject option': result.checks.cookieReject,
                           'Terms of service': result.checks.termsOfService, 'Lawful basis stated': result.checks.lawfulBasis,
                           'Data subject rights': result.checks.dataRights, 'Trackers disclosed': result.checks.trackersDisclosed,
                           'Retention period': result.checks.retentionPolicy, 'DSAR contact': result.checks.dsarContact,

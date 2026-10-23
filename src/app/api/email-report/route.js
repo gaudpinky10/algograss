@@ -95,7 +95,7 @@ export async function POST(request) {
         <tbody>
           ${checkRow('HTTPS encryption',          result.checks.https)}
           ${checkRow('Privacy policy',            result.checks.privacyPolicy)}
-          ${checkRow('Cookie consent banner',     result.checks.cookieBanner)}
+          ${checkRow('Cookie consent',            result.checks.cookieBanner)}
           ${checkRow('Cookie reject option',      result.checks.cookieReject)}
           ${checkRow('Terms of service',          result.checks.termsOfService)}
           ${checkRow('Lawful basis stated',       result.checks.lawfulBasis)}
