@@ -78,6 +78,13 @@ function pathOf(url) {
   try { return new URL(url).pathname.replace(/\/+$/, '') || '/' } catch { return '' }
 }
 
+// What a footer link claims to be, from its address and text
+function linkKind(s) {
+  if (/privacy|data[\s_-]?protection|personal[\s_-]?data|gdpr/i.test(s)) return 'privacy'
+  if (/terms|conditions/i.test(s)) return 'terms'
+  return 'other'
+}
+
 // Same-site links whose address or link text looks like a policy/legal page
 function findLegalLinks(mainHtml, pageUrl, limit = 8) {
   const out = []
@@ -95,8 +102,8 @@ function findLegalLinks(mainHtml, pageUrl, limit = 8) {
     if (/\.(pdf|png|jpe?g|gif|svg|webp|zip|docx?)$/i.test(u.pathname)) continue
     if (CONTENT_PATH.test(u.pathname + '/')) continue // articles about privacy are not policies
     const p = u.pathname.replace(/\/+$/, '') || '/'
-    if (p === '/' || out.includes(p)) continue
-    out.push(p)
+    if (p === '/' || out.some(l => l.path === p)) continue
+    out.push({ path: p, kind: linkKind(href + ' ' + text) })
   }
   return out
 }
@@ -121,7 +128,9 @@ async function fetchSubPages(baseUrl, mainHtml = '', pageUrl = baseUrl) {
   const pageOrigin = (() => { try { return new URL(pageUrl).origin } catch { return origin } })()
   // Policy/legal pages the site itself links to, if not already in the fixed list
   const fixed = new Set(paths)
-  const linked = findLegalLinks(mainHtml, pageUrl).filter(p => !fixed.has(p))
+  const legalLinks = findLegalLinks(mainHtml, pageUrl)
+  const linkKinds = new Map(legalLinks.map(l => [l.path, l.kind]))
+  const linked = legalLinks.map(l => l.path).filter(p => !fixed.has(p))
   const batch0 = linked.map(p => fetchPage(pageOrigin + p, 6000))
   // Run in batches to avoid timeout — first 16 in parallel, then remaining
   const batch1 = paths.slice(0, 16).map(p => fetchPage(origin + p, 6000))
@@ -138,7 +147,15 @@ async function fetchSubPages(baseUrl, mainHtml = '', pageUrl = baseUrl) {
   // for a real privacy policy.
   const mainSig = visibleText(mainHtml).slice(0, 600)
   const pages = []
+  // Privacy/terms links on the homepage that lead to "page not found"
+  const broken = { privacy: [], terms: [] }
   all.forEach((r, i) => {
+    const kind = linkKinds.get(allPaths[i])
+    if (kind === 'privacy' || kind === 'terms') {
+      const v = r.status === 'fulfilled' ? r.value : null
+      if (v?.ok && (v.status === 404 || v.status === 410 || (v.status < 400 && NOT_FOUND.test(pageHeading(v.text || '')))))
+        broken[kind].push(allPaths[i])
+    }
     if (r.status !== 'fulfilled' || !r.value?.ok || r.value.status >= 400) return
     const html = r.value.text
     if (!html || html.length < 300) return
@@ -169,6 +186,8 @@ async function fetchSubPages(baseUrl, mainHtml = '', pageUrl = baseUrl) {
     policyText: policyPages.map(pg => pg.vis).join('\n'),
     policyPaths: policyPages.map(pg => pg.path),
     termsPaths: termsPages.map(pg => pg.path),
+    brokenPrivacyLinks: broken.privacy,
+    brokenTermsLinks: broken.terms,
   }
 }
 
@@ -209,7 +228,7 @@ export async function POST(request) {
 
   try {
     const mainResult = await fetchPage(targetUrl)
-    const sub = mainResult.ok ? await fetchSubPages(targetUrl, mainResult.text, mainResult.finalUrl) : { text: '', policyText: '', policyPaths: [], termsPaths: [] }
+    const sub = mainResult.ok ? await fetchSubPages(targetUrl, mainResult.text, mainResult.finalUrl) : { text: '', policyText: '', policyPaths: [], termsPaths: [], brokenPrivacyLinks: [], brokenTermsLinks: [] }
     const subText = sub.text
     if (!mainResult.ok) {
       await trackActivity({ userEmail: user?.email, tool: 'scan', action: 'scan_failed', detail: targetUrl })
@@ -246,7 +265,10 @@ export async function POST(request) {
     const hasHsts         = mainResult.headers.get('strict-transport-security') !== null
 
     // ─── PRIVACY POLICY ──────────────────────────────────────────────────────
-    const hasPrivacyLink  = detect(allText, [
+    // The site links to a privacy policy, but the page shows "page not found"
+    // and no working policy was found anywhere else
+    const privacyLinkBroken = sub.brokenPrivacyLinks.length > 0 && sub.policyPaths.length === 0
+    const hasPrivacyLink  = (detect(allText, [
       /privacy[\s_-]?(policy|notice|statement|center)/i,
       /data[\s_-]?protection[\s_-]?(policy|notice|statement)/i,
       /how we (use|handle|process|collect) (your )?(personal )?(data|information)/i,
@@ -256,7 +278,7 @@ export async function POST(request) {
       // text) are extremely common and were previously missed entirely —
       // this catches them via the href path instead of the link text.
       /href=["'][^"']{0,80}\/privacy(?:-policy|-notice|-statement)?\/?["']/i,
-    ]) || sub.policyPaths.length > 0 // a policy page found by its address or title
+    ]) || sub.policyPaths.length > 0) && !privacyLinkBroken // a policy page found by its address or title
 
     // ─── COOKIE CONSENT ──────────────────────────────────────────────────────
     const COMPLIANT_PLATFORMS = [
@@ -303,11 +325,12 @@ export async function POST(request) {
     const hasCookieReject  = !!detectedPlatform || hasCookieRejectSignal
 
     // ─── TERMS ───────────────────────────────────────────────────────────────
-    const hasTerms        = detect(allText, [
+    const termsLinkBroken = sub.brokenTermsLinks.length > 0 && sub.termsPaths.length === 0
+    const hasTerms        = (detect(allText, [
       /terms[\s_-]?(of[\s_-]?(service|use)|and[\s_-]?conditions)/i,
       /terms[\s_-]?&[\s_-]?conditions/i, 't&cs', 'terms of business',
       'user agreement', 'usage policy', 'acceptable use',
-    ]) || sub.termsPaths.length > 0 // a terms page found by its address or title
+    ]) || sub.termsPaths.length > 0) && !termsLinkBroken // a terms page found by its address or title
 
     // ─── LAWFUL BASIS ────────────────────────────────────────────────────────
     // Only flag if we actually read the privacy policy AND couldn't find it
@@ -511,7 +534,9 @@ export async function POST(request) {
     if (nonEssentialCookies.length > 0 && !hasCookieBanner)
       issues.push({ sev:'High', title:'Tracking cookies set on first visit without a consent banner', desc:`The server set non-essential cookies (${nonEssentialCookies.slice(0,5).join(', ')}) on the very first request, and no cookie consent mechanism was found. PECR requires consent before these are set.`, reg:'ePrivacy / PECR Reg. 6' })
 
-    if (!hasPrivacyLink) {
+    if (privacyLinkBroken) {
+      issues.push({ sev:'High', title:'Privacy policy link is broken', desc:`Your site links to a privacy policy (${sub.brokenPrivacyLinks[0]}), but that page shows "page not found". Visitors cannot read it, so the site effectively has no privacy notice. Required under GDPR Art. 13 & 14.`, reg:'GDPR Art. 13 & 14' })
+    } else if (!hasPrivacyLink) {
       if (isSpa) {
         issues.push({ sev:'Low', title:'Could not confirm privacy policy (JS-rendered site)', desc:'No privacy policy link found in the fetched HTML or common URL paths, but this site renders content with JavaScript \u2014 a link added by client-side code would not appear in this scan. Verify manually before treating this as a genuine gap.', reg:'GDPR Art. 13 & 14' })
       } else {
@@ -558,7 +583,9 @@ export async function POST(request) {
     if (hasPrivacyLink && !hasDsarContact && hasReadPrivacyPage)
       issues.push({ sev:'Low', title:'No clear DSAR contact method found', desc:'No dedicated privacy contact email or data request form found. Make it easy for individuals to submit Subject Access Requests.', reg:'GDPR Art. 12' })
 
-    if (!hasTerms)
+    if (termsLinkBroken)
+      issues.push({ sev:'Low', title:'Terms link is broken', desc:`Your site links to terms (${sub.brokenTermsLinks[0]}), but that page shows "page not found". Fix the link or publish the page.`, reg:'Best practice' })
+    else if (!hasTerms)
       issues.push({ sev:'Low', title:'No terms of service detected', desc:'No terms page found in the site\'s own links or common URL paths. Recommended for all commercial websites.', reg:'Best practice' })
 
     if (!hasSecurityHeaders)
@@ -580,6 +607,7 @@ export async function POST(request) {
       url: finalUrl, score, isHttps, trackers, issues, isSpa,
       checks: {
         https: isHttps, hsts: hasHsts, privacyPolicy: hasPrivacyLink,
+        privacyLinkBroken, termsLinkBroken,
         // No trackers or non-essential cookies means no consent is needed, so these pass
         cookieBanner: hasCookieBanner || !cookieConsentNeeded,
         cookieReject: hasCookieReject || (!hasCookieBanner && !cookieConsentNeeded),
@@ -598,6 +626,7 @@ export async function POST(request) {
       cookiesSetOnFirstVisit: setCookieNames,
       policyPagesRead: sub.policyPaths,
       termsPagesFound: sub.termsPaths,
+      brokenPolicyLinks: [...sub.brokenPrivacyLinks, ...sub.brokenTermsLinks],
       scannedAt: new Date().toISOString(),
       note,
     }
