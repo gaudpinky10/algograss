@@ -33,6 +33,17 @@ export function needsRehash(stored) {
 }
 
 // ─── Database ────────────────────────────────────────────────────────────────
+// Makes sure a collection deletes old records automatically (once per server)
+const ttlDone = new Set();
+export function ensureTtl(col, field, seconds) {
+  try {
+    const key = `${col.collectionName}:${field}`;
+    if (!col || ttlDone.has(key)) return;
+    ttlDone.add(key);
+    col.createIndex({ [field]: 1 }, { expireAfterSeconds: seconds, name: `ttl_${field}_${seconds}` }).catch(() => {});
+  } catch {}
+}
+
 export async function getCollection(name) {
   const db = await getDb();
   if (!db) return null;
@@ -44,6 +55,7 @@ export async function trackActivity({ userEmail, tool, action, detail = '', meta
   try {
     const col = await getCollection('activities');
     if (!col) return;
+    ensureTtl(col, 'createdAt', 90 * 86400); // activity logs are kept for 90 days
     await col.insertOne({
       userEmail: userEmail || 'anonymous',
       tool,

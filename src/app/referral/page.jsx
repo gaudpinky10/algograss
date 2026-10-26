@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 
 const S = {
   bg: '#06060F', surface: '#0D0D1E', border: 'rgba(255,255,255,0.09)',
-  teal: '#9B7BFA', blue: '#C084FC', text: '#0F172A',
+  teal: '#9B7BFA', blue: '#C084FC', text: '#F1F5F9',
   muted: '#94A3B8', dim: '#475569', red: '#EF4444', amber: '#F59E0B',
 }
 

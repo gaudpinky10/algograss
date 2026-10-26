@@ -12,7 +12,8 @@ function getUser() {
   } catch { return null }
 }
 export default function DsarPage() {
-  const [form, setForm] = useState({ requestText: '', businessName: '', dataTypes: '' })
+  const [form, setForm] = useState({ requestText: '', businessName: '', dataTypes: '', requesterName: '', requesterEmail: '', requestType: 'SAR', dateReceived: new Date().toISOString().slice(0, 10) })
+  const [dates, setDates] = useState(null)
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
@@ -36,6 +37,7 @@ export default function DsarPage() {
       const data = await res.json()
       if (data.error) { setError(data.error); setLoading(false); return }
       setResult(data.response)
+      setDates({ received: data.received, deadline: data.deadline, extendedDeadline: data.extendedDeadline })
     } catch { setError('Failed. Please try again.') }
     setLoading(false)
   }
@@ -46,7 +48,7 @@ export default function DsarPage() {
         <div className="wrap" style={{ maxWidth: 700 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(255,255,255,.15)', padding: '5px 13px', borderRadius: 100, marginBottom: 20, fontSize: 11, fontWeight: 600, color: '#fff', letterSpacing: '.06em', textTransform: 'uppercase' }}>GDPR Tool</div>
           <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(28px,3.5vw,44px)', fontWeight: 800, color: '#fff', marginBottom: 12 }}>DSAR Response Assistant</h1>
-          <p style={{ fontSize: 16, color: 'rgba(255,255,255,.75)', lineHeight: 1.7, maxWidth: 560 }}>Received a Subject Access Request? Paste it here and get a complete response guide — deadline, what to provide, identity verification, and a draft response.</p>
+          <p style={{ fontSize: 16, color: 'rgba(255,255,255,.75)', lineHeight: 1.7, maxWidth: 560 }}>Received a subject access request, or another data rights request? Paste it here for your exact deadline, what to provide, identity checks and a draft reply.</p>
         </div>
       </section>
 
@@ -55,6 +57,23 @@ export default function DsarPage() {
           <div style={{ display: 'grid', gridTemplateColumns: result ? '1fr 1.4fr' : '1fr', gap: 24 }}>
             <div className="card" style={{ padding: 28 }}>
               <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 17, fontWeight: 600, marginBottom: 20 }}>Enter SAR details</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="field-wrap"><label className="field-label">Date the request arrived *</label><input type="date" className="field-input" value={form.dateReceived} onChange={set('dateReceived')} style={{ color: '#0D0D1E', background: '#fff' }} /></div>
+                <div className="field-wrap"><label className="field-label">Type of request</label>
+                  <select className="field-input" value={form.requestType} onChange={set('requestType')} style={{ color: '#0D0D1E', background: '#fff' }}>
+                    <option value="SAR">Access (copy of their data)</option>
+                    <option value="Erasure">Erasure (delete their data)</option>
+                    <option value="Rectification">Rectification (correct their data)</option>
+                    <option value="Objection">Objection (stop using their data)</option>
+                    <option value="Restriction">Restriction (pause use)</option>
+                    <option value="Portability">Portability (send their data)</option>
+                  </select>
+                </div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="field-wrap"><label className="field-label">Requester's name</label><input className="field-input" placeholder="e.g. John Smith" value={form.requesterName} onChange={set('requesterName')} style={{ color: '#0D0D1E', background: '#fff' }} /></div>
+                <div className="field-wrap"><label className="field-label">Requester's email</label><input className="field-input" placeholder="e.g. john@email.com" value={form.requesterEmail} onChange={set('requesterEmail')} style={{ color: '#0D0D1E', background: '#fff' }} /></div>
+              </div>
               <div className="field-wrap"><label className="field-label">Your business name</label><input className="field-input" placeholder="e.g. Acme Ltd" value={form.businessName} onChange={set('businessName')} style={{ color: '#0D0D1E', background: '#fff' }} /></div>
               <div className="field-wrap">
                 <label className="field-label">Types of data you hold about customers</label>
@@ -73,7 +92,7 @@ export default function DsarPage() {
 
               <div style={{ marginTop: 24, background: 'var(--green-p)', border: '1px solid var(--green-m)', borderRadius: 10, padding: '14px 16px' }}>
                 <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--green)', marginBottom: 6 }}>What this tool provides:</p>
-                {['Response deadline (calendar date)', 'List of data you must provide', 'Identity verification checklist', 'Draft acknowledgement email', 'Draft response template', 'Applicable exemptions', 'Step-by-step completion checklist'].map(item => (
+                {['Your deadline: one calendar month from the day it arrived (worked out for you, including weekends and bank holidays)', 'What you must provide', 'Proportionate identity checks', 'Draft acknowledgement email', 'Draft response template', 'Exemptions that may apply', 'Step-by-step checklist'].map(item => (
                   <div key={item} style={{ fontSize: 12, color: 'var(--ink2)', marginBottom: 4, display: 'flex', gap: 6 }}>
                     <span style={{ color: 'var(--green)' }}>✓</span>{item}
                   </div>
@@ -90,7 +109,15 @@ export default function DsarPage() {
                     ⬇ Download
                   </button>
                 </div>
+                {dates && (
+                  <div style={{ background: 'var(--green-p)', border: '1px solid var(--green-m)', borderRadius: 10, padding: '12px 16px', marginBottom: 16 }}>
+                    <div style={{ fontSize: 12, color: 'var(--ink2)' }}>Received {dates.received}</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink)', margin: '4px 0' }}>Respond by {dates.deadline}</div>
+                    <div style={{ fontSize: 12, color: 'var(--ink2)' }}>If complex or one of several requests, you can extend to {dates.extendedDeadline}, but you must tell them within the first month.</div>
+                  </div>
+                )}
                 <pre style={{ fontSize: 13, color: "var(--ink)", lineHeight: 1.8, whiteSpace: 'pre-wrap', wordBreak: 'break-word', maxHeight: 600, overflowY: 'auto' }}>{result}</pre>
+                <p style={{ fontSize: 11, color: 'var(--ink3)', marginTop: 10 }}>AI-generated guidance, not legal advice. Check it before you send anything, and take advice before refusing a request or relying on an exemption.</p>
               </div>
             )}
           </div>

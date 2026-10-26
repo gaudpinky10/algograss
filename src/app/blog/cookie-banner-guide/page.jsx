@@ -34,8 +34,8 @@ const Callout = ({children,type='info'})=>{
 export default function CookieBannerGuide(){
   return(
     <Layout meta={{cat:'Cookies',date:'30 May 2026',read:'6 min',title:'How to Set Up a Legally Compliant Cookie Banner'}}>
-      <P>Cookie banners are not optional. Under UK and EU law, any website that sets non-essential cookies — analytics, advertising, personalisation — must obtain freely given, specific, informed, and unambiguous consent before those cookies fire. Getting this wrong is one of the most common GDPR violations the ICO investigates.</P>
-      <Callout type="warn">The ICO fined a UK company £200,000 for placing analytics cookies before obtaining consent. Cookie compliance is actively enforced — not a theoretical risk.</Callout>
+      <P>Cookie banners are not optional. Under UK and EU law, a website that sets non-essential cookies, such as advertising and most analytics, must get freely given, specific, informed and unambiguous consent before those cookies are set. (Since February 2026 the UK allows a few narrow exceptions, explained below.) Getting this wrong is one of the most common GDPR violations the ICO investigates.</P>
+      <Callout type="warn">The ICO tested the UK's 1,000 most-visited websites and wrote to every one that set advertising cookies before consent or made rejecting harder than accepting. By December 2025, 979 passed, and 17 sites had received preliminary enforcement notices. Since February 2026 PECR fines can reach £17.5 million or 4% of turnover.</Callout>
 
       <H2>What the Law Actually Requires</H2>
       <P>Cookie consent in the UK is governed by the Privacy and Electronic Communications Regulations 2003 (PECR), read alongside UK GDPR. The key rules are:</P>
@@ -67,7 +67,7 @@ export default function CookieBannerGuide(){
         'Third-party live chat cookies',
         'A/B testing tools that track individual users',
       ]}/>
-      <Callout>Google Analytics requires consent. Even if you use IP anonymisation, GA sets cookies that identify returning users across sessions — this is non-essential processing under PECR.</Callout>
+      <Callout>Since 5 February 2026, UK law exempts some cookies used only to collect statistics to improve your own website or service, or to remember a visitor's preferences, but only if you explain them clearly and give a simple, free way to object. Treat Google Analytics and similar tools as needing consent unless you have checked that your set-up genuinely fits the exemption (for example, no advertising features and no use of the data by the provider for its own purposes). Advertising and cross-site tracking cookies always need consent.</Callout>
 
       <H2>What a Compliant Banner Must Contain</H2>
       <P>A legally compliant cookie banner must include all of the following:</P>
@@ -88,7 +88,7 @@ export default function CookieBannerGuide(){
       <H3>3. Not Recording Consent</H3>
       <P>If the ICO investigates, you must be able to demonstrate that a specific user gave consent on a specific date, saw a specific version of your banner, and consented to specific categories. Audit logs are required.</P>
       <H3>4. Using Consent for Legitimate Interests</H3>
-      <P>Some businesses set analytics cookies under "legitimate interests" to avoid needing consent. This is unlawful under PECR — cookie consent is required regardless of your lawful basis under GDPR.</P>
+      <P>Some businesses set analytics cookies under "legitimate interests" to avoid asking for consent. Your UK GDPR lawful basis doesn't change the cookie rules: unless a PECR exemption applies, consent is still required.</P>
 
       <H2>Setting Up Your Cookie Banner: A Practical Checklist</H2>
       <Ul items={[

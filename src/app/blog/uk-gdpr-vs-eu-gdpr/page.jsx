@@ -41,14 +41,14 @@ export default function UkGdprVsEuGdpr(){
       <CompareTable rows={[
         ['Governing law','UK GDPR + DPA 2018','EU GDPR (Regulation 2016/679)'],
         ['Supervisory authority','ICO (UK)','Lead SA in member state; EDPB for cross-border'],
-        ['EU adequacy status','Adequate (since June 2021, under review)','N/A — governs EU transfers out'],
+        ['EU adequacy status','Adequate (first granted June 2021, renewed December 2025 until 2031)','N/A — governs EU transfers out'],
         ['Data transfer mechanism (to third countries)','IDTAs / SCCs (UK version)','SCCs (EU version) / BCRs / adequacy decisions'],
         ['Representative requirement','EU Rep required if targeting EU residents','UK Rep required if targeting UK residents'],
         ['Maximum fines','£17.5m or 4% global turnover','€20m or 4% global turnover'],
         ['Cookie rules','PECR (UK) — applies alongside UK GDPR','ePrivacy Directive — applies alongside EU GDPR'],
-        ['Lawful basis for processing','Same 6 bases as EU GDPR','Same 6 bases'],
+        ['Lawful basis for processing','The same 6 bases, plus recognised legitimate interests (since Feb 2026)','6 bases'],
         ['DPA / ROPA requirements','Identical to EU GDPR','Identical to UK GDPR'],
-        ['Data subject rights','Identical — access, erasure, portability, etc.','Identical'],
+        ['Data subject rights','Same rights; different automated decision-making rules and a duty to handle complaints (2026)','Access, erasure, portability, etc.'],
       ]}/>
 
       <H2>Key Differences in Detail</H2>
@@ -64,7 +64,7 @@ export default function UkGdprVsEuGdpr(){
       <Ul items={[
         'EU Representative required if you process EU residents\' data and have no EU establishment',
         'Exemption: businesses whose processing is occasional, low-risk, and does not involve sensitive data',
-        'Failure to appoint a Rep is itself an infringement of Art. 27 — the ICO and EU SAs have fined organisations for this alone',
+        'Failure to appoint a Rep is itself an infringement of Art. 27, and EU regulators have fined organisations for this alone',
       ]}/>
 
       <H3>3. Supervisory Authority and Enforcement</H3>
@@ -73,18 +73,19 @@ export default function UkGdprVsEuGdpr(){
 
       <H3>4. Cookie Consent: PECR vs ePrivacy Directive</H3>
       <P>In the EU, cookie consent sits under the ePrivacy Directive (soon to be replaced by the ePrivacy Regulation). In the UK, it sits under PECR — the Privacy and Electronic Communications Regulations 2003, which predates GDPR and has been retained and updated. The practical obligations are very similar: you need freely given, informed, unambiguous consent before setting non-essential cookies. However, PECR is UK-specific and the ICO is the enforcing authority.</P>
-      <P>One practical difference: the UK is currently reviewing PECR, and future reforms may move the UK's cookie rules away from the EU's direction. UK businesses should monitor ICO guidance rather than assuming EU cookie rulings directly apply.</P>
+      <P>One practical difference: since February 2026 the UK has extra exemptions from cookie consent (for example some analytics), so UK cookie rules now differ from the EU's. UK businesses should monitor ICO guidance rather than assuming EU cookie rulings directly apply.</P>
 
       <H3>5. UK GDPR Reform: Data (Use and Access) Act 2025</H3>
       <P>The Data (Use and Access) Act 2025 received Royal Assent on 19 June 2025, with key data protection provisions coming into force on 5 February 2026. This further distinguishes UK data protection law from EU GDPR. Key changes include:</P>
       <Ul items={[
-        'Recognised Legitimate Interests (RLI) — a new category allowing processing for specified purposes (e.g. national security, crime prevention, direct marketing) without a balancing test',
+        'Recognised legitimate interests — a new lawful basis for a short list of purposes set out in the law (e.g. national security, crime prevention, safeguarding, emergencies), with no balancing test. Separately, direct marketing is now named as an example of an ordinary legitimate interest',
         'Subject Access Requests — searches need only be "reasonable and proportionate"; organisations can pause the clock to request clarification',
         'A new framework for automated decision-making',
-        'Cookie consent — low-risk cookies (e.g. analytics) may be permitted without explicit consent provided users can opt out',
+        'Cookie consent — some low-risk cookies (e.g. analytics used only to improve your own service) can be used without consent, if you explain them and give an easy way to object',
+        'Complaints — since 19 June 2026, organisations must handle data protection complaints themselves and acknowledge them within 30 days',
         "Children's data — new requirements for online services likely accessed by children, requiring higher data protection standards",
       ]}/>
-      <Callout type="warn">The Data (Use and Access) Act 2025 changes are significant. UK businesses should review their SAR processes, cookie consent approach, and legitimate interests documentation. The EU has signalled these changes could affect the UK adequacy decision.</Callout>
+      <Callout type="warn">The Data (Use and Access) Act 2025 changes are significant. UK businesses should review their SAR processes, cookie consent approach, and legitimate interests documentation. The EU reviewed these changes and renewed the UK's adequacy status in December 2025, so personal data can keep flowing from the EU to the UK.</Callout>
 
       <H2>What UK Businesses with EU Customers Must Do</H2>
       <Ul items={[
@@ -92,15 +93,15 @@ export default function UkGdprVsEuGdpr(){
         'Ensure your privacy notice covers both UK GDPR and EU GDPR obligations — the requirements are nearly identical so one notice usually suffices',
         'Use UK IDTAs (not EU SCCs) for transfers from the UK to third countries',
         'Use EU SCCs for any data flows from the EU to third countries (this is the EU entity\'s responsibility, but your contracts must reflect it)',
-        'Register with ICO as required under UK GDPR',
+        'Pay the ICO data protection fee, unless exempt',
         'Be aware that EU supervisory authorities can investigate you directly for EU GDPR breaches',
       ]}/>
 
       <H2>What Stays the Same</H2>
       <P>The overwhelming majority of day-to-day compliance is identical between UK GDPR and EU GDPR:</P>
       <Ul items={[
-        'All six lawful bases for processing (consent, contract, legal obligation, vital interests, public task, legitimate interests)',
-        'All eight data subject rights (access, rectification, erasure, restriction, portability, objection, automated decisions, information)',
+        'The six original lawful bases (the UK has added a seventh, recognised legitimate interests)',
+        'The core data subject rights (access, rectification, erasure, restriction, portability, objection, information), though the UK now has its own rules on automated decisions',
         'Data processing agreements (Article 28)',
         'Records of processing activities (Article 30)',
         'Privacy by design and default (Article 25)',

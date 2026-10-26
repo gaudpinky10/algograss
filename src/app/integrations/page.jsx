@@ -4,17 +4,17 @@ import { useState, useEffect } from 'react'
 const S = {
   page: { minHeight: '100vh', background: '#06060F', padding: '40px 20px', fontFamily: "'Segoe UI', sans-serif" },
   wrap: { maxWidth: 860, margin: '0 auto' },
-  h1: { fontSize: 34, fontWeight: 800, color: '#0F172A', margin: '0 0 8px', letterSpacing: -0.5 },
+  h1: { fontSize: 34, fontWeight: 800, color: '#F1F5F9', margin: '0 0 8px', letterSpacing: -0.5 },
   sub: { color: '#94A3B8', fontSize: 15, margin: '0 0 36px' },
   card: { background: '#0D0D1E', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: '24px 28px', marginBottom: 16 },
   btn: { background: 'linear-gradient(135deg,#9B7BFA,#7C3AED)', color: '#06060F', fontWeight: 700, fontSize: 13, padding: '9px 20px', borderRadius: 9, border: 'none', cursor: 'pointer' },
   btnOutline: { background: 'transparent', color: '#9B7BFA', fontWeight: 600, fontSize: 13, padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(139,92,246,0.3)', cursor: 'pointer' },
-  input: { background: '#06060F', border: '1.5px solid rgba(255,255,255,0.09)', borderRadius: 10, padding: '10px 14px', color: '#0F172A', fontSize: 13, outline: 'none', width: '100%', boxSizing: 'border-box' },
+  input: { background: '#06060F', border: '1.5px solid rgba(255,255,255,0.09)', borderRadius: 10, padding: '10px 14px', color: '#F1F5F9', fontSize: 13, outline: 'none', width: '100%', boxSizing: 'border-box' },
 }
 
 const INTEGRATIONS = [
-  { id: 'slack', name: 'Slack', icon: '💬', status: 'active', desc: 'Get compliance alerts and weekly scan reports delivered to a Slack channel.', color: '#4A154B', setup: true },
-  { id: 'zapier', name: 'Zapier', icon: '⚡', status: 'available', desc: 'Connect AlgoGrass to 5,000+ apps. Trigger Zaps when compliance scores drop or new issues are found.', color: '#FF4A00', setup: false, webhook: true },
+  { id: 'slack', name: 'Slack', icon: '💬', status: 'active', desc: 'Get an alert in a Slack channel when your weekly website scan finds a score drop or a new serious issue.', color: '#4A154B', setup: true },
+  { id: 'zapier', name: 'Zapier', icon: '⚡', status: 'coming', desc: 'Connect AlgoGrass to other apps when compliance scores drop or new issues are found.', color: '#FF4A00' },
   { id: 'teams', name: 'Microsoft Teams', icon: '🔷', status: 'coming', desc: 'Receive compliance alerts and weekly reports directly in your Teams channels.' },
   { id: 'google', name: 'Google Workspace', icon: '🔵', status: 'coming', desc: 'Share compliance reports to Google Drive and send alerts via Gmail.' },
   { id: 'notion', name: 'Notion', icon: '◾', status: 'coming', desc: 'Sync your GRC register and compliance data to a Notion database automatically.' },
@@ -74,8 +74,6 @@ function SlackSetup() {
 }
 
 export default function IntegrationsPage() {
-  const [copied, setCopied] = useState(false)
-  const zapierUrl = 'https://www.algograss.com/api/webhooks/zapier'
 
   return (
     <div style={S.page}>
@@ -91,7 +89,7 @@ export default function IntegrationsPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span style={{ fontSize: 28 }}>{integration.icon}</span>
                   <div>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: '#0F172A' }}>{integration.name}</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: '#F1F5F9' }}>{integration.name}</div>
                     <div style={{ marginTop: 4 }}>
                       {integration.status === 'active' && <span style={{ background: 'rgba(139,92,246,0.1)', color: '#9B7BFA', fontSize: 11, fontWeight: 700, padding: '2px 10px', borderRadius: 20 }}>Available</span>}
                       {integration.status === 'available' && <span style={{ background: 'rgba(124,158,255,0.1)', color: '#C084FC', fontSize: 11, fontWeight: 700, padding: '2px 10px', borderRadius: 20 }}>Available</span>}
@@ -104,17 +102,6 @@ export default function IntegrationsPage() {
 
               {integration.id === 'slack' && <SlackSetup />}
 
-              {integration.id === 'zapier' && (
-                <div>
-                  <p style={{ color: '#94A3B8', fontSize: 12, margin: '0 0 8px' }}>Your AlgoGrass Zapier webhook URL:</p>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <code style={{ background: '#06060F', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 8, padding: '8px 12px', fontSize: 12, color: '#9B7BFA', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{zapierUrl}</code>
-                    <button onClick={() => { navigator.clipboard.writeText(zapierUrl); setCopied(true); setTimeout(() => setCopied(false), 2000) }} style={S.btnOutline}>{copied ? '✓' : 'Copy'}</button>
-                  </div>
-                  <p style={{ color: '#475569', fontSize: 11, margin: '8px 0 0' }}>Use this URL as a Webhook trigger in your Zap. It accepts POST requests with complaint/scan data.</p>
-                </div>
-              )}
-
               {integration.status === 'coming' && (
                 <button style={{ background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(255,255,255,0.09)', color: '#475569', fontSize: 13, fontWeight: 600, padding: '9px 20px', borderRadius: 9, cursor: 'default' }}>Coming Soon</button>
               )}
@@ -123,7 +110,7 @@ export default function IntegrationsPage() {
         </div>
 
         <div style={{ ...S.card, marginTop: 8, background: 'linear-gradient(135deg,rgba(139,92,246,0.06),rgba(124,158,255,0.06))', textAlign: 'center' }}>
-          <p style={{ color: '#0F172A', fontWeight: 600, fontSize: 15, margin: '0 0 6px' }}>Need a custom integration?</p>
+          <p style={{ color: '#F1F5F9', fontWeight: 600, fontSize: 15, margin: '0 0 6px' }}>Need a custom integration?</p>
           <p style={{ color: '#94A3B8', fontSize: 13, margin: '0 0 16px' }}>Use our Developer API to build any integration you need. Full scan results available via REST API.</p>
           <a href="/api-access" style={{ display: 'inline-block', background: 'linear-gradient(135deg,#9B7BFA,#7C3AED)', color: '#06060F', fontWeight: 700, fontSize: 13, padding: '10px 22px', borderRadius: 10, textDecoration: 'none' }}>View API docs →</a>
         </div>

@@ -81,8 +81,8 @@ export default function ComplaintPage() {
     setLoading(false)
   }
 
-  const urgencyColors = { High: '#FEF2F2', Medium: '#FFFBEB', Low: '#F0FDF4' }
-  const urgencyText = { High: '#DC2626', Medium: '#D97706', Low: '#16A34A' }
+  const urgencyColors = { High: 'rgba(239,68,68,0.12)', Medium: 'rgba(245,158,11,0.12)', Low: 'rgba(34,197,94,0.12)' }
+  const urgencyText = { High: '#F87171', Medium: '#FBBF24', Low: '#4ADE80' }
   const selectedChannel = CHANNELS.find(c => c.id === channel)
 
   return (
@@ -132,7 +132,7 @@ export default function ComplaintPage() {
                   <label className="field-label">{selectedChannel?.icon} {selectedChannel?.label} content *</label>
                   <textarea value={complaint} onChange={e => setComplaint(e.target.value)}
                     placeholder={selectedChannel?.placeholder}
-                    style={{ width: '100%', minHeight: 160, border: '1.5px solid var(--border)', borderRadius: 10, padding: '12px 14px', fontSize: 14, color: 'var(--ink)', outline: 'none', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6, boxSizing: 'border-box' }} />
+                    style={{ width: '100%', minHeight: 160, border: '1.5px solid var(--border)', borderRadius: 10, padding: '12px 14px', fontSize: 14, color: 'var(--ink)', background: 'var(--bg)', outline: 'none', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6, boxSizing: 'border-box' }} />
                 </div>
                 {error && <p style={{ fontSize: 13, color: 'var(--red-text)', marginBottom: 12 }}>{error}</p>}
                 <button onClick={analyse} disabled={loading || !complaint.trim()} className="btn btn-primary btn-full" style={{ fontSize: 15, padding: 14 }}>
@@ -182,13 +182,14 @@ export default function ComplaintPage() {
                   <div style={{ background: urgencyColors[result.urgency] || 'var(--white)', border: '1px solid var(--border)', borderRadius: 12, padding: '14px 16px' }}>
                     <div style={{ fontSize: 10, color: 'var(--ink2)', textTransform: 'uppercase', fontWeight: 600, marginBottom: 6 }}>Urgency</div>
                     <div style={{ fontSize: 13, fontWeight: 700, color: urgencyText[result.urgency] }}>{result.urgency}</div>
-                    <div style={{ fontSize: 11, color: 'var(--ink2)', marginTop: 3 }}>Respond within {result.responseDays} days</div>
+                    <div style={{ fontSize: 11, color: 'var(--ink2)', marginTop: 3 }}>{result.deadline ? (result.deadline === 'Now' ? 'Act now' : `By ${result.deadline}`) : 'No legal deadline'}</div>
                   </div>
                 </div>
 
                 <div style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 12, padding: '16px 18px' }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink)', marginBottom: 8 }}>✅ Recommended Action</div>
                   <p style={{ fontSize: 13, color: 'var(--ink2)', lineHeight: 1.6 }}>{result.recommendedAction}</p>
+                  {result.deadlineRule && <p style={{ fontSize: 12, color: 'var(--ink)', lineHeight: 1.6, marginTop: 10, paddingTop: 10, borderTop: '1px solid var(--border)' }}>⏱️ {result.deadlineRule}</p>}
                 </div>
 
                 <div style={{ background: 'var(--green-p)', border: '1px solid var(--green-m)', borderRadius: 12, padding: '16px 18px' }}>
@@ -235,7 +236,7 @@ export default function ComplaintPage() {
                   const urgBg  = { High: '#FEF2F2', Medium: '#FFFBEB', Low: '#F0FDF4' }
                   const cat = entry.category || entry.result?.category || 'Unknown'
                   const urg = entry.urgency || entry.result?.urgency || 'Medium'
-                  const days = entry.responseDays || entry.result?.responseDays || 30
+                  const days = entry.deadline ? (entry.deadline === 'Now' ? 'Act now' : `Due ${entry.deadline}`) : (entry.responseDays ? `${entry.responseDays}d to respond` : 'No deadline')
                   const action = entry.recommendedAction || entry.result?.recommendedAction || ''
                   const text = entry.complaintText || entry.complaint || ''
                   return (
@@ -250,7 +251,7 @@ export default function ComplaintPage() {
                         </div>
                         <div style={{ display: 'flex', gap: 6 }}>
                           <span style={{ fontSize: 11, padding: '3px 9px', borderRadius: 100, fontWeight: 600, background: urgBg[urg], color: urgCol[urg] }}>{urg}</span>
-                          <span style={{ fontSize: 11, padding: '3px 9px', borderRadius: 100, background: 'var(--green-p)', color: 'var(--green)', fontWeight: 600 }}>{days}d to respond</span>
+                          <span style={{ fontSize: 11, padding: '3px 9px', borderRadius: 100, background: 'var(--green-p)', color: 'var(--green)', fontWeight: 600 }}>{days}</span>
                         </div>
                       </div>
                       <p style={{ fontSize: 12, color: 'var(--ink2)', lineHeight: 1.5, marginBottom: 8 }}>{text.slice(0, 150)}{text.length > 150 ? '...' : ''}</p>

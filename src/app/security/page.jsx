@@ -106,12 +106,12 @@ export default function SecurityPage() {
           <H2 icon="🗓️">Data retention</H2>
           <P>We keep your data only as long as necessary. Here is exactly what we store and for how long:</P>
           <div style={{ marginTop: 24 }}>
-            <Row label="Scan results" value="Retained for 30 days, then automatically deleted" note="You can download your report at any time. Re-scanning creates a fresh record." />
+            <Row label="Scan results" value="Kept for 30 days, then automatically deleted" note="You can download your report at any time. If you are logged in, your own scan history stays in your dashboard while your account is open." />
             <Row label="Account data" value="Retained while your account is active" note="Deletion request: email contact@algograss.com — we'll delete your account and all associated data within 30 days." />
             <Row label="Compliance documents" value="Retained in your account until you delete them" note="Documents you generate (privacy policy, DPA, etc.) are stored linked to your account." />
-            <Row label="Audit logs" value="Retained for 90 days for security and debugging" note="Logs contain request metadata (IP, timestamp, endpoint). Logs are not used for marketing." />
-            <Row label="Payment data" value="Retained as required by UK financial regulations (7 years)" note="Stripe retains full payment records. We store only subscription status and amount." />
-            <Row label="Email addresses (waitlist)" value="Retained until you unsubscribe or request deletion" note="One-click unsubscribe is included in every email." />
+            <Row label="Activity logs" value="Kept for 90 days for security and debugging, then automatically deleted" note="Logs record which tool was used and when. They are not used for marketing." />
+            <Row label="Payment data" value="Kept for 6 years after the end of the financial year, as HMRC requires" note="Stripe holds full payment records. We store only subscription status and amount." />
+            <Row label="Email addresses (waitlist)" value="Kept until you ask us to remove them" note="Email contact@algograss.com and we will delete your address." />
           </div>
         </AnimateOnScroll>
       </S>
@@ -205,14 +205,14 @@ export default function SecurityPage() {
           </div>
           <div style={{ marginTop: 28, padding: '18px 22px', background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.2)', borderRadius: 12 }}>
             <p style={{ fontSize: 14, color: 'var(--ink2)', margin: 0, lineHeight: 1.75 }}>
-              To exercise any of these rights, email <a href="mailto:contact@algograss.com" style={{ color: 'var(--accent)' }}>contact@algograss.com</a>. We'll respond within 30 days as required by UK GDPR Article 12. If you're not satisfied with our response, you can lodge a complaint with the <a href="https://ico.org.uk/make-a-complaint/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>Information Commissioner's Office (ICO)</a>.
+              To exercise any of these rights, email <a href="mailto:contact@algograss.com" style={{ color: 'var(--accent)' }}>contact@algograss.com</a>. We'll respond within one calendar month, as UK GDPR requires Article 12. If you're not satisfied with our response, you can lodge a complaint with the <a href="https://ico.org.uk/make-a-complaint/" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>Information Commissioner's Office (ICO)</a>.
             </p>
           </div>
         </AnimateOnScroll>
       </S>
 
       {/* Contact */}
-      <section style={{ padding: '72px 0', background: 'rgba(255,255,255,0.9)', borderTop: '1px solid rgba(15,23,42,0.05)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ padding: '72px 0', background:'rgba(255,255,255,0.04)', borderTop: '1px solid rgba(15,23,42,0.05)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div className="orb orb-teal" style={{ width: 600, height: 300, top: '50%', left: '50%', transform: 'translate(-50%,-50%)', opacity: 0.35 }} />
         <div className="wrap" style={{ maxWidth: 560, position: 'relative', zIndex: 1 }}>
           <AnimateOnScroll direction="scale">

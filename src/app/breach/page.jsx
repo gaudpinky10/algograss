@@ -6,13 +6,13 @@ const S = {
   wrap: { maxWidth: 800, margin: '0 auto' },
   header: { marginBottom: 36 },
   tag: { fontSize: 12, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: '#EF4444', background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 20, padding: '4px 14px', display: 'inline-block', marginBottom: 14 },
-  h1: { fontSize: 34, fontWeight: 800, color: '#0F172A', margin: '0 0 10px', letterSpacing: -0.5 },
+  h1: { fontSize: 34, fontWeight: 800, color: '#F1F5F9', margin: '0 0 10px', letterSpacing: -0.5 },
   sub: { color: '#94A3B8', fontSize: 15, margin: 0 },
   card: { background: '#0D0D1E', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: '28px 32px', marginBottom: 20 },
-  cardTitle: { fontSize: 16, fontWeight: 700, color: '#0F172A', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 10 },
+  cardTitle: { fontSize: 16, fontWeight: 700, color: '#F1F5F9', marginBottom: 18, display: 'flex', alignItems: 'center', gap: 10 },
   label: { fontSize: 13, fontWeight: 600, color: '#CBD5E1', display: 'block', marginBottom: 6 },
-  input: { width: '100%', background: '#06060F', border: '1.5px solid rgba(255,255,255,0.09)', borderRadius: 10, padding: '10px 14px', color: '#0F172A', fontSize: 14, outline: 'none', boxSizing: 'border-box' },
-  textarea: { width: '100%', background: '#06060F', border: '1.5px solid rgba(255,255,255,0.09)', borderRadius: 10, padding: '10px 14px', color: '#0F172A', fontSize: 14, outline: 'none', resize: 'vertical', minHeight: 90, boxSizing: 'border-box', fontFamily: 'inherit' },
+  input: { width: '100%', background: '#06060F', border: '1.5px solid rgba(255,255,255,0.09)', borderRadius: 10, padding: '10px 14px', color: '#F1F5F9', fontSize: 14, outline: 'none', boxSizing: 'border-box' },
+  textarea: { width: '100%', background: '#06060F', border: '1.5px solid rgba(255,255,255,0.09)', borderRadius: 10, padding: '10px 14px', color: '#F1F5F9', fontSize: 14, outline: 'none', resize: 'vertical', minHeight: 90, boxSizing: 'border-box', fontFamily: 'inherit' },
   row: { marginBottom: 18 },
   btn: { background: 'linear-gradient(135deg,#9B7BFA,#7C3AED)', color: '#06060F', fontWeight: 700, fontSize: 14, padding: '12px 28px', borderRadius: 10, border: 'none', cursor: 'pointer', width: '100%' },
   btnOutline: { background: 'transparent', color: '#9B7BFA', fontWeight: 600, fontSize: 13, padding: '10px 20px', borderRadius: 10, border: '1px solid #9B7BFA', cursor: 'pointer' },
@@ -98,7 +98,7 @@ export default function BreachPage() {
   const generate = async () => {
     if (!form.breachDescription.trim()) return setError('Please describe the breach')
     setLoading(true); setError('')
-    const res = await fetch('/api/breach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, breachDate }) })
+    const res = await fetch('/api/breach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, breachDate: breachDate ? new Date(breachDate).toISOString() : '' }) })
     const data = await res.json()
     setLoading(false)
     if (data.error) return setError(data.error)
@@ -114,14 +114,14 @@ export default function BreachPage() {
         <div style={S.header}>
           <div style={S.tag}>🚨 Data Breach Response</div>
           <h1 style={S.h1}>Breach Notification Tool</h1>
-          <p style={S.sub}>ICO notification must be submitted within 72 hours of becoming aware of a breach — Article 33 UK GDPR</p>
+          <p style={S.sub}>If a breach is reportable, you must tell the ICO within 72 hours of becoming aware of it (Article 33 UK GDPR). Work out whether to report, and prepare what the ICO's form asks for.</p>
         </div>
 
         {/* 72-Hour Countdown */}
         <div style={S.card}>
           <div style={S.cardTitle}>⏱️ 72-Hour Countdown</div>
           <div style={S.row}>
-            <label style={S.label}>When did you discover the breach?</label>
+            <label style={S.label}>When did you become aware of the breach?</label>
             <input type="datetime-local" style={S.input} value={breachDate} onChange={e => setBreachDate(e.target.value)} />
           </div>
           <Countdown breachDateTime={breachDate} />
@@ -167,7 +167,7 @@ export default function BreachPage() {
           </div>
           {error && <p style={{ color: '#EF4444', fontSize: 13, marginBottom: 12 }}>{error}</p>}
           <button style={S.btn} onClick={generate} disabled={loading}>
-            {loading ? 'Generating ICO Notification Letter...' : '📄 Generate ICO Notification Letter'}
+            {loading ? 'Preparing your breach report...' : '📄 Prepare breach assessment and ICO report'}
           </button>
         </div>
 
@@ -185,7 +185,7 @@ export default function BreachPage() {
             <div key={title} style={S.check}>
               <span style={S.checkIcon}>{icon}</span>
               <div>
-                <div style={{ fontWeight: 600, color: '#0F172A', fontSize: 14, marginBottom: 2 }}>{title}</div>
+                <div style={{ fontWeight: 600, color: '#F1F5F9', fontSize: 14, marginBottom: 2 }}>{title}</div>
                 <div style={S.checkText}>{desc}</div>
               </div>
             </div>
@@ -202,14 +202,14 @@ export default function BreachPage() {
         {letter && (
           <div style={S.card} ref={letterRef}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-              <div style={S.cardTitle}>📄 ICO Notification Letter</div>
+              <div style={S.cardTitle}>📄 Breach assessment and ICO report</div>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={copy} style={S.btnOutline}>📋 Copy</button>
                 <button onClick={() => window.print()} style={S.btnOutline}>🖨️ Print</button>
               </div>
             </div>
             <div style={S.letter}>{letter}</div>
-            <p style={{ color: '#475569', fontSize: 12, marginTop: 12 }}>Review this letter carefully and have your DPO or legal advisor check it before submission. AlgoGrass generates this as a guide — it does not constitute legal advice.</p>
+            <p style={{ color: '#475569', fontSize: 12, marginTop: 12 }}>AI-generated guidance, not legal advice. Check the details before you submit them through the ICO's online form, and take advice if you're unsure whether to report.</p>
           </div>
         )}
       </div>

@@ -57,7 +57,7 @@ export default function LoginPage() {
           <a href="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 28 }}>
             <img src="/logo.png" alt="AlgoGrass" style={{ height: 40, width: 'auto' }} />
           </a>
-          <h1 style={{ fontFamily: 'var(--font-syne,"Syne"),sans-serif', fontWeight: 800, fontSize: 28, color: '#0F172A', marginBottom: 8, lineHeight: 1.2 }}>
+          <h1 style={{ fontFamily: 'var(--font-syne,"Syne"),sans-serif', fontWeight: 800, fontSize: 28, color: '#F1F5F9', marginBottom: 8, lineHeight: 1.2 }}>
             Welcome back
           </h1>
           <p style={{ fontSize: 14, color: '#64748B' }}>

@@ -41,7 +41,7 @@ function layout(body, previewText = '') {
   <div style="padding:20px 40px;border-top:1px solid #1e2d45;text-align:center">
     <p style="color:#475569;font-size:11px;margin:0;line-height:1.7">
       AlgoGrass · Automated GDPR Compliance · <a href="https://www.algograss.com" style="color:#00D4AA;text-decoration:none">algograss.com</a><br>
-      You're receiving this because you have an AlgoGrass account.
+      You're receiving this because you have an AlgoGrass account. <a href="https://www.algograss.com/settings" style="color:#00D4AA;text-decoration:none">Manage your emails</a>
     </p>
   </div>
 
@@ -195,7 +195,7 @@ export async function sendTrialWarningEmail(name, email, daysLeft) {
     </div>
     <div style="padding:32px 40px;background:#060B14">
       <p style="color:#CBD5E1;font-size:14px;line-height:1.7;margin:0 0 24px">
-        Hi ${name.split(' ')[0]}, your 30-day AlgoGrass Pro trial ends in <strong style="color:#F59E0B">${daysLeft} day${daysLeft > 1 ? 's' : ''}</strong>.
+        Hi ${name.split(' ')[0]}, your 60-day AlgoGrass Pro trial ends in <strong style="color:#F59E0B">${daysLeft} day${daysLeft > 1 ? 's' : ''}</strong>.
         After that, you'll lose access to:
       </p>
       <div style="background:#0D1525;border:1px solid #1e2d45;border-radius:12px;padding:20px;margin-bottom:24px">
@@ -228,7 +228,7 @@ export async function sendTrialExpiredEmail(name, email) {
     </div>
     <div style="padding:32px 40px;background:#060B14">
       <p style="color:#CBD5E1;font-size:14px;line-height:1.7;margin:0 0 24px">
-        Hi ${name.split(' ')[0]}, your 30-day free trial has ended. Your account has been switched to the free plan.
+        Hi ${name.split(' ')[0]}, your 60-day free trial has ended. Your account has been switched to the free plan.
         You can still access basic features, but Pro tools are paused until you upgrade.
       </p>
       <div style="text-align:center">
@@ -286,4 +286,29 @@ export async function sendRegulatoryAlertEmail(name, email, updates) {
     subject: `📰 Weekly GDPR digest: ${updates.length} new update${updates.length > 1 ? 's' : ''} — ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}`,
     html,
   });
+}
+
+
+// ─── Reminder digest ───────────────────────────────────────────────────────
+const escHtml = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+export async function sendReminderDigestEmail(name, email, reminders) {
+  const resend = getResend();
+  const day = 864e5;
+  const rows = reminders.map(r => {
+    const due = new Date(r.dueDate);
+    const days = Math.ceil((due - Date.now()) / day);
+    const when = isNaN(due) ? '' : days < 0 ? `<span style="color:#EF4444">${-days} day${days === -1 ? '' : 's'} overdue</span>` : days === 0 ? '<span style="color:#F59E0B">due today</span>' : `due in ${days} day${days === 1 ? '' : 's'}`;
+    return `<tr><td style="padding:10px 0;border-bottom:1px solid #1e2d45;color:#E2E8F0;font-size:14px">${escHtml(r.title)}<div style="color:#64748B;font-size:12px">${escHtml(r.type || '')}${r.owner ? ' · ' + escHtml(r.owner) : ''}</div></td><td style="padding:10px 0;border-bottom:1px solid #1e2d45;color:#94A3B8;font-size:13px;text-align:right;white-space:nowrap">${isNaN(due) ? '' : due.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}<br>${when}</td></tr>`;
+  }).join('');
+  const html = layout(`
+    <div style="padding:32px 40px;background:#0D1525;border-bottom:1px solid #1e2d45">
+      <h1 style="color:#E2E8F0;font-size:20px;font-weight:700;margin:0 0 6px">Your compliance reminders</h1>
+      <p style="color:#94A3B8;font-size:14px;margin:0">Hi ${escHtml(String(name).split(' ')[0])}, here is what's coming up or overdue.</p>
+    </div>
+    <div style="padding:24px 40px;background:#060B14">
+      <table style="width:100%;border-collapse:collapse">${rows}</table>
+      <div style="text-align:center;margin-top:24px">${btn('Open your reminders', 'https://www.algograss.com/reminders')}</div>
+    </div>
+  `, 'Your AlgoGrass compliance reminders');
+  return resend.emails.send({ from: FROM_ADDRESS, to: email, subject: `Compliance reminders: ${reminders.length} coming up or overdue`, html });
 }

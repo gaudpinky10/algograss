@@ -50,9 +50,11 @@ export async function GET(request) {
     }));
 
     // Get all Pro users who haven't opted out of regulatory alerts
+    // Paying customers and trial users, unless they turned the digest off in Settings
     const proUsers = await users.find({
-      plan: { $in: ['pro', 'starter'] },
+      plan: { $in: ['pro', 'starter', 'growth', 'agency'] },
       regulatoryAlertsOptOut: { $ne: true },
+      'notifications.regulatoryDigest': { $ne: false },
     }).toArray();
 
     for (const user of proUsers) {

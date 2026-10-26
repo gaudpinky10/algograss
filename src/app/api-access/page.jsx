@@ -4,15 +4,15 @@ import { useState, useEffect } from 'react'
 const S = {
   page: { minHeight: '100vh', background: '#06060F', padding: '40px 20px', fontFamily: "'Segoe UI', sans-serif" },
   wrap: { maxWidth: 860, margin: '0 auto' },
-  h1: { fontSize: 34, fontWeight: 800, color: '#0F172A', margin: '0 0 8px', letterSpacing: -0.5 },
+  h1: { fontSize: 34, fontWeight: 800, color: '#F1F5F9', margin: '0 0 8px', letterSpacing: -0.5 },
   sub: { color: '#94A3B8', fontSize: 15, margin: '0 0 36px' },
   card: { background: '#0D0D1E', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: '28px 32px', marginBottom: 20 },
-  cardTitle: { fontSize: 16, fontWeight: 700, color: '#0F172A', marginBottom: 18 },
+  cardTitle: { fontSize: 16, fontWeight: 700, color: '#F1F5F9', marginBottom: 18 },
   btn: { background: 'linear-gradient(135deg,#9B7BFA,#7C3AED)', color: '#06060F', fontWeight: 700, fontSize: 14, padding: '10px 22px', borderRadius: 10, border: 'none', cursor: 'pointer' },
   btnDanger: { background: 'rgba(239,68,68,0.1)', color: '#EF4444', fontWeight: 600, fontSize: 13, padding: '6px 14px', borderRadius: 8, border: '1px solid rgba(239,68,68,0.25)', cursor: 'pointer' },
   code: { background: '#06060F', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 10, padding: '18px 20px', fontFamily: 'monospace', fontSize: 13, color: '#9B7BFA', overflow: 'auto', whiteSpace: 'pre', lineHeight: 1.7 },
   tab: { padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', border: 'none', background: 'transparent' },
-  input: { background: '#06060F', border: '1.5px solid rgba(255,255,255,0.09)', borderRadius: 10, padding: '10px 14px', color: '#0F172A', fontSize: 14, outline: 'none' },
+  input: { background: '#06060F', border: '1.5px solid rgba(255,255,255,0.09)', borderRadius: 10, padding: '10px 14px', color: '#F1F5F9', fontSize: 14, outline: 'none' },
 }
 
 const CODE_EXAMPLES = {
@@ -129,7 +129,7 @@ export default function ApiAccessPage() {
               <tbody>
                 {keys.map(k => (
                   <tr key={k._id}>
-                    <td style={{ padding: '12px 12px', fontSize: 14, color: '#0F172A', borderBottom: '1px solid rgba(30,45,69,0.5)' }}>{k.keyName}</td>
+                    <td style={{ padding: '12px 12px', fontSize: 14, color: '#F1F5F9', borderBottom: '1px solid rgba(30,45,69,0.5)' }}>{k.keyName}</td>
                     <td style={{ padding: '12px 12px', fontSize: 13, color: '#94A3B8', fontFamily: 'monospace', borderBottom: '1px solid rgba(30,45,69,0.5)' }}>{k.preview}</td>
                     <td style={{ padding: '12px 12px', fontSize: 13, color: '#94A3B8', borderBottom: '1px solid rgba(30,45,69,0.5)' }}>{new Date(k.createdAt).toLocaleDateString('en-GB')}</td>
                     <td style={{ padding: '12px 12px', fontSize: 13, color: '#94A3B8', borderBottom: '1px solid rgba(30,45,69,0.5)' }}>{k.usageCount || 0} calls</td>
@@ -148,13 +148,13 @@ export default function ApiAccessPage() {
           <div style={S.cardTitle}>⚡ Rate Limits</div>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr>{['Plan','Scans/day','Keys allowed','Support'].map(h => <th key={h} style={{ textAlign: 'left', padding: '8px 12px', fontSize: 11, color: '#9B7BFA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.8, borderBottom: '1px solid rgba(255,255,255,0.09)' }}>{h}</th>)}</tr>
+              <tr>{['Plan','Scans per day (with a key)','Keys allowed'].map(h => <th key={h} style={{ textAlign: 'left', padding: '8px 12px', fontSize: 11, color: '#9B7BFA', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.8, borderBottom: '1px solid rgba(255,255,255,0.09)' }}>{h}</th>)}</tr>
             </thead>
             <tbody>
-              {[['Free','10 scans','1 key','Community'],['Starter','100 scans','3 keys','Email'],['Pro','1,000 scans','10 keys','Priority']].map(([plan, scans, keys, support]) => (
+              {[['Free','10','1'],['Starter, and the free trial','100','3'],['Growth and Agency','1,000','10']].map(([plan, scans, keys]) => (
                 <tr key={plan}>
-                  {[plan, scans, keys, support].map((v, i) => (
-                    <td key={i} style={{ padding: '12px 12px', fontSize: 13, color: i === 0 ? '#0F172A' : '#94A3B8', fontWeight: i === 0 ? 600 : 400, borderBottom: '1px solid rgba(30,45,69,0.5)' }}>{v}</td>
+                  {[plan, scans, keys].map((v, i) => (
+                    <td key={i} style={{ padding: '12px 12px', fontSize: 13, color: i === 0 ? '#F1F5F9' : '#94A3B8', fontWeight: i === 0 ? 600 : 400, borderBottom: '1px solid rgba(30,45,69,0.5)' }}>{v}</td>
                   ))}
                 </tr>
               ))}
@@ -168,15 +168,15 @@ export default function ApiAccessPage() {
           <div style={{ marginBottom: 20 }}>
             <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
               <span style={{ background: 'rgba(139,92,246,0.12)', color: '#9B7BFA', fontSize: 12, fontWeight: 700, padding: '4px 12px', borderRadius: 6 }}>POST</span>
-              <code style={{ color: '#0F172A', fontSize: 14 }}>https://www.algograss.com/api/scan</code>
+              <code style={{ color: '#F1F5F9', fontSize: 14 }}>https://www.algograss.com/api/scan</code>
             </div>
-            <p style={{ color: '#94A3B8', fontSize: 13, margin: '0 0 14px' }}>Scan any website for GDPR compliance and get a score with detailed issues.</p>
-            <p style={{ color: '#0F172A', fontSize: 13, fontWeight: 600, margin: '0 0 8px' }}>Request headers:</p>
+            <p style={{ color: '#94A3B8', fontSize: 13, margin: '0 0 14px' }}>Scan any public website and get the same score and findings as the scanner on our website. With your key, each scan counts towards your plan's daily limit and is saved to your dashboard history. A scan can take up to a minute, so allow a 90-second timeout.</p>
+            <p style={{ color: '#F1F5F9', fontSize: 13, fontWeight: 600, margin: '0 0 8px' }}>Request headers:</p>
             <pre style={S.code}>{`Authorization: Bearer YOUR_API_KEY
 Content-Type: application/json`}</pre>
-            <p style={{ color: '#0F172A', fontSize: 13, fontWeight: 600, margin: '16px 0 8px' }}>Request body:</p>
+            <p style={{ color: '#F1F5F9', fontSize: 13, fontWeight: 600, margin: '16px 0 8px' }}>Request body:</p>
             <pre style={S.code}>{`{ "url": "https://example.com" }`}</pre>
-            <p style={{ color: '#0F172A', fontSize: 13, fontWeight: 600, margin: '16px 0 8px' }}>Response:</p>
+            <p style={{ color: '#F1F5F9', fontSize: 13, fontWeight: 600, margin: '16px 0 8px' }}>Response:</p>
             <pre style={S.code}>{`{
   "score": 74,
   "url": "https://example.com",

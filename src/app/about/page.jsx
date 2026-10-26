@@ -57,7 +57,7 @@ export default function AboutPage() {
       </section>
 
       {/* Mission */}
-      <section style={{ padding: '80px 0', background: 'rgba(255,255,255,0.9)', borderTop: '1px solid rgba(15,23,42,0.05)', borderBottom: '1px solid rgba(15,23,42,0.05)', position: 'relative', zIndex: 1 }}>
+      <section style={{ padding: '80px 0', background:'rgba(255,255,255,0.04)', borderTop: '1px solid rgba(15,23,42,0.05)', borderBottom: '1px solid rgba(15,23,42,0.05)', position: 'relative', zIndex: 1 }}>
         <div className="wrap grid-2col">
           <AnimateOnScroll direction="left">
             <span className="eyebrow">Our mission</span>
@@ -148,7 +148,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section style={{ padding: '80px 0', background: 'rgba(255,255,255,0.9)', borderTop: '1px solid rgba(15,23,42,0.05)', textAlign: 'center', position: 'relative', zIndex: 1, overflow: 'hidden' }}>
+      <section style={{ padding: '80px 0', background:'rgba(255,255,255,0.04)', borderTop: '1px solid rgba(15,23,42,0.05)', textAlign: 'center', position: 'relative', zIndex: 1, overflow: 'hidden' }}>
         <div className="orb orb-teal" style={{ width: 600, height: 300, top: '50%', left: '50%', transform: 'translate(-50%,-50%)', opacity: 0.4 }} />
         <div className="wrap" style={{ maxWidth: 520, position: 'relative', zIndex: 1 }}>
           <AnimateOnScroll direction="scale">

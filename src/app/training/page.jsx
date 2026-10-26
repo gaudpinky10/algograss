@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 const S = {
   page: { minHeight: '100vh', background: '#06060F', padding: '40px 20px', fontFamily: "'Segoe UI', sans-serif" },
   wrap: { maxWidth: 800, margin: '0 auto' },
-  h1: { fontSize: 34, fontWeight: 800, color: '#0F172A', margin: '0 0 8px', letterSpacing: -0.5 },
+  h1: { fontSize: 34, fontWeight: 800, color: '#F1F5F9', margin: '0 0 8px', letterSpacing: -0.5 },
   sub: { color: '#94A3B8', fontSize: 15, margin: '0 0 32px' },
   card: { background: '#0D0D1E', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: '24px 28px', marginBottom: 16 },
   btn: { background: 'linear-gradient(135deg,#9B7BFA,#7C3AED)', color: '#06060F', fontWeight: 700, fontSize: 14, padding: '11px 24px', borderRadius: 10, border: 'none', cursor: 'pointer' },
@@ -19,7 +19,7 @@ const MODULES = [
       'UK GDPR (General Data Protection Regulation) applies to any organisation that processes personal data of UK residents.',
       'Personal data is any information relating to an identifiable person — names, emails, IP addresses, location data, and more.',
       'UK GDPR is built on 7 core principles: (1) Lawful, fair and transparent, (2) Purpose limitation, (3) Data minimisation, (4) Accuracy, (5) Storage limitation, (6) Integrity and confidentiality, (7) Accountability.',
-      'The ICO (Information Commissioner\'s Office) enforces UK GDPR and can fine organisations up to £17.5 million or 4% of global annual turnover.',
+      'The ICO (Information Commissioner\'s Office) enforces UK GDPR and can fine organisations up to £17.5 million or 4% of global annual turnover, whichever is higher.',
     ],
     quiz: [
       { q: 'What does GDPR stand for?', opts: ['General Data Protection Regulation','Global Data Privacy Rules','Government Data Processing Requirements'], correct: 0 },
@@ -31,14 +31,15 @@ const MODULES = [
     id: 2, title: 'Lawful Basis for Processing', icon: '⚖️',
     content: [
       'You must have a lawful basis before processing personal data. Processing without a lawful basis is unlawful.',
-      'The 6 lawful bases are: (1) Consent, (2) Contract, (3) Legal obligation, (4) Vital interests, (5) Public task, (6) Legitimate interests.',
+      'There are 7 lawful bases: (1) Consent, (2) Contract, (3) Legal obligation, (4) Vital interests, (5) Public task, (6) Legitimate interests, and (7) Recognised legitimate interests, added by the Data (Use and Access) Act from 5 February 2026 for a short list of purposes such as crime prevention, safeguarding and emergencies.',
       'Consent: must be freely given, specific, informed and unambiguous. Pre-ticked boxes are NOT valid consent.',
       'Legitimate interests: you can process data if it is necessary for your legitimate interests — but only if it doesn\'t override the individual\'s rights.',
+      'Email and text marketing to individuals also needs consent under PECR, unless the "soft opt-in" applies (existing customers, similar products, a chance to opt out when you collected their details and in every message).',
       'You must document which lawful basis you rely on for each processing activity.',
     ],
     quiz: [
-      { q: 'How many lawful bases exist under UK GDPR?', opts: ['4','6','8'], correct: 1 },
-      { q: 'Which lawful basis is most appropriate for sending marketing emails?', opts: ['Contract','Consent','Vital interests'], correct: 1 },
+      { q: 'How many lawful bases does UK GDPR have since February 2026?', opts: ['4','6','7'], correct: 2 },
+      { q: 'To send marketing emails to a new contact who has never bought from you, you usually need...', opts: ['Their contract','Their consent','Their vital interests'], correct: 1 },
       { q: 'Is a pre-ticked consent box valid under UK GDPR?', opts: ['Yes, always','No','Only for B2B marketing'], correct: 1 },
     ],
   },
@@ -48,16 +49,17 @@ const MODULES = [
       'UK GDPR gives individuals 8 rights over their personal data.',
       '1. Right to be informed — about how their data is used (via privacy notice)',
       '2. Right of access (SAR) — they can request a copy of their personal data',
-      '3. Right to rectification — correct inaccurate data within 30 days',
+      '3. Right to rectification — correct inaccurate data',
       '4. Right to erasure — "right to be forgotten" in certain circumstances',
       '5. Right to restrict processing — pause processing while a dispute is resolved',
       '6. Right to data portability — receive data in a structured, machine-readable format',
       '7. Right to object — particularly to direct marketing (absolute right) and legitimate interests',
       '8. Rights related to automated decision-making — not to be subject to solely automated decisions with significant effects',
-      'You must respond to most requests within 30 days. This can be extended by 2 months in complex cases.',
+      'You must respond to most requests within one calendar month of receiving them (e.g. received 3 March, reply by 3 April; a weekend or bank holiday moves it to the next working day). It can be extended by up to 2 more months if the request is complex, but you must tell the person within the first month.',
+      'Since 19 June 2026, people can also complain to you about how you use their data: acknowledge each complaint within 30 days and tell them the outcome.',
     ],
     quiz: [
-      { q: 'How long do you have to respond to a Subject Access Request?', opts: ['14 days','30 days','60 days'], correct: 1 },
+      { q: 'How long do you normally have to respond to a Subject Access Request?', opts: ['14 days','One calendar month','60 days'], correct: 1 },
       { q: 'What is the "right to be forgotten"?', opts: ['Right of access','Right to erasure','Right to portability'], correct: 1 },
       { q: 'How many individual rights does UK GDPR provide?', opts: ['6','7','8'], correct: 2 },
     ],
@@ -85,8 +87,9 @@ const MODULES = [
       'Silence, pre-ticked boxes, or inactivity do NOT count as consent.',
       'You must be able to show consent was given — keep records.',
       'Cookies: Under PECR (Privacy and Electronic Communications Regulations), you need consent for non-essential cookies (analytics, advertising, tracking).',
-      'Cookie consent: it must be as easy to Reject as to Accept. You must have a clear "Reject All" option.',
-      'Strictly necessary cookies (session cookies, security cookies) do NOT require consent.',
+      'Cookie consent: it must be as easy to Reject as to Accept, so offer a clear "Reject all" option alongside "Accept all".',
+      'Since February 2026 a few low-risk cookies (such as some analytics used only to improve your website) can be used without consent, as long as you explain them clearly and give an easy way to object. Advertising and tracking cookies still need consent.',
+      'Strictly necessary cookies (for example for logging in, a shopping basket or security) do NOT require consent.',
     ],
     quiz: [
       { q: 'Is a pre-ticked consent box valid under UK GDPR?', opts: ['Yes','No','Only for first-party cookies'], correct: 1 },
@@ -114,7 +117,7 @@ function ProgressBar({ completed, total }) {
 function QuizQuestion({ q, idx, onAnswer, answered }) {
   return (
     <div style={{ marginBottom: 20 }}>
-      <p style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 10 }}>{idx + 1}. {q.q}</p>
+      <p style={{ fontSize: 14, fontWeight: 600, color: '#F1F5F9', marginBottom: 10 }}>{idx + 1}. {q.q}</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {q.opts.map((opt, i) => {
           let bg = 'rgba(15,23,42,0.03)', col = '#CBD5E1', border = 'rgba(255,255,255,0.09)'
@@ -163,7 +166,7 @@ function Module({ mod, onComplete, isCompleted }) {
           <span style={{ fontSize: 24 }}>{mod.icon}</span>
           <div>
             <div style={{ fontSize: 11, color: '#475569', fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 2 }}>Module {mod.id}</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#0F172A' }}>{mod.title}</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#F1F5F9' }}>{mod.title}</div>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -185,7 +188,7 @@ function Module({ mod, onComplete, isCompleted }) {
             </>
           ) : (
             <div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 20 }}>Answer at least 2 out of 3 questions correctly to pass this module.</p>
+              <p style={{ fontSize: 14, fontWeight: 600, color: '#F1F5F9', marginBottom: 20 }}>Answer at least 2 out of 3 questions correctly to pass this module.</p>
               {mod.quiz.map((q, i) => (
                 <QuizQuestion key={i} q={q} idx={i} onAnswer={a => answer(i, a)} answered={submitted ? (answers[i] !== undefined ? answers[i] : undefined) : answers[i] !== undefined ? undefined : undefined} />
               ))}
@@ -276,9 +279,9 @@ export default function TrainingPage() {
         {allDone && !showCert && (
           <div style={{ background: 'linear-gradient(135deg,rgba(139,92,246,0.1),rgba(124,158,255,0.1))', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 16, padding: '32px', textAlign: 'center', marginTop: 24 }}>
             <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
-            <h2 style={{ color: '#0F172A', fontSize: 22, fontWeight: 700, margin: '0 0 8px' }}>Congratulations! All modules complete.</h2>
+            <h2 style={{ color: '#F1F5F9', fontSize: 22, fontWeight: 700, margin: '0 0 8px' }}>Congratulations! All modules complete.</h2>
             <p style={{ color: '#94A3B8', fontSize: 14, margin: '0 0 24px' }}>Enter your name to generate your GDPR training certificate.</p>
-            <input style={{ ...S.card, display: 'block', width: '100%', maxWidth: 360, margin: '0 auto 16px', textAlign: 'center', color: '#0F172A', fontSize: 16, padding: '12px 16px', borderRadius: 10, boxSizing: 'border-box' }}
+            <input style={{ ...S.card, display: 'block', width: '100%', maxWidth: 360, margin: '0 auto 16px', textAlign: 'center', color: '#F1F5F9', fontSize: 16, padding: '12px 16px', borderRadius: 10, boxSizing: 'border-box' }}
               placeholder="Your full name" value={certName} onChange={e => setCertName(e.target.value)} />
             <button style={{ ...S.btn, opacity: certName.trim() ? 1 : 0.5 }} onClick={() => certName.trim() && setShowCert(true)} disabled={!certName.trim()}>
               🏆 Generate Certificate

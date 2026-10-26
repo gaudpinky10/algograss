@@ -1,20 +1,28 @@
-import { generateContent } from '@/lib/ai'
+import { askClaude } from '@/lib/ai'
+import { toolSystem } from '@/lib/ukDataFacts'
+import { currentUser, allowAiUse, tooMany, aiFailed } from '@/lib/toolGuard'
+
 export async function POST(request) {
+  const user = currentUser()
   const { toolName, purpose, dataTypes, hasPersonalData, sharesWithThirdParty, businessName } = await request.json()
-
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) return Response.json({ error: 'AI not configured.' }, { status: 500 })
-
+  if (!toolName && !purpose) return Response.json({ error: 'Please name the AI tool and what you use it for.' }, { status: 400 })
+  if (!(await allowAiUse('ai-governance', user, user ? 40 : 5))) return tooMany()
   try {
-    const data = await generateContent({
-          systemInstruction: { parts: [{ text: 'You are an AI Governance specialist for AlgoGrass. Assess AI tool usage for GDPR and UK data protection compliance. Be practical and specific. End with disclaimer.' }] },
-          contents: [{ role: 'user', parts: [{ text: `Assess this AI tool usage for GDPR compliance:\nBusiness: ${businessName || 'Unknown'}\nAI Tool: ${toolName}\nPurpose: ${purpose}\nData types entered into tool: ${dataTypes}\nContains personal data: ${hasPersonalData ? 'Yes' : 'No'}\nData shared with third party: ${sharesWithThirdParty ? 'Yes' : 'No'}\n\nProvide:\n1. Overall risk rating (High/Medium/Low) with explanation\n2. GDPR issues identified (specific articles)\n3. Legal basis assessment (is there a valid basis?)\n4. Data processor agreement needed? (Yes/No + why)\n5. DPIA required? (Yes/No + why)\n6. Recommended actions (numbered list)\n7. What to add to privacy policy\n8. Monitoring and review recommendations` }] }],
-          generationConfig: { maxOutputTokens: 2000, temperature: 0.3 },
-        })
-    if (data.error) return Response.json({ error: data.error.message }, { status: 500 })
-    const assessment = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Assessment failed.'
+    const assessment = await askClaude({
+      system: toolSystem('You are the AlgoGrass AI governance assistant. You help UK small businesses use AI tools in line with UK GDPR, and the EU AI Act where it applies to them.'),
+      prompt: `Assess this use of an AI tool by a UK organisation.
+Organisation: ${businessName || 'not stated'}
+AI tool: ${toolName || 'not stated'}
+What it is used for: ${purpose || 'not stated'}
+Data entered into it: ${dataTypes || 'not stated'}
+Includes personal data: ${hasPersonalData ? 'Yes' : 'No'}
+Data shared with the tool's provider or other third parties: ${sharesWithThirdParty ? 'Yes' : 'No'}
+
+Give, with short headings: 1) Overall risk (High/Medium/Low) and why. 2) UK GDPR points: lawful basis, transparency, the provider's role (processor or controller) and contract, international transfers, retention and whether inputs are used to train the provider's models, and automated decision-making (UK GDPR Arts. 22A-22D) if decisions about people are made. 3) Whether a DPIA is needed. 4) EU AI Act: only if they place AI on the EU market or its output is used in the EU; give the likely category and the dates that apply. 5) Practical steps, in order. End with a one-line note that this is guidance, not legal advice.`,
+      maxTokens: 2000,
+    })
     return Response.json({ assessment, generatedAt: new Date().toISOString() })
-  } catch (err) {
-    return Response.json({ error: 'Failed: ' + err.message }, { status: 500 })
+  } catch (e) {
+    return aiFailed(e.status === 503 ? 503 : 502)
   }
 }

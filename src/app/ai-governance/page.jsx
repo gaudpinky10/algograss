@@ -3,38 +3,41 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 const RISK_TIERS = {
-  unacceptable: { label:'Unacceptable Risk — PROHIBITED', color:'#EF4444', bg:'rgba(239,68,68,0.1)', border:'rgba(239,68,68,0.3)', icon:'🚫', summary:'Your AI system falls under Article 5 prohibited practices. These are banned in the EU from 2 February 2025.', requirements:['This system CANNOT be placed on the EU market or used in the EU','No conformity assessment can make a prohibited system compliant','Prohibited: subliminal manipulation, exploitation of vulnerabilities, social scoring by public authorities, real-time remote biometric identification in public spaces','Review your system architecture — redesign or withdraw from EU market immediately'] },
-  high: { label:'High Risk (Annex III)', color:'#F59E0B', bg:'rgba(245,158,11,0.1)', border:'rgba(245,158,11,0.3)', icon:'⚠️', summary:'Your system is classified as high-risk under Annex III. Full conformity obligations apply from 2 August 2026.', requirements:['Quality Management System (QMS) — Art. 17','Technical documentation — Art. 11 + Annex IV','Conformity assessment before market placement — Art. 43','EU Declaration of Conformity — Art. 47','CE marking required','Register in EU AI database — Art. 49','Post-market monitoring plan — Art. 72','Incident reporting to authorities — Art. 73'] },
+  unacceptable: { label:'Unacceptable Risk — PROHIBITED', color:'#EF4444', bg:'rgba(239,68,68,0.1)', border:'rgba(239,68,68,0.3)', icon:'🚫', summary:'Your AI system falls under Article 5 prohibited practices. These are banned in the EU from 2 February 2025.', requirements:['This system CANNOT be placed on the EU market or used in the EU','No conformity assessment can make a prohibited system compliant','Prohibited: harmful manipulation, exploitation of vulnerabilities, social scoring, emotion recognition at work or in education, and (with narrow exceptions) real-time remote biometric identification in public for law enforcement','Review your system architecture — redesign or withdraw from EU market immediately'] },
+  high: { label:'High Risk (Annex III)', color:'#F59E0B', bg:'rgba(245,158,11,0.1)', border:'rgba(245,158,11,0.3)', icon:'⚠️', summary:'Your system looks high-risk under Annex III. After the EU\'s Digital Omnibus amendment (in force 27 July 2026), the high-risk obligations apply from 2 December 2027.', requirements:['Quality Management System (QMS) — Art. 17','Technical documentation — Art. 11 + Annex IV','Conformity assessment before market placement — Art. 43','EU Declaration of Conformity — Art. 47','CE marking required','Register in EU AI database — Art. 49','Post-market monitoring plan — Art. 72','Incident reporting to authorities — Art. 73'] },
   limited: { label:'Limited Risk', color:'#818CF8', bg:'rgba(99,102,241,0.1)', border:'rgba(99,102,241,0.3)', icon:'ℹ️', summary:'Your system has limited risk obligations — primarily transparency requirements.', requirements:['Inform users when they interact with an AI system','Disclose AI-generated or manipulated content (deepfakes etc.)','Ensure emotion recognition and biometric categorisation systems disclose their nature','No conformity assessment required but document your transparency measures'] },
   minimal: { label:'Minimal Risk', color:'#9B7BFA', bg:'rgba(139,92,246,0.1)', border:'rgba(139,92,246,0.3)', icon:'✅', summary:'Your system poses minimal risk. No mandatory EU AI Act obligations apply, but best practice documentation is recommended.', requirements:['No mandatory EU AI Act obligations apply','Consider voluntary codes of conduct','Document the AI system in your AI governance register','Maintain basic transparency with users about AI use','Review periodically as regulations evolve'] },
 }
 
 const QUESTIONS = [
-  { id:'prohibited', text:'Does your AI system do any of the following?', options:['Social scoring of individuals by public authorities','Subliminal manipulation of behaviour causing harm','Exploitation of vulnerabilities (age, disability, economic situation)','Real-time remote biometric identification in public spaces','Emotion recognition in workplace or educational settings (not safety)','None of the above'], prohibited:['Social scoring of individuals by public authorities','Subliminal manipulation of behaviour causing harm','Exploitation of vulnerabilities (age, disability, economic situation)','Real-time remote biometric identification in public spaces'] },
+  { id:'prohibited', text:'Does your AI system do any of the following?', options:['Social scoring of people (by any organisation)','Subliminal manipulation of behaviour causing harm','Exploitation of vulnerabilities (age, disability, economic situation)','Real-time remote biometric identification in public spaces for law enforcement','Emotion recognition in workplace or educational settings (not safety)','None of the above'], prohibited:['Social scoring of individuals by public authorities','Subliminal manipulation of behaviour causing harm','Exploitation of vulnerabilities (age, disability, economic situation)','Real-time remote biometric identification in public spaces'] },
   { id:'highRiskSector', text:'Is your AI system used in any of these high-risk sectors (Annex III)?', options:['Biometric identification or categorisation','Critical infrastructure (energy, water, transport, digital)','Education and vocational training (access/assessment)','Employment, recruitment, or performance management','Essential private/public services (credit scoring, emergency services, benefits)','Law enforcement or border control','Administration of justice or democratic processes','None of the above'] },
   { id:'transparency', text:'Does your system interact directly with natural persons?', options:['Yes — chatbot, virtual assistant, or other conversational AI','Yes — generates text/images/video (deepfakes, synthetic content)','Yes — emotion recognition or biometric categorisation','No — backend processing only','No — purely B2B with no public-facing element'] },
 ]
 
 const READINESS_CHECKS = [
-  { id:'register', cat:'Governance', label:'AI system registered in AI Governance Register', art:'Art. 49', desc:'Maintain an inventory of all AI systems with purpose, risk tier, data used, and responsible person.' },
+  { id:'register', cat:'Governance', label:'AI system registered in AI Governance Register', art:'Best practice', desc:'Maintain an inventory of all AI systems with purpose, risk tier, data used, and responsible person.' },
   { id:'dpia', cat:'Governance', label:'DPIA completed for high-risk AI use', art:'Art. 35 UK GDPR', desc:'Data Protection Impact Assessment required for high-risk AI processing. Document risks and mitigations.' },
   { id:'lawful_basis', cat:'Data', label:'Lawful basis identified for AI training data', art:'Art. 6 GDPR', desc:'Document the lawful basis (consent, LI, contract, etc.) for all personal data used in AI training or inference.' },
   { id:'transparency_notice', cat:'Data', label:'AI use disclosed in privacy notice', art:'Art. 13-14 GDPR', desc:'Privacy notice updated to disclose AI/automated processing, logic involved, and significance of decisions.' },
   { id:'human_oversight', cat:'Operations', label:'Human oversight mechanism in place', art:'Art. 14 EU AI Act', desc:'For high-risk AI: documented process for human review and override of AI decisions.' },
   { id:'bias_testing', cat:'Operations', label:'Bias and fairness testing conducted', art:'Art. 9 EU AI Act', desc:'Risk management system addressing bias, accuracy, robustness, and cybersecurity for AI systems.' },
   { id:'data_minimisation', cat:'Data', label:'Data minimisation applied to AI training', art:'Art. 5(1)(c) GDPR', desc:'Only personal data that is adequate, relevant, and limited to what is necessary is used for AI training.' },
-  { id:'automated_decisions', cat:'Operations', label:'Automated decision-making safeguards in place', art:'Art. 22 GDPR', desc:'If solely automated decisions have legal/significant effects: right to human review, explanation, and contest.' },
+  { id:'automated_decisions', cat:'Operations', label:'Automated decision-making safeguards in place', art:'UK GDPR Art. 22A-22D', desc:'If solely automated decisions have legal or similarly significant effects: tell people, and let them make representations, get a human to review and contest the decision (UK GDPR as amended by DUAA).' },
   { id:'gpai', cat:'Governance', label:'GPAI model obligations assessed (if applicable)', art:'Art. 53 EU AI Act', desc:'If using or building General Purpose AI models: technical documentation, copyright policy, training data summary.' },
   { id:'incident_reporting', cat:'Operations', label:'AI incident reporting process defined', art:'Art. 73 EU AI Act', desc:'Process to identify, assess, and report serious incidents from high-risk AI systems to national authorities.' },
   { id:'staff_training', cat:'Training', label:'Staff trained on AI governance and risks', art:'Art. 4 EU AI Act', desc:'All staff who deploy or manage AI systems have received appropriate AI literacy and governance training.' },
-  { id:'supplier_checks', cat:'Governance', label:'AI supplier/provider obligations verified', art:'Art. 28 EU AI Act', desc:'Confirmed obligations between provider and deployer are clear, DPA in place, and technical documentation received.' },
+  { id:'supplier_checks', cat:'Governance', label:'AI supplier/provider obligations verified', art:'Art. 25-26 EU AI Act', desc:'Confirmed obligations between provider and deployer are clear, DPA in place, and technical documentation received.' },
 ]
 
+// Dates as amended by the Digital Omnibus on AI (in force 27 July 2026)
 const TIMELINE = [
-  { date:'Feb 2025', label:'Prohibited AI practices banned', status:'active', color:'#EF4444' },
-  { date:'Aug 2025', label:'GPAI model obligations apply', status:'active', color:'#F59E0B' },
-  { date:'Aug 2026', label:'High-risk AI (Annex III) obligations', status:'upcoming', color:'#818CF8' },
-  { date:'Aug 2027', label:'High-risk AI (Annex I) obligations', status:'future', color:'rgba(255,255,255,.3)' },
+  { date:'Feb 2025', label:'Prohibited AI practices banned; AI literacy duty applies', status:'active', color:'#EF4444' },
+  { date:'Aug 2025', label:'General-purpose AI model obligations apply', status:'active', color:'#F59E0B' },
+  { date:'Aug 2026', label:'Transparency duties (e.g. telling people they are talking to an AI)', status:'active', color:'#F59E0B' },
+  { date:'Dec 2026', label:'Labelling AI-generated content, for generative AI already on the market', status:'upcoming', color:'#818CF8' },
+  { date:'Dec 2027', label:'High-risk AI (Annex III, e.g. recruitment, credit scoring) obligations', status:'upcoming', color:'#818CF8' },
+  { date:'Aug 2028', label:'High-risk AI in regulated products (Annex I) obligations', status:'future', color:'rgba(255,255,255,.3)' },
 ]
 
 
@@ -99,7 +102,7 @@ export default function AIGovernancePage() {
       </section>
 
       {/* TABS */}
-      <div style={{ background:'rgba(255,255,255,0.9)', borderBottom:'1px solid var(--border)' }}>
+      <div style={{ background:'rgba(255,255,255,0.04)', borderBottom:'1px solid var(--border)' }}>
         <div className="wrap" style={{ display:'flex' }}>
           {[['classifier','🔍 Risk Classifier'],['readiness','✅ Readiness Checklist'],['timeline','📅 EU AI Act Timeline'],['register','📋 AI Register']].map(([id, label]) => (
             <button key={id} onClick={() => setTab(id)}
@@ -117,7 +120,7 @@ export default function AIGovernancePage() {
           <div>
             {!tier ? (
               <div style={{ maxWidth:680 }}>
-                <div style={{ background:'rgba(255,255,255,0.9)', border:'1px solid rgba(255,255,255,.08)', borderRadius:16, padding:'28px 32px', marginBottom:20 }}>
+                <div style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,.08)', borderRadius:16, padding:'28px 32px', marginBottom:20 }}>
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:20 }}>
                     <h2 style={{ fontFamily:'Syne,sans-serif', fontSize:18, fontWeight:700, color:'#fff' }}>EU AI Act Risk Classifier</h2>
                     <span style={{ fontSize:12, color:'rgba(255,255,255,.35)' }}>Question {step + 1} of {QUESTIONS.length}</span>
@@ -158,7 +161,7 @@ export default function AIGovernancePage() {
                   <p style={{ fontSize:14, color:'rgba(255,255,255,.7)', lineHeight:1.7, marginBottom:0 }}>{RISK_TIERS[tier].summary}</p>
                 </div>
 
-                <div style={{ background:'rgba(255,255,255,0.9)', border:'1px solid rgba(255,255,255,.07)', borderRadius:14, padding:'22px 24px', marginBottom:16 }}>
+                <div style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,.07)', borderRadius:14, padding:'22px 24px', marginBottom:16 }}>
                   <h3 style={{ fontSize:15, fontWeight:700, color:'#fff', marginBottom:16 }}>Required Actions</h3>
                   <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
                     {RISK_TIERS[tier].requirements.map((req, i) => (
@@ -187,7 +190,7 @@ export default function AIGovernancePage() {
                 <h2 style={{ fontFamily:'Syne,sans-serif', fontSize:20, fontWeight:700, color:'#fff', marginBottom:4 }}>AI Governance Readiness</h2>
                 <p style={{ fontSize:13, color:'rgba(255,255,255,.45)' }}>{completedChecks} of {READINESS_CHECKS.length} checks completed</p>
               </div>
-              <div style={{ textAlign:'center', background:'rgba(255,255,255,0.9)', border:'1px solid rgba(255,255,255,.08)', borderRadius:12, padding:'14px 20px' }}>
+              <div style={{ textAlign:'center', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,.08)', borderRadius:12, padding:'14px 20px' }}>
                 <div style={{ fontSize:28, fontWeight:800, color: checksPct >= 75 ? '#9B7BFA' : checksPct >= 40 ? '#F59E0B' : '#EF4444' }}>{checksPct}%</div>
                 <div style={{ fontSize:11, color:'rgba(255,255,255,.4)' }}>Ready</div>
               </div>
@@ -226,21 +229,23 @@ export default function AIGovernancePage() {
         {tab === 'timeline' && (
           <div style={{ maxWidth:740 }}>
             <h2 style={{ fontFamily:'Syne,sans-serif', fontSize:20, fontWeight:700, color:'#fff', marginBottom:8 }}>EU AI Act Implementation Timeline</h2>
-            <p style={{ fontSize:14, color:'rgba(255,255,255,.5)', marginBottom:32, lineHeight:1.7 }}>The EU AI Act (Regulation 2024/1689) entered into force on 1 August 2024. Obligations roll out over 36 months.</p>
+            <p style={{ fontSize:14, color:'rgba(255,255,255,.5)', marginBottom:32, lineHeight:1.7 }}>The EU AI Act (Regulation 2024/1689) entered into force on 1 August 2024. Its obligations apply in stages, as amended by the Digital Omnibus on AI (in force 27 July 2026). It applies to UK organisations that place AI systems on the EU market or whose AI output is used in the EU.</p>
 
             <div style={{ position:'relative', paddingLeft:32 }}>
               <div style={{ position:'absolute', left:8, top:0, bottom:0, width:2, background:'rgba(255,255,255,.08)' }} />
               {[
-                { date:'1 Aug 2024', label:'EU AI Act enters into force', status:'done', color:'#9B7BFA', detail:'The Act was published in the Official Journal. 24-month implementation clock started for most obligations.' },
-                { date:'2 Feb 2025', label:'Prohibited AI practices ban', status:'done', color:'#EF4444', detail:'All prohibited AI systems under Article 5 must be discontinued. Includes social scoring, subliminal manipulation, exploitation of vulnerabilities, and (with narrow exceptions) real-time remote biometric ID.' },
-                { date:'2 Aug 2025', label:'GPAI model obligations', status:'done', color:'#F59E0B', detail:'General Purpose AI model providers must: maintain technical documentation, publish training data summaries, implement copyright policies, report serious incidents to EU AI Office.' },
-                { date:'2 Aug 2026', label:'High-risk AI obligations (Annex III)', status:'upcoming', color:'#818CF8', detail:'Full conformity obligations for high-risk AI systems in: biometrics, critical infrastructure, education, employment, essential services, law enforcement, border control, justice. Includes QMS, conformity assessments, CE marking, EU database registration.' },
-                { date:'2 Aug 2026', label:'Notified body requirements', status:'upcoming', color:'#818CF8', detail:'Conformity assessment bodies must be designated and notified. Third-party conformity assessments required for certain high-risk AI systems.' },
-                { date:'2 Aug 2027', label:'High-risk AI obligations (Annex I)', status:'future', color:'rgba(255,255,255,.3)', detail:'AI systems used as safety components in products covered by existing EU legislation (machinery, medical devices, vehicles etc.) must comply.' },
+                { date:'1 Aug 2024', label:'EU AI Act enters into force', status:'done', color:'#9B7BFA', detail:'Regulation (EU) 2024/1689 was published in the Official Journal. Its obligations apply in stages.' },
+                { date:'2 Feb 2025', label:'Prohibited AI practices banned; AI literacy', status:'done', color:'#EF4444', detail:'Article 5 practices are banned, including social scoring, harmful manipulation, exploiting vulnerabilities, and (with narrow exceptions) real-time remote biometric identification for law enforcement. Organisations using AI must also take steps to ensure their staff have sufficient AI literacy (Art. 4).' },
+                { date:'2 Aug 2025', label:'General-purpose AI model obligations', status:'done', color:'#F59E0B', detail:'Providers of general-purpose AI models must keep technical documentation, publish a summary of training content and have a copyright policy. Extra duties apply to models with systemic risk.' },
+                { date:'27 Jul 2026', label:'Digital Omnibus amendment in force', status:'done', color:'#9B7BFA', detail:'The EU amended the Act to delay the high-risk rules and give more time for labelling AI-generated content. The dates below are the amended ones.' },
+                { date:'2 Aug 2026', label:'Transparency duties and penalties', status:'done', color:'#F59E0B', detail:'People must be told when they are interacting with an AI system (unless obvious), and deepfakes must be disclosed. National authorities can enforce, with penalties.' },
+                { date:'2 Dec 2026', label:'Labelling AI-generated content (existing systems)', status:'upcoming', color:'#818CF8', detail:'Generative AI systems placed on the market before 2 August 2026 have until 2 December 2026 to mark AI-generated audio, images, video and text in a machine-readable way.' },
+                { date:'2 Dec 2027', label:'High-risk AI obligations (Annex III)', status:'upcoming', color:'#818CF8', detail:'Stand-alone high-risk systems in areas such as biometrics, critical infrastructure, education, employment and recruitment, access to essential services (e.g. credit scoring), law enforcement, migration and justice: risk management, data governance, documentation, human oversight, conformity assessment and EU database registration.' },
+                { date:'2 Aug 2028', label:'High-risk AI in regulated products (Annex I)', status:'future', color:'rgba(255,255,255,.3)', detail:'AI used as a safety component of products covered by EU product laws (machinery, medical devices, toys and so on) must comply.' },
               ].map((item, i) => (
                 <div key={i} style={{ position:'relative', marginBottom:28, paddingLeft:20 }}>
                   <div style={{ position:'absolute', left:-24, top:4, width:14, height:14, borderRadius:'50%', background: item.status==='done' ? item.color : item.status==='upcoming' ? 'rgba(255,255,255,.15)' : 'rgba(255,255,255,.06)', border:`2px solid ${item.color}` }} />
-                  <div style={{ background:'rgba(255,255,255,0.9)', border:`1px solid ${item.status==='done' ? `${item.color}33` : 'rgba(255,255,255,.06)'}`, borderRadius:12, padding:'16px 20px' }}>
+                  <div style={{ background:'rgba(255,255,255,0.04)', border:`1px solid ${item.status==='done' ? `${item.color}33` : 'rgba(255,255,255,.06)'}`, borderRadius:12, padding:'16px 20px' }}>
                     <div style={{ display:'flex', gap:10, alignItems:'center', marginBottom:8, flexWrap:'wrap' }}>
                       <span style={{ fontSize:12, fontWeight:700, color:item.color }}>{item.date}</span>
                       <span style={{ fontSize:10, padding:'2px 8px', borderRadius:20, background: item.status==='done'?'rgba(139,92,246,.1)':item.status==='upcoming'?'rgba(99,102,241,.1)':'rgba(255,255,255,.05)', color: item.status==='done'?'#9B7BFA':item.status==='upcoming'?'#818CF8':'rgba(255,255,255,.35)', fontWeight:600 }}>{item.status==='done'?'IN FORCE':item.status==='upcoming'?'UPCOMING':'FUTURE'}</span>
@@ -269,7 +274,7 @@ export default function AIGovernancePage() {
               </div>
             </div>
 
-            <div style={{ background:'rgba(255,255,255,0.9)', border:'1px solid rgba(255,255,255,.08)', borderRadius:16, padding:'28px 32px', textAlign:'center' }}>
+            <div style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,.08)', borderRadius:16, padding:'28px 32px', textAlign:'center' }}>
               <div style={{ fontSize:48, marginBottom:16 }}>🤖</div>
               <h3 style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:8 }}>AI Register</h3>
               <p style={{ fontSize:14, color:'rgba(255,255,255,.45)', marginBottom:20, lineHeight:1.7, maxWidth:480, margin:'0 auto 20px' }}>Use the Risk Classifier to assess each AI system, then your classifications are stored here. Run the classifier for each AI tool your organisation uses.</p>

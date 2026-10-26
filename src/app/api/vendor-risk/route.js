@@ -36,7 +36,8 @@ export async function POST(req) {
   if (action === 'delete') {
     if (col && user && vendorId) {
       const { ObjectId } = await import('mongodb')
-      await col.deleteOne({ _id: new ObjectId(vendorId), userEmail: user.email })
+      if (!ObjectId.isValid(String(vendorId))) return Response.json({ error: 'Vendor not found' }, { status: 404 })
+      await col.deleteOne({ _id: new ObjectId(String(vendorId)), userEmail: user.email })
       await trackActivity({ userEmail: user?.email, tool: 'vendor-risk', action: 'vendor_deleted', detail: vendorId })
     }
     return Response.json({ success: true })
@@ -45,7 +46,8 @@ export async function POST(req) {
   if (action === 'update_dpa') {
     if (col && user && vendorId) {
       const { ObjectId } = await import('mongodb')
-      await col.updateOne({ _id: new ObjectId(vendorId), userEmail: user.email }, { $set: { dpaSigned: body.dpaSigned, dpaSignedDate: body.dpaSignedDate, updatedAt: new Date() } })
+      if (!ObjectId.isValid(String(vendorId))) return Response.json({ error: 'Vendor not found' }, { status: 404 })
+      await col.updateOne({ _id: new ObjectId(String(vendorId)), userEmail: user.email }, { $set: { dpaSigned: body.dpaSigned, dpaSignedDate: body.dpaSignedDate, updatedAt: new Date() } })
       await trackActivity({ userEmail: user?.email, tool: 'vendor-risk', action: 'dpa_updated', detail: vendorId, meta: { dpaSigned: body.dpaSigned } })
     }
     return Response.json({ success: true })

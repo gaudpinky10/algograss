@@ -79,22 +79,26 @@ export async function GET(request) {
         } else {
           // New user — create account
           const isAdmin = email === (process.env.ADMIN_EMAIL || '').toLowerCase()
+          // Same 60-day free Pro trial as email signups (launch promotion)
+          const trialEndsAt = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000)
           const result  = await users.insertOne({
             name, email,
             password:    null, // Google users have no password
-            plan:        'free',
+            plan:        'pro',
+            trialEndsAt,
+            trialPlan:   'free',
             isAdmin,
             avatar,
             googleId:    googleUser.id,
             createdAt:   new Date(),
             signupMethod: 'google',
           })
-          userData = { id: result.insertedId.toString(), name, email, plan: 'free', isAdmin, avatar }
+          userData = { id: result.insertedId.toString(), name, email, plan: 'pro', isAdmin, avatar }
           await trackActivity({ userEmail: email, tool: 'auth', action: 'signup', detail: 'New signup via Google', meta: { method: 'google' } })
           // Send welcome email (non-blocking)
           if (process.env.RESEND_API_KEY) {
             const { sendWelcomeEmail } = await import('@/lib/emails')
-            sendWelcomeEmail(name, email, 'free').catch(e => console.error('Welcome email failed:', e.message))
+            sendWelcomeEmail(name, email, 'pro').catch(e => console.error('Welcome email failed:', e.message))
           }
         }
       }

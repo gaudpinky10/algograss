@@ -1,19 +1,20 @@
 import { askClaude } from '@/lib/ai'
+import { UK_DATA_FACTS, HONESTY_RULES, todayUK } from '@/lib/ukDataFacts'
 
-const SYSTEM_PROMPT = `You are AlgoGrass — an expert AI compliance platform specialising in GDPR (EU Regulation 2016/679), UK Data Protection Act 2018, UK GDPR, ePrivacy Regulations, and ICO enforcement guidance.
+const SYSTEM_PROMPT = `You are AlgoGrass AI, the compliance assistant of AlgoGrass (algograss.com), built on Anthropic's Claude. You help UK small businesses with UK GDPR, the Data Protection Act 2018, PECR and ICO guidance (and EU GDPR where relevant).
 
-You provide authoritative, accurate, and actionable compliance guidance to UK and EU businesses. You speak with confidence and expertise. You give specific, practical answers — not vague generalities.
+Give specific, practical answers with clear next steps. Cite the article, section or ICO guidance when you are sure of it.
 
-Always cite the exact GDPR article, ICO guidance reference, or UK DPA section. Give businesses clear, implementable steps they can act on immediately.
+${UK_DATA_FACTS}
 
-You are the compliance expert these businesses rely on. Be thorough, precise, and professional.`
+${HONESTY_RULES}`
 
 export async function POST(request) {
   try {
     const { messages } = await request.json()
 
     const reply = await askClaude({
-      system: SYSTEM_PROMPT,
+      system: SYSTEM_PROMPT + `\n\nToday's date is ${todayUK()}.`,
       messages,
       maxTokens: 1500,
       temperature: 0.3,

@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react'
 const S = {
   page: { minHeight: '100vh', background: '#06060F', padding: '40px 20px', fontFamily: "'Segoe UI', sans-serif" },
   wrap: { maxWidth: 720, margin: '0 auto' },
-  h1: { fontSize: 30, fontWeight: 800, color: '#0F172A', margin: '0 0 6px', letterSpacing: -0.5 },
+  h1: { fontSize: 30, fontWeight: 800, color: '#F1F5F9', margin: '0 0 6px', letterSpacing: -0.5 },
   sub: { color: '#94A3B8', fontSize: 14, margin: '0 0 32px' },
   card: { background: '#0D0D1E', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 16, padding: '28px 32px', marginBottom: 20 },
   label: { fontSize: 13, fontWeight: 600, color: '#CBD5E1', display: 'block', marginBottom: 6 },
-  input: { width: '100%', background: '#06060F', border: '1.5px solid rgba(255,255,255,0.09)', borderRadius: 10, padding: '10px 14px', color: '#0F172A', fontSize: 14, outline: 'none', boxSizing: 'border-box' },
+  input: { width: '100%', background: '#06060F', border: '1.5px solid rgba(255,255,255,0.09)', borderRadius: 10, padding: '10px 14px', color: '#F1F5F9', fontSize: 14, outline: 'none', boxSizing: 'border-box' },
   row: { marginBottom: 18 },
   btn: { background: 'linear-gradient(135deg,#9B7BFA,#7C3AED)', color: '#06060F', fontWeight: 700, fontSize: 14, padding: '11px 26px', borderRadius: 10, border: 'none', cursor: 'pointer' },
   btnDanger: { background: 'rgba(239,68,68,0.08)', color: '#EF4444', fontWeight: 600, fontSize: 13, padding: '9px 20px', borderRadius: 9, border: '1px solid rgba(239,68,68,0.2)', cursor: 'pointer' },
@@ -78,7 +78,7 @@ export default function SettingsPage() {
         {/* Profile */}
         {tab === 'Profile' && (
           <div style={S.card}>
-            <h3 style={{ color: '#0F172A', fontWeight: 700, fontSize: 16, margin: '0 0 20px' }}>Profile Details</h3>
+            <h3 style={{ color: '#F1F5F9', fontWeight: 700, fontSize: 16, margin: '0 0 20px' }}>Profile Details</h3>
             <div style={S.row}><label style={S.label}>Full name</label><input style={S.input} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} /></div>
             <div style={S.row}><label style={S.label}>Email address</label><input style={{ ...S.input, opacity: 0.5 }} value={user?.email || ''} readOnly /></div>
             <div style={S.row}><label style={S.label}>Website</label><input style={S.input} value={form.website} onChange={e => setForm(f => ({ ...f, website: e.target.value }))} placeholder="https://yourbusiness.com" /></div>
@@ -102,7 +102,7 @@ export default function SettingsPage() {
                 <a href="/pricing" style={{ color: '#9B7BFA', fontSize: 13, fontWeight: 600 }}>Upgrade to Pro →</a>
               </div>
             )}
-            <h3 style={{ color: '#0F172A', fontWeight: 700, fontSize: 16, margin: '0 0 20px' }}>White Label Branding</h3>
+            <h3 style={{ color: '#F1F5F9', fontWeight: 700, fontSize: 16, margin: '0 0 20px' }}>White Label Branding</h3>
             <div style={S.row}><label style={S.label}>Company name (used on generated documents)</label><input style={S.input} value={form.brandName} onChange={e => setForm(f => ({ ...f, brandName: e.target.value }))} placeholder="Your Company Ltd" disabled={!isPro} /></div>
             <div style={S.row}><label style={S.label}>Company logo URL</label><input style={S.input} value={form.brandLogo} onChange={e => setForm(f => ({ ...f, brandLogo: e.target.value }))} placeholder="https://yourcompany.com/logo.png" disabled={!isPro} /></div>
             {form.brandLogo && <div style={{ ...S.row, background: '#06060F', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 10, padding: 16, marginBottom: 18 }}><img src={form.brandLogo} alt="Logo preview" style={{ maxHeight: 60, maxWidth: 200 }} onError={e => e.target.style.display='none'} /></div>}
@@ -123,16 +123,16 @@ export default function SettingsPage() {
         {/* Notifications */}
         {tab === 'Notifications' && (
           <div style={S.card}>
-            <h3 style={{ color: '#0F172A', fontWeight: 700, fontSize: 16, margin: '0 0 20px' }}>Email Notifications</h3>
+            <h3 style={{ color: '#F1F5F9', fontWeight: 700, fontSize: 16, margin: '0 0 20px' }}>Email Notifications</h3>
             {[
-              ['weeklyReport', 'Weekly scan reports', 'Automated compliance scan results every Monday'],
+              ['weeklyReport', 'Weekly scan alerts', 'Email after the weekly scan of your website, when it finds something new'],
               ['regulatoryDigest', 'Regulatory update digest', 'New ICO, EDPB, and UK GDPR updates every Friday'],
               ['trialWarning', 'Trial expiry warnings', 'Reminder 3 days before your trial ends'],
               ['scoreDrop', 'Score drop alerts', 'Email when your compliance score drops 5+ points'],
             ].map(([key, label, desc]) => (
               <div key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 0', borderBottom: '1px solid rgba(30,45,69,0.5)' }}>
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 2 }}>{label}</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#F1F5F9', marginBottom: 2 }}>{label}</div>
                   <div style={{ fontSize: 12, color: '#94A3B8' }}>{desc}</div>
                 </div>
                 <div onClick={() => setNotif(n => ({ ...n, [key]: !n[key] }))} style={{ width: 44, height: 24, borderRadius: 12, background: notif[key] ? '#9B7BFA' : 'rgba(255,255,255,0.09)', cursor: 'pointer', position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}>
@@ -150,7 +150,7 @@ export default function SettingsPage() {
         {tab === 'Security' && (
           <>
             <div style={S.card}>
-              <h3 style={{ color: '#0F172A', fontWeight: 700, fontSize: 16, margin: '0 0 20px' }}>Change Password</h3>
+              <h3 style={{ color: '#F1F5F9', fontWeight: 700, fontSize: 16, margin: '0 0 20px' }}>Change Password</h3>
               <div style={S.row}><label style={S.label}>Current password</label><input type="password" style={S.input} value={pass.current} onChange={e => setPass(p => ({ ...p, current: e.target.value }))} /></div>
               <div style={S.row}><label style={S.label}>New password</label><input type="password" style={S.input} value={pass.next} onChange={e => setPass(p => ({ ...p, next: e.target.value }))} /></div>
               <div style={S.row}><label style={S.label}>Confirm new password</label><input type="password" style={S.input} value={pass.confirm} onChange={e => setPass(p => ({ ...p, confirm: e.target.value }))} /></div>

@@ -5,11 +5,13 @@
  * What it does:
  *  1. Finds users whose trial expires in exactly 3 days → sends warning email
  *  2. Finds users whose trial expired today → sends expired email + downgrades plan to 'free'
+ *  3. Sends the daily reminder digest to users who turned it on
  */
 
 import { NextResponse } from 'next/server';
 import { getCollection } from '@/lib/dbHelpers';
 import { sendTrialWarningEmail, sendTrialExpiredEmail } from '@/lib/emails';
+import { sendReminderDigests } from '@/lib/reminderDigest';
 
 export const runtime = 'nodejs';
 
@@ -42,7 +44,7 @@ export async function GET(request) {
 
     for (const user of soonExpiring) {
       try {
-        if (process.env.RESEND_API_KEY) {
+        if (process.env.RESEND_API_KEY && user.notifications?.trialWarning !== false) {
           await sendTrialWarningEmail(user.name || 'there', user.email, 3);
           results.warned++;
         }
@@ -78,6 +80,9 @@ export async function GET(request) {
     // ── Also check users on 'pro' with no trialEndsAt — they signed up before
     //    this field existed. Gracefully skip them (don't downgrade).
     // ─────────────────────────────────────────────────────────────────────────
+
+    // ── Daily reminder digests (same daily run) ─────────────────────────────
+    try { results.reminders = await sendReminderDigests(); } catch (e) { results.errors.push(`reminders: ${e.message}`); }
 
     return NextResponse.json({
       ok: true,

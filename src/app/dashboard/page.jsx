@@ -441,10 +441,10 @@ function Dashboard() {
     try {
       const res = await fetch('/api/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ docType, scanData: result }) })
       const data = await res.json()
-      if (data.error) { alert('Error: ' + data.error); return }
-      setDocState(prev => ({ ...prev, [docType]: data.document }))
+      if (data.error) alert(data.error)
+      else setDocState(prev => ({ ...prev, [docType]: data.note ? `${data.document}\n\n---\n${data.note}` : data.document }))
     } catch { alert('Failed to generate document. Please try again.') }
-    setDocLoading(prev => ({ ...prev, [docType]: false }))
+    finally { setDocLoading(prev => ({ ...prev, [docType]: false })) }
   }
 
   async function sendMessage(text) {
@@ -464,11 +464,10 @@ function Dashboard() {
   async function sendEmailReport() {
     if (!emailReport || !result) return
     try {
-      await fetch(`https://formspree.io/f/${process.env.NEXT_PUBLIC_FORMSPREE_ID || 'xlgvkepp'}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailReport, subject: `AlgoGrass Report: ${result.url}`, report: buildReportText(result), score: result.score }),
-      })
+      // Sent by AlgoGrass to the address given, using the scan saved on our side
+      const res = await fetch('/api/email-report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: emailReport, url: result.url }) })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || data.error) { alert(data.error || 'Could not send email. Please download the report instead.'); return }
       setEmailSent(true)
     } catch { alert('Could not send email. Please download the report instead.') }
   }
@@ -1022,4 +1021,3 @@ function Dashboard() {
     </div>
   )
 }
- 

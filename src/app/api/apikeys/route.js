@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getCollection, parseUserCookie } from '@/lib/dbHelpers';
 import { cookies } from 'next/headers';
 import { randomBytes, createHash } from 'crypto';
+import { limitsFor } from '@/lib/apiKeys';
 
 function getUser() {
   try {
@@ -27,7 +28,9 @@ export async function POST(request) {
   if (!col) return NextResponse.json({ error: 'DB unavailable' }, { status: 500 });
 
   const existing = await col.countDocuments({ userEmail: user.email, isActive: true });
-  const limit = user.plan === 'pro' ? 10 : user.plan === 'starter' ? 3 : 1;
+  const users = await getCollection('users');
+  const me = users ? await users.findOne({ email: user.email }, { projection: { plan: 1 } }) : null;
+  const limit = limitsFor(me?.plan || user.plan).keys;
   if (existing >= limit) return NextResponse.json({ error: `Your plan allows up to ${limit} API key${limit > 1 ? 's' : ''}. Delete an existing key first.` }, { status: 400 });
 
   const key = `ag_${randomBytes(32).toString('hex')}`;
@@ -44,6 +47,7 @@ export async function DELETE(request) {
   const col = await getCollection('apikeys');
   if (!col) return NextResponse.json({ error: 'DB unavailable' }, { status: 500 });
   const { ObjectId } = await import('mongodb');
-  await col.updateOne({ _id: new ObjectId(keyId), userEmail: user.email }, { $set: { isActive: false, revokedAt: new Date() } });
+  if (!ObjectId.isValid(String(keyId))) return NextResponse.json({ error: 'Key not found' }, { status: 404 });
+  await col.updateOne({ _id: new ObjectId(String(keyId)), userEmail: user.email }, { $set: { isActive: false, revokedAt: new Date() } });
   return NextResponse.json({ success: true });
 }

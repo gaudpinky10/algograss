@@ -2,24 +2,18 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
-const REMINDERS_KEY = 'algograss_reminders'
-const AUTO_EMAIL_KEY = 'algograss_auto_reminder_email'
-const LAST_SENT_KEY = 'algograss_reminder_last_sent'
 const TYPES = ['Policy Review', 'DPIA Review', 'AI Register Review', 'Vendor Contract Review', 'Staff Training', 'Privacy Notice Update', 'Data Retention Review', 'Security Audit', 'ICO Registration Renewal', 'Custom']
 
-function getData(key) { try { return JSON.parse(localStorage.getItem(key) || '[]') } catch { return [] } }
-function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)) } catch {} }
 
 function getDaysUntil(dateStr) {
   return Math.ceil((new Date(dateStr) - new Date()) / (1000 * 60 * 60 * 24))
 }
 
 function getStatusStyle(days) {
-  if (days < 0) return { bg: '#FEF2F2', text: '#DC2626', border: '#F5B7B1', label: 'OVERDUE' }
-  if (days === 0) return { bg: '#FEF2F2', text: '#DC2626', border: '#F5B7B1', label: 'DUE TODAY' }
-  if (days <= 7) return { bg: '#FFFBEB', text: '#D97706', border: '#FCD34D', label: `${days}d` }
-  if (days <= 30) return { bg: '#FFFBEB', text: '#D97706', border: '#FCD34D', label: `${days}d` }
-  return { bg: '#F0FDF4', text: '#16A34A', border: 'var(--green-m)', label: `${days}d` }
+  if (days < 0) return { bg: 'rgba(239,68,68,0.10)', text: '#F87171', border: 'rgba(239,68,68,0.35)', label: 'OVERDUE' }
+  if (days === 0) return { bg: 'rgba(239,68,68,0.10)', text: '#F87171', border: 'rgba(239,68,68,0.35)', label: 'DUE TODAY' }
+  if (days <= 30) return { bg: 'rgba(245,158,11,0.10)', text: '#FBBF24', border: 'rgba(245,158,11,0.35)', label: `${days}d` }
+  return { bg: 'rgba(34,197,94,0.10)', text: '#4ADE80', border: 'var(--green-m)', label: `${days}d` }
 }
 
 
@@ -48,49 +42,31 @@ export default function RemindersPage() {
   const [emailLoading, setEmailLoading] = useState(false)
 
   // Auto-reminder state
-  const [autoEmail, setAutoEmail] = useState('')
   const [autoEnabled, setAutoEnabled] = useState(false)
   const [autoSaving, setAutoSaving] = useState(false)
-  const [autoStatus, setAutoStatus] = useState('') // '', 'sent', 'no-due'
 
   const [filter, setFilter] = useState('all')
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }))
 
+  const [accountEmail, setAccountEmail] = useState('')
+  const [emailOn, setEmailOn] = useState(true)
+  const [saveError, setSaveError] = useState('')
+
   useEffect(() => {
-    // Load from DB first, fallback to localStorage
     fetch('/api/reminders')
       .then(r => r.json())
       .then(data => {
-        if (data.reminders && data.reminders.length > 0) {
-          // Normalize DB reminders (dueDate field) to match UI (date field)
-          const normalized = data.reminders.map(r => ({ ...r, date: r.dueDate || r.date, id: r._id || r.id }))
-          setReminders(normalized)
-        } else {
-          // Fallback: try localStorage
-          const saved = getData(REMINDERS_KEY)
-          setReminders(saved)
-        }
+        setReminders((data.reminders || []).map(r => ({ ...r, date: r.dueDate || r.date, id: r.id || r._id })))
+        setAutoEnabled(!!data.digest)
+        setAccountEmail(data.email || '')
+        setEmailOn(data.emailOn !== false)
       })
-      .catch(() => {
-        const saved = getData(REMINDERS_KEY)
-        setReminders(saved)
-      })
-
-    // Restore auto-reminder settings
-    const savedAutoEmail = localStorage.getItem(AUTO_EMAIL_KEY) || ''
-    if (savedAutoEmail) {
-      setAutoEmail(savedAutoEmail)
-      setAutoEnabled(true)
-      const lastSent = localStorage.getItem(LAST_SENT_KEY) || ''
-      const today = new Date().toDateString()
-      if (lastSent === today) {
-        setAutoStatus('sent')
-      }
-    }
+      .catch(() => setSaveError('Could not load your reminders. Please refresh the page.'))
   }, [])
 
   async function addReminder() {
     if (!form.title || !form.date) return
+    setSaveError('')
     try {
       const res = await fetch('/api/reminders', {
         method: 'POST',
@@ -98,78 +74,42 @@ export default function RemindersPage() {
         body: JSON.stringify({ title: form.title, type: form.type, dueDate: form.date, owner: form.owner, notes: form.notes }),
       })
       const data = await res.json()
-      if (data.reminder) {
-        const normalized = { ...data.reminder, date: data.reminder.dueDate, id: data.reminder._id }
-        setReminders(prev => [normalized, ...prev])
-      } else {
-        // Fallback to localStorage
-        const updated = [{ id: Date.now(), ...form, createdAt: new Date().toISOString() }, ...reminders]
-        setReminders(updated); saveData(REMINDERS_KEY, updated)
-      }
-    } catch {
-      const updated = [{ id: Date.now(), ...form, createdAt: new Date().toISOString() }, ...reminders]
-      setReminders(updated); saveData(REMINDERS_KEY, updated)
-    }
-    setShowForm(false); setForm({ title: '', type: 'Policy Review', date: '', owner: '', notes: '' })
+      if (!res.ok || !data.reminder) { setSaveError(data.error || 'Could not save the reminder.'); return }
+      setReminders(prev => [{ ...data.reminder, date: data.reminder.dueDate }, ...prev])
+      setShowForm(false); setForm({ title: '', type: 'Policy Review', date: '', owner: '', notes: '' })
+    } catch { setSaveError('Could not save the reminder. Please try again.') }
   }
 
   async function deleteReminder(id) {
+    const before = reminders
     setReminders(prev => prev.filter(r => r.id !== id && r._id !== id))
     try {
-      await fetch('/api/reminders', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id }),
-      })
-    } catch {}
-    // Also remove from localStorage fallback
-    const updated = reminders.filter(r => r.id !== id)
-    saveData(REMINDERS_KEY, updated)
+      const res = await fetch('/api/reminders', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) })
+      if (!res.ok) { setReminders(before); setSaveError('Could not delete the reminder.') }
+    } catch { setReminders(before); setSaveError('Could not delete the reminder.') }
   }
 
   async function sendEmailReminders() {
-    if (!email || !reminders.length) return
-    setEmailLoading(true)
+    if (!reminders.length) return
+    setEmailLoading(true); setSaveError('')
     try {
-      const res = await fetch('/api/reminders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'email', email, reminders }),
-      })
+      const res = await fetch('/api/reminders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'email' }) })
       const data = await res.json()
-      if (data.success) setEmailSent(true)
-      else alert('Could not send email. Please try again.')
-    } catch { alert('Failed to send email.') }
+      if (data.success) { setEmail(data.sentTo || accountEmail); setEmailSent(true) }
+      else setSaveError(data.error || 'Could not send the email.')
+    } catch { setSaveError('Could not send the email.') }
     setEmailLoading(false)
   }
 
-  async function saveAutoReminder() {
-    if (!autoEmail) return
-    setAutoSaving(true)
-    localStorage.setItem(AUTO_EMAIL_KEY, autoEmail)
-    setAutoEnabled(true)
-    // Send immediately on first subscribe
+  async function setDigest(enabled) {
+    setAutoSaving(true); setSaveError('')
     try {
-      const res = await fetch('/api/reminders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'email', email: autoEmail, reminders }),
-      })
+      const res = await fetch('/api/reminders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'digest', enabled }) })
       const data = await res.json()
-      if (data.success) {
-        localStorage.setItem(LAST_SENT_KEY, new Date().toDateString())
-        setAutoStatus('sent')
-      }
-    } catch {}
+      if (data.success) setAutoEnabled(!!data.digest)
+      else setSaveError(data.error || 'Could not change the setting.')
+    } catch { setSaveError('Could not change the setting.') }
     setAutoSaving(false)
-  }
-
-  function disableAutoReminder() {
-    localStorage.removeItem(AUTO_EMAIL_KEY)
-    localStorage.removeItem(LAST_SENT_KEY)
-    setAutoEnabled(false)
-    setAutoEmail('')
-    setAutoStatus('')
   }
 
   const getDate = r => r.date || r.dueDate
@@ -185,7 +125,7 @@ export default function RemindersPage() {
         <div className="wrap">
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(255,255,255,.15)', padding: '5px 13px', borderRadius: 100, marginBottom: 16, fontSize: 11, fontWeight: 600, color: '#fff', letterSpacing: '.06em', textTransform: 'uppercase' }}>Compliance Reminders</div>
           <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(26px,3vw,42px)', fontWeight: 800, color: '#fff', marginBottom: 10 }}>Review & Reminder Tracker</h1>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,.75)', maxWidth: 540, lineHeight: 1.7 }}>Never miss a compliance deadline. Track policy reviews, DPIA renewals, staff training, and vendor contract reviews — with automatic daily email digests.</p>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,.75)', maxWidth: 540, lineHeight: 1.7 }}>Never miss a compliance deadline. Track policy reviews, DPIA renewals, staff training, and vendor contract reviews — with an optional daily email of anything due soon.</p>
         </div>
       </section>
 
@@ -205,55 +145,40 @@ export default function RemindersPage() {
 
       <div className="wrap" style={{ padding: '32px 48px' }}>
 
-        {/* ── Auto-reminder subscription ─────────────────────────────── */}
+        {saveError && <p style={{ fontSize: 13, color: 'var(--red-text)', marginBottom: 12 }}>{saveError}</p>}
+
+        {/* ── Daily email digest (to the account's own email) ─────────── */}
         <div style={{ background: 'var(--white)', border: `1.5px solid ${autoEnabled ? 'var(--green)' : 'var(--border)'}`, borderRadius: 14, padding: '18px 22px', marginBottom: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: autoEnabled ? 0 : 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 20 }}>🔔</span>
-            <div style={{ flex: 1 }}>
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>Automatic daily digest</span>
-              {autoEnabled && autoStatus === 'sent' && (
-                <span style={{ marginLeft: 10, fontSize: 12, color: 'var(--green)', fontWeight: 500 }}>✅ Sent today to {autoEmail}</span>
-              )}
-              {autoEnabled && autoStatus === 'no-due' && (
-                <span style={{ marginLeft: 10, fontSize: 12, color: 'var(--ink2)' }}>No reminders due within 30 days — will send when one is.</span>
-              )}
-            </div>
-            {autoEnabled && (
-              <button onClick={disableAutoReminder} style={{ fontSize: 11, padding: '5px 12px', borderRadius: 7, border: '1px solid var(--border)', background: 'var(--cream)', color: 'var(--ink2)', cursor: 'pointer' }}>Disable</button>
-            )}
-          </div>
-          {!autoEnabled && (
-            <>
-              <p style={{ fontSize: 12, color: 'var(--ink2)', marginBottom: 12, lineHeight: 1.6 }}>
-                Subscribe to receive an automatic email digest each time you visit — sent once per day whenever reminders are due within 30 days.
-              </p>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                <input type="email" placeholder="your@email.com" value={autoEmail} onChange={e => setAutoEmail(e.target.value)}
-                  style={{ flex: 1, minWidth: 200, border: '1px solid var(--border)', borderRadius: 8, padding: '8px 12px', fontSize: 13, outline: 'none' }} />
-                <button onClick={saveAutoReminder} disabled={autoSaving || !autoEmail} className="btn btn-primary btn-sm">
-                  {autoSaving ? 'Subscribing...' : 'Enable auto-reminders →'}
-                </button>
+            <div style={{ flex: 1, minWidth: 220 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>Daily email digest {autoEnabled ? '· on' : ''}</div>
+              <div style={{ fontSize: 12, color: 'var(--ink2)', lineHeight: 1.6, marginTop: 2 }}>
+                {emailOn
+                  ? `Each morning, if anything is overdue or due within 7 days, we email ${accountEmail || 'your account email'}.`
+                  : 'Email digests are not switched on yet. Your reminders are saved here, and the digest will start once email is available.'}
               </div>
-            </>
-          )}
+            </div>
+            <button onClick={() => setDigest(!autoEnabled)} disabled={autoSaving} className={autoEnabled ? 'btn btn-secondary btn-sm' : 'btn btn-primary btn-sm'}>
+              {autoSaving ? 'Saving...' : autoEnabled ? 'Turn off' : 'Turn on'}
+            </button>
+          </div>
         </div>
 
-        {/* ── Manual one-off email send ─────────────────────────────── */}
-        <div style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 12, padding: '13px 20px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 16 }}>📧</span>
-          <span style={{ fontSize: 13, color: 'var(--ink2)' }}>Send all reminders now:</span>
-          {emailSent ? (
-            <span style={{ fontSize: 13, color: 'var(--green)', fontWeight: 500 }}>✅ Sent to {email}!</span>
-          ) : (
-            <>
-              <input type="email" placeholder="your@email.com" value={email} onChange={e => setEmail(e.target.value)}
-                style={{ flex: 1, minWidth: 180, border: '1px solid var(--border)', borderRadius: 8, padding: '7px 12px', fontSize: 13, outline: 'none' }} />
-              <button onClick={sendEmailReminders} disabled={emailLoading || !email || !reminders.length} className="btn btn-secondary btn-sm">
+        {/* ── Send now ──────────────────────────────────────────────────── */}
+        {emailOn && (
+          <div style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: 12, padding: '13px 20px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 16 }}>📧</span>
+            <span style={{ fontSize: 13, color: 'var(--ink2)', flex: 1 }}>Email all open reminders to {accountEmail || 'your account email'} now</span>
+            {emailSent ? (
+              <span style={{ fontSize: 13, color: 'var(--green)', fontWeight: 500 }}>✅ Sent to {email}</span>
+            ) : (
+              <button onClick={sendEmailReminders} disabled={emailLoading || !reminders.length} className="btn btn-secondary btn-sm">
                 {emailLoading ? 'Sending...' : 'Send now →'}
               </button>
-            </>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         {/* Add form */}
         {showForm && (
@@ -345,17 +270,9 @@ export default function RemindersPage() {
                       body: JSON.stringify({ title: item.title, type: item.type, dueDate, owner: '', notes: '' }),
                     })
                     const data = await res.json()
-                    if (data.reminder) {
-                      const normalized = { ...data.reminder, date: data.reminder.dueDate, id: data.reminder._id }
-                      setReminders(prev => [normalized, ...prev])
-                    } else {
-                      const r = { id: Date.now(), ...item, date: dueDate, owner: '', notes: '' }
-                      setReminders(prev => [r, ...prev]); saveData(REMINDERS_KEY, [r, ...reminders])
-                    }
-                  } catch {
-                    const r = { id: Date.now(), ...item, date: dueDate, owner: '', notes: '' }
-                    setReminders(prev => [r, ...prev]); saveData(REMINDERS_KEY, [r, ...reminders])
-                  }
+                    if (data.reminder) setReminders(prev => [{ ...data.reminder, date: data.reminder.dueDate }, ...prev])
+                    else setSaveError(data.error || 'Could not save the reminder.')
+                  } catch { setSaveError('Could not save the reminder. Please try again.') }
                 }} style={{ padding: '14px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--white)', cursor: 'pointer', textAlign: 'left' }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ink)', marginBottom: 4 }}>{item.title}</div>
                   <div style={{ fontSize: 11, color: 'var(--green)' }}>+ Add (due in {item.months} months)</div>

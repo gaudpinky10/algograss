@@ -133,7 +133,7 @@ export default function SignupPage() {
           <a href="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 20 }}>
             <img src="/logo.png" alt="AlgoGrass" style={{ height: 40, width: 'auto' }} />
           </a>
-          <h1 style={{ fontFamily: 'var(--f-head,Syne,sans-serif)', fontWeight: 800, fontSize: 26, color: '#0F172A', marginBottom: 8 }}>Start for free</h1>
+          <h1 style={{ fontFamily: 'var(--f-head,Syne,sans-serif)', fontWeight: 800, fontSize: 26, color: '#F1F5F9', marginBottom: 8 }}>Start for free</h1>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 100, padding: '6px 14px', marginBottom: 4 }}>
             <span style={{ fontSize: 13 }}>🚀</span>
             <span style={{ fontSize: 13, color: '#9B7BFA', fontWeight: 700 }}>60 days free Pro — no credit card needed</span>

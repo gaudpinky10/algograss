@@ -49,9 +49,9 @@ const QUESTIONS = {
 }
 
 const PRIORITY_COLORS = {
-  'Immediate': { bg: '#FEF2F2', text: '#DC2626', border: '#F5B7B1' },
-  'Within 30 days': { bg: '#FFFBEB', text: '#D97706', border: '#FCD34D' },
-  'Within 90 days': { bg: '#F0FDF4', text: '#16A34A', border: 'var(--green-m)' },
+  'Immediate': { bg: 'rgba(239,68,68,0.10)', text: '#F87171', border: 'rgba(239,68,68,0.35)' },
+  'Within 30 days': { bg: 'rgba(245,158,11,0.10)', text: '#FBBF24', border: 'rgba(245,158,11,0.35)' },
+  'Within 90 days': { bg: 'rgba(34,197,94,0.10)', text: '#4ADE80', border: 'var(--green-m)' },
 }
 
 
@@ -201,6 +201,7 @@ export default function DataAuditPage() {
                     <span style={{ fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 100, background: sc >= 70 ? 'var(--green-p)' : sc >= 40 ? 'var(--amber-bg)' : 'var(--red-bg)', color: scCol }}>{result.rating}</span>
                   </div>
                   <p style={{ fontSize: 13, color: 'var(--ink2)', lineHeight: 1.65 }}>{result.summary}</p>
+                  {result.note && <p style={{ fontSize: 11, color: 'var(--ink3)', marginTop: 6 }}>{result.note}</p>}
                   <p style={{ fontSize: 12, color: 'var(--ink2)', marginTop: 6 }}>{businessName || 'Your business'} · {new Date().toLocaleDateString('en-GB')}</p>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
