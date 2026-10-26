@@ -40,7 +40,9 @@ export async function askClaude({
     throw e
   }
 
-  const res = await fetch(ANTHROPIC_URL, {
+  // One retry when the API is busy or briefly unreachable, so a passing
+  // hiccup doesn't become an error for the user
+  const send = () => fetch(ANTHROPIC_URL, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
@@ -54,6 +56,14 @@ export async function askClaude({
       messages: finalMessages,
     }),
   })
+  const busy = st => st === 429 || st === 529 || st >= 500
+  let res
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try { res = await send() } catch (e) { if (attempt) throw e; await new Promise(r => setTimeout(r, 1500)); continue }
+    if (!busy(res.status) || attempt) break
+    const wait = Math.min(5000, Math.max(1000, (parseFloat(res.headers.get('retry-after')) || 2) * 1000))
+    await new Promise(r => setTimeout(r, wait))
+  }
 
   if (!res.ok) {
     let detail = ''

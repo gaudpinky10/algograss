@@ -26,17 +26,20 @@ Judge only from their answers; if an answer is missing or unclear, say what to c
 Reply with JSON only, in this shape (values are descriptions):
 {"score": a number 0-100 for how well their answers meet the law, "rating": "Compliant" | "Needs Work" | "At Risk", "summary": "2-3 sentences", "issues": [{"sev": "High" | "Medium" | "Low", "title": "short title", "desc": "what is wrong and why it matters", "reg": "e.g. UK GDPR Art. 5(1)(e) or PECR reg. 22", "action": "the specific fix"}], "actions": [{"priority": "Immediate" | "Within 30 days" | "Within 90 days", "action": "short action", "detail": "how to do it"}], "positives": ["things they do well"], "privacyPolicyAdditions": ["points their privacy notice should cover"]}`
 
-  let raw
-  try {
-    raw = await askClaude({
-      system: toolSystem('You are the AlgoGrass data audit assistant. You review UK small businesses\' answers about how they handle personal data and give fair, specific feedback.'),
-      prompt,
-      maxTokens: 3000,
-    })
-  } catch (e) {
-    return aiFailed(e.status === 503 ? 503 : 502)
+  // Ask again once if the reply wasn't usable JSON
+  let ai = null
+  for (let attempt = 0; attempt < 2 && !ai; attempt++) {
+    try {
+      const raw = await askClaude({
+        system: toolSystem('You are the AlgoGrass data audit assistant. You review UK small businesses\' answers about how they handle personal data and give fair, specific feedback.'),
+        prompt,
+        maxTokens: 3000,
+      })
+      ai = extractJson(raw)
+    } catch (e) {
+      if (attempt) return aiFailed(e.status === 503 ? 503 : 502)
+    }
   }
-  const ai = extractJson(raw)
   if (!ai) return aiFailed()
   const str = v => String(v ?? '')
   const result = {
