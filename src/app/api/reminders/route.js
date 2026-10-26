@@ -1,11 +1,11 @@
 import { cookies } from 'next/headers';
-import { getCollection } from '@/lib/dbHelpers';
+import { getCollection, parseUserCookie } from '@/lib/dbHelpers';
 
 async function getUserEmail() {
   try {
     const userCookie = cookies().get('algograss_user')
     if (!userCookie) return null
-    const user = JSON.parse(Buffer.from(userCookie.value, 'base64').toString())
+    const user = parseUserCookie(userCookie.value)
     return user?.email || null
   } catch { return null }
 }

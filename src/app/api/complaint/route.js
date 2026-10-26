@@ -50,8 +50,8 @@ urgency: High, Medium, or Low. riskLevel: High, Medium, or Low.`
     ;(async () => {
       try {
         const col = await getCollection('complaints')
-        if (col) await col.insertOne({
-          userEmail: user?.email || 'anonymous',
+        if (col && user?.email) await col.insertOne({ // only kept for logged-in users
+          userEmail: user.email,
           channel: channel || 'Website Form',
           complaintText: complaint,
           businessName: businessName || '',

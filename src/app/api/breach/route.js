@@ -1,6 +1,6 @@
 import { generateContent } from '@/lib/ai'
 import { NextResponse } from 'next/server';
-import { getCollection, trackActivity } from '@/lib/dbHelpers';
+import { getCollection, trackActivity, parseUserCookie } from '@/lib/dbHelpers';
 import { cookies } from 'next/headers';
 
 export async function POST(request) {
@@ -44,11 +44,11 @@ Use formal UK GDPR legal language. Reference the relevant Articles (Article 33, 
     // Save to DB
     try {
       const col = await getCollection('breaches');
-      if (col) {
+      if (col && cookies().get('algograss_user')) {
         const cookieStore = cookies();
         const userCookie = cookieStore.get('algograss_user');
-        const user = userCookie ? JSON.parse(Buffer.from(userCookie.value, 'base64').toString()) : null;
-        await col.insertOne({ controllerName, breachDate, dataTypes, individualsAffected, userEmail: user?.email || 'anonymous', createdAt: new Date() });
+        const user = userCookie ? parseUserCookie(userCookie.value) : null;
+        if (user?.email) await col.insertOne({ controllerName, breachDate, dataTypes, individualsAffected, userEmail: user.email, createdAt: new Date() }); // only kept for logged-in users
         if (user?.email) await trackActivity({ userEmail: user.email, tool: 'breach', action: 'notification_generated', detail: `Breach notification for ${controllerName}` });
       }
     } catch {}

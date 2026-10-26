@@ -23,7 +23,7 @@ export async function POST(request) {
       const userCookie = cookies().get('algograss_user')
       if (userCookie) {
         const user = parseUserCookie(userCookie.value)
-        const col = await getCollection('grc_' + type)
+        const col = prompts[type] ? await getCollection('grc_' + type) : null
         if (col && user?.email) await col.insertOne({ userEmail: user.email, type, data, aiText, createdAt: new Date() })
       }
     } catch (dbErr) { console.error('DB (non-fatal):', dbErr) }

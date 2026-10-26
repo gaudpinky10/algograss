@@ -1,7 +1,9 @@
+import { isPublicHttpUrl } from '@/lib/safeUrl'
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
 
 async function probe(url) {
   try {
+    if (!(await isPublicHttpUrl(url))) return null
     const ctrl = new AbortController()
     const t = setTimeout(() => ctrl.abort(), 6000)
     const res = await fetch(url, {

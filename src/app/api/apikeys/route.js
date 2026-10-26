@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
-import { getCollection } from '@/lib/dbHelpers';
+import { getCollection, parseUserCookie } from '@/lib/dbHelpers';
 import { cookies } from 'next/headers';
-import { randomBytes } from 'crypto';
+import { randomBytes, createHash } from 'crypto';
 
 function getUser() {
   try {
     const c = cookies().get('algograss_user');
-    return c ? JSON.parse(Buffer.from(c.value, 'base64').toString()) : null;
+    return c ? parseUserCookie(c.value) : null;
   } catch { return null; }
 }
 
@@ -32,7 +32,8 @@ export async function POST(request) {
 
   const key = `ag_${randomBytes(32).toString('hex')}`;
   const keyPreview = key.slice(-8);
-  await col.insertOne({ userEmail: user.email, keyName: name || `Key ${existing + 1}`, key, keyPreview, createdAt: new Date(), usageCount: 0, isActive: true });
+  // Only a hash of the key is stored, like a password: a database leak doesn't leak keys
+  await col.insertOne({ userEmail: user.email, keyName: name || `Key ${existing + 1}`, keyHash: createHash('sha256').update(key).digest('hex'), keyPreview, createdAt: new Date(), usageCount: 0, isActive: true });
   return NextResponse.json({ key, keyPreview, message: 'Copy this key now — it will not be shown again.' });
 }
 

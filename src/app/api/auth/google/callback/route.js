@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { getCollection, trackActivity } from '@/lib/dbHelpers'
+import { getCollection, trackActivity, createSessionValue, sessionCookieOptions, SESSION_COOKIE } from '@/lib/dbHelpers'
+import { timingSafeEqual } from 'crypto'
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
@@ -11,6 +12,14 @@ export async function GET(request) {
 
   if (error || !code) {
     return NextResponse.redirect(`${appUrl}/login?error=google_denied`)
+  }
+
+  // The state must match the one set when the login started
+  const state = searchParams.get('state') || ''
+  const expected = cookies().get('ag_oauth_state')?.value || ''
+  cookies().set('ag_oauth_state', '', { maxAge: 0, path: '/api/auth/google' })
+  if (!state || !expected || state.length !== expected.length || !timingSafeEqual(Buffer.from(state), Buffer.from(expected))) {
+    return NextResponse.redirect(`${appUrl}/login?error=google_failed`)
   }
 
   const clientId     = process.env.GOOGLE_CLIENT_ID
@@ -43,6 +52,7 @@ export async function GET(request) {
     })
     const googleUser = await infoRes.json()
     if (!googleUser.email) throw new Error('Could not retrieve email from Google')
+    if (googleUser.verified_email === false) throw new Error('Google account email is not verified')
 
     const email = googleUser.email.toLowerCase()
     const name  = googleUser.name || googleUser.email.split('@')[0]
@@ -94,13 +104,7 @@ export async function GET(request) {
     }
 
     // ── 4. Set session cookie ─────────────────────────────────
-    cookies().set('algograss_user', Buffer.from(JSON.stringify(userData)).toString('base64'), {
-      httpOnly: false,
-      secure:   process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge:   60 * 60 * 24 * 30,
-      path:     '/',
-    })
+    cookies().set(SESSION_COOKIE, createSessionValue(userData), sessionCookieOptions())
 
     await trackActivity({ userEmail: email, tool: 'auth', action: 'login', detail: 'Login via Google OAuth', meta: { method: 'google' } })
 

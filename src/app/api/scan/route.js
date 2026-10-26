@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { getCollection, trackActivity, parseUserCookie } from '@/lib/dbHelpers';
 import { createHash } from 'crypto';
+import { isPublicHttpUrl, isBlockedHostname } from '@/lib/safeUrl';
 
 // JavaScript-only sites are loaded in a real browser, which takes longer
 export const maxDuration = 60
@@ -26,6 +27,8 @@ async function fetchPage(url, timeoutMs = 15000) {
     try {
       const res = await fetch(u, { headers: FETCH_HEADERS, signal: ctrl.signal, redirect: 'follow', cache: 'no-store' })
       clearTimeout(timer)
+      // A redirect to an internal address is treated as unreachable
+      if (!process.env.SCAN_ALLOW_PRIVATE) { try { if (isBlockedHostname(new URL(res.url || u).hostname)) return null } catch {} }
       const text = await res.text().catch(() => '')
       if (!text && res.status >= 400) return null
       return { ok: true, text: text.slice(0, 700 * 1024), status: res.status, headers: res.headers, finalUrl: res.url }
@@ -359,6 +362,10 @@ export async function POST(request) {
   } else if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
     targetUrl = 'https://' + targetUrl
   }
+
+  // Only public websites: never addresses inside our own hosting
+  if (!process.env.SCAN_ALLOW_PRIVATE && !(await isPublicHttpUrl(targetUrl)))
+    return Response.json({ error: 'Please enter the address of a public website, e.g. example.co.uk.' }, { status: 400 })
 
   const userCookie = cookies().get('algograss_user')
   const user = userCookie ? parseUserCookie(userCookie.value) : null

@@ -24,7 +24,7 @@ export async function POST(request) {
     ;(async () => {
       try {
         const col = await getCollection('dsars')
-        if (col) {
+        if (col && user?.email) { // only kept for logged-in users, in their own account
           const deadline = new Date(); deadline.setDate(deadline.getDate() + 30)
           await col.insertOne({ userEmail: user?.email || 'anonymous', requesterName: requesterName || 'Unknown', requesterEmail: requesterEmail || '', requestType: requestType || 'SAR', requestDetails: requestText, aiGuide: responseText, deadline, createdAt: new Date() })
         }

@@ -6,6 +6,8 @@
 // On Vercel this uses @sparticuz/chromium. For local development, set
 // CHROME_EXECUTABLE_PATH to any installed Chrome/Chromium.
 
+import { isBlockedHostname } from './safeUrl'
+
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36'
 
 async function launch() {
@@ -95,7 +97,9 @@ export async function createRenderer({ timeoutMs = 12000, maxConcurrent = 3, dea
       await page.setRequestInterception(true)
       page.on('request', r => {
         if (requests.length < 400) requests.push(r.url())
-        if (skip.includes(r.resourceType())) r.abort().catch(() => {})
+        let internal = false
+        if (!process.env.SCAN_ALLOW_PRIVATE) { try { internal = isBlockedHostname(new URL(r.url()).hostname) } catch {} }
+        if (internal || skip.includes(r.resourceType())) r.abort().catch(() => {})
         else r.continue().catch(() => {})
       })
       const res = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: pageTimeout })

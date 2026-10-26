@@ -1,6 +1,6 @@
 import { generateContent } from '@/lib/ai'
 import { cookies } from 'next/headers';
-import { getCollection } from '@/lib/dbHelpers';
+import { getCollection, parseUserCookie } from '@/lib/dbHelpers';
 
 export async function POST(request) {
   const { area, answers, businessName } = await request.json()
@@ -26,7 +26,7 @@ export async function POST(request) {
     try {
       const userCookie = cookies().get('algograss_user')
       if (userCookie) {
-        const user = JSON.parse(Buffer.from(userCookie.value, 'base64').toString())
+        const user = parseUserCookie(userCookie.value)
         const col = await getCollection('audits')
         if (col && user?.email) await col.insertOne({ userEmail: user.email, auditType: area, answers, result, score: result.score, createdAt: new Date() })
       }

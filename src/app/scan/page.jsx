@@ -52,7 +52,7 @@ function ScanPageInner() {
     if (!email.trim()) return
     setEmailStatus('sending'); setEmailError('')
     try {
-      const res  = await fetch('/api/email-report', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ email, result }) })
+      const res  = await fetch('/api/email-report', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ email, url: result.url }) })
       const data = await res.json()
       if (data.error) { setEmailError(data.error); setEmailStatus('error'); return }
       setEmailStatus('sent')
