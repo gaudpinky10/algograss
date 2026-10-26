@@ -19,7 +19,7 @@ Includes personal data: ${hasPersonalData ? 'Yes' : 'No'}
 Data shared with the tool's provider or other third parties: ${sharesWithThirdParty ? 'Yes' : 'No'}
 
 Give, with short headings: 1) Overall risk (High/Medium/Low) and why. 2) UK GDPR points: lawful basis, transparency, the provider's role (processor or controller) and contract, international transfers, retention and whether inputs are used to train the provider's models, and automated decision-making (UK GDPR Arts. 22A-22D) if decisions about people are made. 3) Whether a DPIA is needed. 4) EU AI Act: only if they place AI on the EU market or its output is used in the EU; give the likely category and the dates that apply. 5) Practical steps, in order. End with a one-line note that this is guidance, not legal advice.`,
-      maxTokens: 2000,
+      maxTokens: 3500,
     })
     return Response.json({ assessment, generatedAt: new Date().toISOString() })
   } catch (e) {

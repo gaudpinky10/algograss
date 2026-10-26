@@ -33,7 +33,7 @@ Reply with JSON only, in this shape (values are descriptions):
       const raw = await askClaude({
         system: toolSystem('You are the AlgoGrass data audit assistant. You review UK small businesses\' answers about how they handle personal data and give fair, specific feedback.'),
         prompt,
-        maxTokens: 3000,
+        maxTokens: 5000,
       })
       ai = extractJson(raw)
     } catch (e) {

@@ -42,14 +42,14 @@ Sections:
 6. Measures to reduce each risk, and the risk remaining after them.
 7. Outcome: if a high risk remains, the ICO must be consulted before the processing starts (Art. 36). Say clearly whether that seems to apply.
 8. Sign-off and review date.
-End with a short note that this is an AI-generated draft to review, not legal advice.`
+Keep it concise: the whole DPIA in under 1,800 words, using short paragraphs and the table. End with a short note that this is an AI-generated draft to review, not legal advice.`
 
   let dpia
   try {
     dpia = await askClaude({
       system: toolSystem('You are the AlgoGrass DPIA assistant. You draft clear, honest Data Protection Impact Assessments for UK small businesses, following the ICO\'s approach.'),
       prompt,
-      maxTokens: 3500,
+      maxTokens: 7000,
     })
   } catch (e) {
     return aiFailed(e.status === 503 ? 503 : 502)

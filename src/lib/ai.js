@@ -83,6 +83,8 @@ export async function askClaude({
     .join('')
     .trim()
 
+  // Never pass off a cut-short answer as complete
+  if (data.stop_reason === 'max_tokens' && text) return text + '\n\n[This answer was cut short. Please try again, or ask for less at once.]'
   return text || 'No response received.'
 }
 
