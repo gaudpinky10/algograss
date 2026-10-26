@@ -17,6 +17,9 @@ export async function POST(request) {
   const medIssues    = result.issues.filter(i => i.sev === 'Medium')
   const lowIssues    = result.issues.filter(i => i.sev === 'Low')
 
+  // The report holds text taken from the scanned site and comes from the browser, so escape it
+  const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]))
+  const showEvidence = iss => !!iss.evidence && !String(iss.desc || '').includes(String(iss.evidence).slice(0, 60))
   const issueRow = (iss) => `
     <tr>
       <td style="padding:12px 16px;border-bottom:1px solid #1e2d45;vertical-align:top;width:80px">
@@ -27,9 +30,10 @@ export async function POST(request) {
         </span>
       </td>
       <td style="padding:12px 16px;border-bottom:1px solid #1e2d45;vertical-align:top">
-        <div style="color:#0F172A;font-weight:600;font-size:13px;margin-bottom:4px">${iss.title}</div>
-        <div style="color:#94A3B8;font-size:12px;line-height:1.5;margin-bottom:6px">${iss.desc}</div>
-        <span style="background:rgba(139,92,246,0.1);color:#9B7BFA;font-size:10px;padding:2px 8px;border-radius:4px">${iss.reg}</span>
+        <div style="color:#0F172A;font-weight:600;font-size:13px;margin-bottom:4px">${esc(iss.title)}</div>
+        <div style="color:#94A3B8;font-size:12px;line-height:1.5;margin-bottom:6px">${esc(iss.desc)}</div>
+        ${showEvidence(iss) ? `<div style="color:#64748B;font-size:11px;line-height:1.5;margin-bottom:6px">What we found: ${esc(iss.evidence)}</div>` : ''}
+        <span style="background:rgba(139,92,246,0.1);color:#9B7BFA;font-size:10px;padding:2px 8px;border-radius:4px">${esc(iss.reg)}</span>
       </td>
     </tr>`
 
@@ -54,7 +58,7 @@ export async function POST(request) {
         <span style="color:#9B7BFA;font-weight:800;font-size:18px">AlgoGrass</span>
       </div>
       <h1 style="color:#0F172A;font-size:22px;font-weight:700;margin:16px 0 6px">GDPR Compliance Report</h1>
-      <p style="color:#64748B;font-size:13px;margin:0">${result.url} · Scanned ${new Date(result.scannedAt).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' })}</p>
+      <p style="color:#64748B;font-size:13px;margin:0">${esc(result.url)} · Scanned ${new Date(result.scannedAt).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' })}</p>
     </div>
 
     <!-- Score -->
@@ -69,7 +73,7 @@ export async function POST(request) {
       </div>
       <p style="color:#94A3B8;font-size:13px;margin:12px 0 0">
         ${result.issues.length} issue${result.issues.length!==1?'s':''} found
-        ${result.trackers.length > 0 ? ' · Trackers: ' + result.trackers.join(', ') : ''}
+        ${result.trackers.length > 0 ? ' · Trackers: ' + esc(result.trackers.join(', ')) : ''}
       </p>
     </div>
 

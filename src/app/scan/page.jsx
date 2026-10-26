@@ -2,6 +2,9 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
+// Show the evidence behind a finding, unless the description already quotes it
+const showEvidence = iss => !!iss.evidence && !String(iss.desc || '').includes(String(iss.evidence).slice(0, 60))
+
 function ScanPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -63,6 +66,9 @@ function ScanPageInner() {
     const scoreLabel = sc >= 70 ? 'Good' : sc >= 40 ? 'Needs Work' : 'At Risk'
     const now = new Date(result.scannedAt).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' })
 
+    // Report text can contain words taken from the scanned site (button labels,
+    // policy quotes), so everything is escaped before it goes into the PDF page
+    const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]))
     const issueHTML = result.issues.map(iss => {
       const sevColor = iss.sev==='High' ? '#EF4444' : iss.sev==='Medium' ? '#F59E0B' : '#818CF8'
       const sevBg    = iss.sev==='High' ? '#FEE2E2' : iss.sev==='Medium' ? '#FEF3C7' : '#EDE9FE'
@@ -71,9 +77,10 @@ function ScanPageInner() {
           <span style="background:${sevBg};color:${sevColor};padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap">${iss.sev}</span>
         </td>
         <td style="padding:12px 14px;border-bottom:1px solid #e5e7eb;vertical-align:top">
-          <div style="color:#0D0D1E;font-weight:600;font-size:13px;margin-bottom:3px">${iss.title}</div>
-          <div style="color:#6B7280;font-size:12px;line-height:1.55;margin-bottom:5px">${iss.desc}</div>
-          <span style="background:#D1FAE5;color:#065F46;font-size:10px;padding:2px 8px;border-radius:4px">${iss.reg}</span>
+          <div style="color:#0D0D1E;font-weight:600;font-size:13px;margin-bottom:3px">${esc(iss.title)}</div>
+          <div style="color:#6B7280;font-size:12px;line-height:1.55;margin-bottom:5px">${esc(iss.desc)}</div>
+          ${showEvidence(iss) ? `<div style="color:#374151;font-size:11px;line-height:1.5;margin-bottom:6px;padding:5px 8px;background:#F9FAFB;border-left:2px solid #D1D5DB">What we found: ${esc(iss.evidence)}</div>` : ''}
+          <span style="background:#D1FAE5;color:#065F46;font-size:10px;padding:2px 8px;border-radius:4px">${esc(iss.reg)}</span>
         </td>
       </tr>`
     }).join('')
@@ -105,7 +112,7 @@ function ScanPageInner() {
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>GDPR Compliance Report — ${result.url}</title>
+  <title>GDPR Compliance Report — ${esc(result.url)}</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { font-family:'Segoe UI',Arial,sans-serif; background:#fff; color:#0D0D1E; font-size:13px; max-width:820px; margin:0 auto; padding:76px 24px 40px; }
@@ -148,7 +155,7 @@ function ScanPageInner() {
     </div>
     <div class="header-right">
       <h1>GDPR Compliance Report</h1>
-      <p>${result.url} &nbsp;·&nbsp; ${now}</p>
+      <p>${esc(result.url)} &nbsp;·&nbsp; ${now}</p>
     </div>
   </div>
 
@@ -334,6 +341,7 @@ function ScanPageInner() {
                           <div>
                             <div style={{fontSize:13,fontWeight:600,color:'var(--ink)',marginBottom:4}}>{iss.title}</div>
                             <div style={{fontSize:12,color:'var(--ink2)',lineHeight:1.55,marginBottom:6}}>{iss.desc}</div>
+                            {showEvidence(iss) && <div style={{fontSize:11,color:'var(--ink2)',lineHeight:1.5,marginBottom:8,padding:'6px 10px',background:'var(--bg)',borderLeft:'2px solid var(--border)',borderRadius:4}}>What we found: {iss.evidence}</div>}
                             <span style={{fontSize:10,background:'rgba(139,92,246,0.1)',color:'var(--accent)',padding:'2px 8px',borderRadius:4}}>{iss.reg}</span>
                           </div>
                         </div>
