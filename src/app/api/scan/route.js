@@ -108,6 +108,18 @@ function findLegalLinks(mainHtml, pageUrl, limit = 8) {
   return out
 }
 
+// A page whose HTML is only an empty JavaScript app shell (e.g. a React app
+// showing "You need to enable JavaScript to run this app"): the content only
+// appears after scripts run in a browser, so this scan cannot read it
+function isJsShell(html) {
+  const h = html || ''
+  if (!/<script[\s>]/i.test(h)) return false
+  const text = visibleText(h.replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ').replace(/<title[\s\S]*?<\/title>/gi, ' '))
+  const mount = /<div[^>]+id=["'](root|app|__next|__nuxt|svelte)["'][^>]*>\s*<\/div>/i.test(h)
+  const needsJs = /enable javascript to run this app|requires? javascript|please enable javascript/i.test(h)
+  return text.length < 200 && (mount || needsJs)
+}
+
 // Bot-protection screens and refusals are not the real page
 const BLOCK_PAGE = /<title>\s*(just a moment|attention required|access denied|request rejected|pardon our interruption)|window\._cf_chl_opt|sorry, you have been blocked|_Incapsula_Resource/i
 function isBlocked(res) {
@@ -277,6 +289,15 @@ export async function POST(request) {
         ? 'That page could not be found. Please check the URL and try again.'
         : 'This website blocked our automated scan (many sites use bot protection). Please try again in a few minutes. If it keeps happening, the site blocks automated checks, so we cannot give an accurate result.'
       return Response.json({ error, blocked: true }, { status: 422 })
+    }
+    // An empty JavaScript app shell has nothing for this scan to read, so do
+    // not report its policies as missing
+    if (mainResult.ok && isJsShell(mainResult.text)) {
+      await trackActivity({ userEmail: user?.email, tool: 'scan', action: 'scan_js_only', detail: targetUrl })
+      return Response.json({
+        error: "This website builds its pages with JavaScript in the browser, so our scanner can't read its content yet. Rather than guess, we haven't given it a score. Support for sites like this is coming soon.",
+        jsOnly: true,
+      }, { status: 422 })
     }
     const sub = mainResult.ok ? await fetchSubPages(targetUrl, mainResult.text, mainResult.finalUrl) : { text: '', policyText: '', policyPaths: [], termsPaths: [], brokenPrivacyLinks: [], brokenTermsLinks: [], blockedCount: 0, requestCount: 0 }
     const subText = sub.text
@@ -517,7 +538,8 @@ export async function POST(request) {
     // ─── SPA DETECTION ───────────────────────────────────────────────────────
     const isSpa = detect(allScanText, [
       /__NEXT_DATA__/i, 'window.__nuxt', '__vue__', 'data-reactroot',
-      'id="__next"', 'id="app"', 'ng-version', 'data-n-head',
+      'id="__next"', 'id="app"', 'id="root"', 'ng-version', 'data-n-head',
+      /enable javascript to run this app/i,
       /next\/dist\/client/i, /webpack-runtime/i, /chunks\/main/i,
       /_app-[a-f0-9]+\.js/i, /static\/chunks/i,
     ])
