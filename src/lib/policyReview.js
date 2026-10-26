@@ -7,6 +7,9 @@
 
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages'
 const MAX_POLICY_CHARS = 60000
+// Change this whenever the questions or rules below change, so saved reviews
+// of the same policy text are not reused after the change
+export const REVIEW_VERSION = '2026-10-26'
 
 const SYSTEM = `You review the privacy notice of a UK website against UK GDPR Article 13.
 Answer only from the policy text you are given. Never assume anything that is not written there.
@@ -75,40 +78,58 @@ export function parseReview(raw, policyText, truncated) {
   return checks
 }
 
-export async function reviewPolicy(policyText, { timeoutMs = 20000 } = {}) {
+const sleep = ms => new Promise(r => setTimeout(r, ms))
+
+export async function reviewPolicy(policyText, { timeoutMs = 20000, deadline = Date.now() + timeoutMs } = {}) {
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey || process.env.SCAN_DISABLE_AI) return { ok: false, reason: 'not configured' }
   if (!policyText || policyText.length < 500) return { ok: false, reason: 'no policy text' }
   const truncated = policyText.length > MAX_POLICY_CHARS
   const text = policyText.slice(0, MAX_POLICY_CHARS)
-  const models = [process.env.POLICY_REVIEW_MODEL || 'claude-sonnet-5-5', 'claude-haiku-5-5']
-  for (const model of [...new Set(models)]) {
-    const ctrl = new AbortController()
-    const timer = setTimeout(() => ctrl.abort(), timeoutMs)
-    try {
-      const res = await fetch(ANTHROPIC_URL, {
-        method: 'POST',
-        signal: ctrl.signal,
-        headers: { 'content-type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-        body: JSON.stringify({
-          model,
-          max_tokens: 900,
-          system: SYSTEM,
-          messages: [{ role: 'user', content: `Privacy policy text:\n<policy>\n${text}\n</policy>\n\n${QUESTIONS}` }],
-        }),
-      })
+  const models = [...new Set([process.env.POLICY_REVIEW_MODEL || 'claude-sonnet-5-5', 'claude-haiku-5-5'])]
+  const body = model => JSON.stringify({
+    model,
+    max_tokens: 900,
+    system: SYSTEM,
+    messages: [{ role: 'user', content: `Privacy policy text:\n<policy>\n${text}\n</policy>\n\n${QUESTIONS}` }],
+  })
+  let reason = 'no model available'
+  for (const model of models) {
+    // One retry on the same model when the API is busy, if there is time
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const left = deadline - Date.now()
+      if (left < 3000) return { ok: false, reason: reason === 'no model available' ? 'no time left' : reason }
+      const ctrl = new AbortController()
+      const timer = setTimeout(() => ctrl.abort(), Math.min(timeoutMs, left))
+      let res
+      try {
+        res = await fetch(ANTHROPIC_URL, {
+          method: 'POST',
+          signal: ctrl.signal,
+          headers: { 'content-type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+          body: body(model),
+        })
+      } catch (e) {
+        clearTimeout(timer)
+        reason = e?.name === 'AbortError' ? 'timed out' : 'request failed'
+        if (e?.name === 'AbortError') return { ok: false, reason }
+        continue // network blip: retry
+      }
       clearTimeout(timer)
-      if (res.status === 404) continue // model name not available on this account: try the next
+      if (res.status === 404) { reason = 'model not available'; break } // try the next model
+      if (res.status === 429 || res.status === 529 || res.status >= 500) {
+        reason = `AI ${res.status}`
+        const wait = Math.min(6000, Math.max(1000, (parseFloat(res.headers.get('retry-after')) || 2) * 1000))
+        if (attempt === 0 && deadline - Date.now() > wait + 8000) { await sleep(wait); continue }
+        break // busy: try the next model
+      }
       if (!res.ok) return { ok: false, reason: `AI ${res.status}` }
       const data = await res.json()
       const raw = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('')
       const checks = parseReview(raw, text, truncated)
       if (!checks) return { ok: false, reason: 'unreadable reply' }
       return { ok: true, checks, model, truncated }
-    } catch (e) {
-      clearTimeout(timer)
-      return { ok: false, reason: e?.name === 'AbortError' ? 'timed out' : 'request failed' }
     }
   }
-  return { ok: false, reason: 'no model available' }
+  return { ok: false, reason }
 }
