@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { getCollection, trackActivity, parseUserCookie } from '@/lib/dbHelpers';
+import { createHash } from 'crypto';
 
 // JavaScript-only sites are loaded in a real browser, which takes longer
 export const maxDuration = 60
@@ -584,27 +585,42 @@ export async function POST(request) {
     ])
 
     // ─── DATA RETENTION ──────────────────────────────────────────────────────
-    const ruleRetention   = detect(policyScope, [
+    // Actual periods ("for 6 years", "Retention: 2 years", "deleted after 30 days")
+    const RETENTION_SPECIFIC = [
+      /(kept|retained|stored|held|deleted|erased) (for|after|within) (up to )?[0-9]+ (day|month|year)/i,
+      /for (up to )?[0-9]+ (day|month|year)s? (after|from|following)/i,
+      /\b(keep|kept|retain|retained|store|stored|hold|held|delete|deleted|erase|erased)\b[^.]{0,80}?\b(for|up to|within|after)\s+(a (minimum|maximum) of |at least |up to )?([0-9]+|one|two|three|four|five|six|seven|ten|twelve)\s+(day|week|month|year)s?\b/i,
+      /\bretention\b[^.]{0,40}?\b([0-9]+|one|two|three|four|five|six|seven|ten|twelve)\s+(day|week|month|year)s?\b/i,
+    ]
+    // Retention mentioned only in general terms ("as long as necessary")
+    const RETENTION_GENERAL = [
       /retention[\s_-]?period/i,
       /how[\s_-]?long[\s_-]?(we[\s_-]?)?(keep|hold|store|retain)/i,
       /data[\s_-]?retention/i,
-      'we keep your data', 'stored for', 'retained for', 'deleted after',
-      // Broad synonyms
-      /as long as (necessary|needed|required)/i,
-      /no longer than (necessary|needed|required)/i,
+      /we keep your data/i, /stored for/i, /retained for/i, /deleted after/i,
+      /as long as (is )?(reasonably )?(necessary|needed|required)/i,
+      /no longer than (is )?(necessary|needed|required)/i,
       /for (the duration|as long as|the period)/i,
-      /we (store|retain|keep|hold) (your |personal )?(data|information) (for|until|as)/i,
+      /we (will )?(store|retain|keep|hold) (and use )?(your |personal )?(data|information) (for|until|as)/i,
       /storage (limitation|period|duration)/i,
       /keep (your |personal )?(data|information) (for|until)/i,
       /minimum (necessary|retention) period/i,
       /we will (delete|remove|erase|destroy) (your |personal )?(data|information)/i,
       /automatically (deleted|removed|erased|purged)/i,
-      /(kept|retained|stored|held|deleted|erased) (for|after|within) (up to )?[0-9]+ (day|month|year)/i,
-      /for (up to )?[0-9]+ (day|month|year)s? (after|from|following)/i,
-      // A stated period, e.g. "We keep order records for 6 years", "Retention: 2 years"
-      /\b(keep|kept|retain|retained|store|stored|hold|held)\b[^.]{0,80}?\b(for|up to|within)\s+(a (minimum|maximum) of |at least |up to )?([0-9]+|one|two|three|four|five|six|seven|ten|twelve)\s+(day|week|month|year)s?\b/i,
-      /\bretention\b[^.]{0,40}?\b([0-9]+|one|two|three|four|five|six|seven|ten|twelve)\s+(day|week|month|year)s?\b/i,
-    ])
+    ]
+    const ruleRetentionSpecific = detect(policyScope, RETENTION_SPECIFIC)
+    const ruleRetention = ruleRetentionSpecific || detect(policyScope, RETENTION_GENERAL)
+    // The sentence that mentions retention, to quote when it is only general
+    const retentionSentence = (() => {
+      for (const re of RETENTION_GENERAL) {
+        const m = re.exec(policyScope)
+        if (!m) continue
+        const from = Math.max(policyScope.lastIndexOf('. ', m.index) + 2, policyScope.lastIndexOf('\n', m.index) + 1, m.index - 200)
+        let to = policyScope.indexOf('. ', m.index + m[0].length); if (to < 0 || to - m.index > 240) to = Math.min(policyScope.length, m.index + 240)
+        return policyScope.slice(from, to + 1).replace(/\s+/g, ' ').trim()
+      }
+      return ''
+    })()
 
     // ─── DSAR CONTACT ────────────────────────────────────────────────────────
     // An email given in the privacy policy for privacy, data protection or
@@ -639,11 +655,24 @@ export async function POST(request) {
     // Each answer must quote the policy, and every quote is checked against
     // the text. A confirmed answer is used; anything uncertain falls back to
     // the rules above and is never reported as a definite failure.
+    // The same policy text always gets the same answers: a review is saved
+    // and reused until the policy changes, so repeat scans agree.
     let ai = null
     if (hasReadPrivacyPage && Date.now() - startedAt < 46000) {
       try {
-        const { reviewPolicy } = await import('@/lib/policyReview')
-        ai = await reviewPolicy(privacyText, { timeoutMs: Math.max(4000, Math.min(20000, 56000 - (Date.now() - startedAt))) })
+        const { reviewPolicy, REVIEW_VERSION } = await import('@/lib/policyReview')
+        const reviewKey = createHash('sha256').update(REVIEW_VERSION + '\n' + privacyText).digest('hex')
+        let reviews = null
+        try {
+          reviews = await Promise.race([getCollection('policy_reviews'), new Promise(r => setTimeout(() => r(null), 1500))])
+          const saved = reviews ? await Promise.race([reviews.findOne({ _id: reviewKey }), new Promise(r => setTimeout(() => r(null), 1500))]) : null
+          if (saved && saved.checks && Date.now() - new Date(saved.createdAt).getTime() < 30 * 864e5)
+            ai = { ok: true, checks: saved.checks, model: saved.model, truncated: saved.truncated, saved: true }
+        } catch {}
+        if (!ai) {
+          ai = await reviewPolicy(privacyText, { timeoutMs: 20000, deadline: startedAt + 56000 })
+          if (ai.ok && reviews) reviews.updateOne({ _id: reviewKey }, { $set: { checks: ai.checks, model: ai.model, truncated: ai.truncated, createdAt: new Date() } }, { upsert: true }).catch(() => {})
+        }
       } catch (e) { ai = { ok: false, reason: 'error' } }
     }
     const aiAnswer = k => (ai && ai.ok && ai.checks[k]) ? ai.checks[k] : { answer: 'unclear', quote: '' }
@@ -661,8 +690,11 @@ export async function POST(request) {
     const rightsState  = decide('data_rights', ruleDataRights, ['yes'])
     const contactState = decide('request_contact', ruleDsarContact, ['yes'])
     const retentionAnswer = aiAnswer('retention')
-    const retentionVague = retentionAnswer.answer === 'vague'
-    if (retentionVague) evidence.retention = retentionAnswer.quote
+    // When the policy was not read by Claude (or Claude was unsure), the rules
+    // give the same kind of answer: general wording only counts as "vague"
+    const ruleVagueOnly = hasReadPrivacyPage && ruleRetention && !ruleRetentionSpecific && !!retentionSentence
+    const retentionVague = retentionAnswer.answer === 'vague' || (!['specific', 'no'].includes(retentionAnswer.answer) && ruleVagueOnly)
+    if (retentionVague) evidence.retention = retentionAnswer.answer === 'vague' ? retentionAnswer.quote : retentionSentence
     const retentionState = retentionVague ? 'vague' : decide('retention', ruleRetention, ['specific'])
     const hasLawfulBasis = lawfulState === 'pass'
     const hasDataRights = rightsState === 'pass'
@@ -918,7 +950,7 @@ export async function POST(request) {
 
     const result = {
       url: finalUrl, score, isHttps, trackers, issues, isSpa, renderedInBrowser,
-      evidence, aiPolicyReview: aiUsed ? { model: ai.model } : null,
+      evidence, aiPolicyReview: aiUsed ? { model: ai.model, saved: !!ai.saved } : (ai ? { skipped: ai.reason } : null),
       cookieBannerSeen: seenBanner ? { text: seenBanner.text, buttons: seenBanner.buttons } : null,
       trackingCookiesBeforeConsent: nonEssentialCookies,
       securityHeadersMissing: missingHeaders,
