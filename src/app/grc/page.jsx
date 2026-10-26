@@ -19,7 +19,7 @@ const GDPR_CONTROLS = [
   { id:'privacy-notice',  cat:'Governance',          name:'Privacy Notice published',              ref:'Art. 13-14',   desc:'GDPR-compliant privacy notice accessible from all pages, covering lawful basis, rights, DPO contact, and retention.' },
   { id:'dpia',            cat:'Governance',          name:'DPIA process in place',                 ref:'Art. 35',      desc:'DPIAs conducted for high-risk processing activities before processing begins. Register of DPIAs maintained.' },
   { id:'lawful-basis',    cat:'Governance',          name:'Lawful basis documented',               ref:'Art. 6',       desc:'Lawful basis identified and recorded for each processing purpose. LIA conducted where legitimate interests relied on.' },
-  { id:'dsar-process',    cat:'Data Subject Rights', name:'DSAR handling process',                 ref:'Art. 12-15',   desc:'Documented process to handle Subject Access Requests within 30 days. Log of SARs maintained.' },
+  { id:'dsar-process',    cat:'Data Subject Rights', name:'DSAR handling process',                 ref:'Art. 12-15',   desc:'Documented process to handle subject access and other rights requests within one calendar month of receipt (moved to the next working day if it falls on a weekend or bank holiday). Log of requests maintained.' },
   { id:'erasure',         cat:'Data Subject Rights', name:'Right to Erasure procedure',            ref:'Art. 17',      desc:'Process to delete personal data on valid erasure requests, with exceptions documented.' },
   { id:'portability',     cat:'Data Subject Rights', name:'Data Portability capability',           ref:'Art. 20',      desc:'Ability to provide data in machine-readable format (CSV/JSON) where processing is automated and consent/contract-based.' },
   { id:'consent-records', cat:'Data Subject Rights', name:'Consent records maintained',            ref:'Art. 7',       desc:'Records of when/how consent was obtained with easy withdrawal mechanism. Separate from T&Cs.' },
@@ -29,10 +29,10 @@ const GDPR_CONTROLS = [
   { id:'retention',       cat:'Security',            name:'Data retention & deletion policy',      ref:'Art. 5(1)(e)', desc:'Documented retention periods with automated or scheduled deletion. Retention schedule reviewed annually.' },
   { id:'dpa-contracts',   cat:'Vendor Management',   name:'Data Processing Agreements (DPAs)',     ref:'Art. 28',      desc:'DPAs in place with all data processors before processing begins. Covers security, sub-processors, return/deletion.' },
   { id:'vendor-audit',    cat:'Vendor Management',   name:'Vendor due diligence conducted',        ref:'Art. 28',      desc:'Annual reviews of all processors for security and compliance. Questionnaires or certifications reviewed.' },
-  { id:'international',   cat:'Vendor Management',   name:'International transfer safeguards',     ref:'Art. 44-49',   desc:'SCCs, adequacy decisions, or BCRs in place for non-UK/EEA transfers. Transfer impact assessments completed.' },
+  { id:'international',   cat:'Vendor Management',   name:'International transfer safeguards',     ref:'Art. 44-49',   desc:'Transfers outside the UK rely on UK adequacy regulations (which cover the EU/EEA), the UK-US data bridge, the IDTA or the UK Addendum to the EU SCCs, or BCRs. Transfer risk assessments documented.' },
   { id:'staff-training',  cat:'Training',            name:'Staff GDPR training completed',         ref:'Art. 39',      desc:'All staff completed data protection training in last 12 months. Records of completion maintained.' },
   { id:'incident-resp',   cat:'Training',            name:'Incident response training',            ref:'Art. 32',      desc:'Staff know how to identify and report data breaches immediately. Tabletop exercise completed annually.' },
-  { id:'ico-reg',         cat:'Training',            name:'ICO registration current',              ref:'DPA 2018',     desc:'Organisation registered with ICO and fee paid (renews annually).' },
+  { id:'ico-reg',         cat:'Training',            name:'ICO data protection fee paid',          ref:'DPA 2018',     desc:'ICO data protection fee paid and renewed each year, unless exempt.' },
   { id:'cookie-compliance',cat:'Training',           name:'Cookie consent compliance',             ref:'PECR',         desc:'Cookie banner with Reject All as prominent as Accept All. Consent records kept. Non-essential cookies blocked until consent.' },
 ]
 
@@ -85,16 +85,16 @@ const UK_GOV_COMPLAINTS = [
     id:'ico', body:"Information Commissioner's Office (ICO)", icon:'🏛️', scope:'Data protection, GDPR, PECR, Freedom of Information', color:'#3B82F6',
     complaintTypes:[
       { type:'Data Protection Complaint', url:'https://ico.org.uk/make-a-complaint/data-protection-complaints/data-protection-complaints/', desc:'Organisation mishandled personal data or denied a Subject Access Request', timeLimit:'3 months from last contact with the organisation', form:'Online form at ico.org.uk' },
-      { type:'PECR / Marketing Complaint', url:'https://ico.org.uk/make-a-complaint/nuisance-calls-and-messages/report-a-nuisance-call-or-message/', desc:'Unwanted marketing emails, texts, or calls; cookie law breaches; no reject-all button', timeLimit:'No strict limit', form:'ICO Report a nuisance call/message' },
+      { type:'PECR / Marketing Complaint', url:'https://ico.org.uk/make-a-complaint/nuisance-calls-and-messages/report-a-nuisance-call-or-message/', desc:'Unwanted marketing calls, texts or emails', timeLimit:'Report as soon as possible', form:'ICO Report a nuisance call/message' },
       { type:'Freedom of Information', url:'https://ico.org.uk/make-a-complaint/foi-and-eir-complaints/', desc:'Public authority failed to respond to FOI request within 20 working days', timeLimit:'3 months from public authority response (or non-response)', form:'ICO FOI complaint form' },
-      { type:'DSAR Not Fulfilled', url:'https://ico.org.uk/make-a-complaint/', desc:'Organisation failed to respond to Subject Access Request within 30 days', timeLimit:'3 months from the 30-day deadline expiry', form:'ICO online complaint' },
+      { type:'DSAR Not Fulfilled', url:'https://ico.org.uk/make-a-complaint/', desc:'Organisation did not respond to a subject access request within one calendar month (or the extended deadline)', timeLimit:'Within 3 months of your last meaningful contact with the organisation', form:'ICO online complaint' },
     ],
     audits:[
       { name:'ICO Accountability Framework Self-Assessment', url:'https://ico.org.uk/for-organisations/accountability-framework/', desc:'Free tool to assess GDPR accountability across 10 themes' },
       { name:'ICO Data Protection Self-Assessment (SMEs)', url:'https://ico.org.uk/for-organisations/advice-for-small-organisations/data-protection-self-assessment/', desc:'Quick self-assessment toolkit for small organisations' },
     ],
     applications:[
-      { name:'ICO Registration (Data Controller)', url:'https://ico.org.uk/about-the-ico/what-we-do/register-with-the-ico/', desc:'Annual registration required for most data controllers — £40 (Tier 1) or £60 (Tier 2)', deadline:'Annually on registration anniversary — failure is a criminal offence' },
+      { name:'ICO data protection fee', url:'https://ico.org.uk/for-organisations/data-protection-fee/', desc:'Most organisations that process personal data must pay an annual fee: £52 (tier 1, micro), £78 (tier 2, small and medium) or £3,763 (tier 3, large), £5 less by direct debit, unless exempt', deadline:'Every year. Not paying can lead to a fine from the ICO' },
     ],
   },
   {
@@ -118,17 +118,17 @@ const UK_GOV_COMPLAINTS = [
       { name:'Online Safety Act Readiness Guidance', url:'https://www.ofcom.org.uk/online-safety', desc:'Guidance for services in scope — risk assessments, illegal content duties, children\'s safety' },
     ],
     applications:[
-      { name:'Register as In-Scope Service (OSA 2023)', url:'https://www.ofcom.org.uk/online-safety/information-for-industry', desc:'User-to-user and search services must register and submit annual transparency reports', deadline:'Phased — Category 1 services 2024; others from 2025' },
+      { name:'Online Safety Act risk assessments', url:'https://www.ofcom.org.uk/online-safety', desc:'User-to-user and search services in scope must assess the risk of illegal content (duties in force since 17 March 2025) and, if children can access them, the risks to children (since 25 July 2025)', deadline:'Ongoing: keep risk assessments up to date' },
     ],
   },
   {
     id:'fca', body:'Financial Conduct Authority (FCA)', icon:'🏦', scope:'Financial services, Consumer Duty, data in finance, AI in finance', color:'#F59E0B',
     complaintTypes:[
-      { type:'Consumer Duty / Mis-Selling Complaint', url:'https://www.fca.org.uk/consumers/how-complain', desc:'Financial firm failed Consumer Duty, mis-sold a product, or provided poor service', timeLimit:'8 weeks after raising with firm, then Financial Ombudsman', form:'Financial Ombudsman Service (FOS) — free, binding up to £415,000' },
+      { type:'Consumer Duty / Mis-Selling Complaint', url:'https://www.fca.org.uk/consumers/how-complain', desc:'Financial firm failed Consumer Duty, mis-sold a product, or provided poor service', timeLimit:'8 weeks after raising with firm, then Financial Ombudsman', form:'Financial Ombudsman Service (FOS) — free for consumers' },
       { type:'Regulatory Breach Report', url:'https://www.fca.org.uk/firms/report-misconduct', desc:'Report suspected breach of FCA rules by an authorised firm', timeLimit:'As soon as possible', form:'FCA reporting portal (confidential)' },
     ],
     audits:[
-      { name:'Consumer Duty Board Report Template', url:'https://www.fca.org.uk/firms/consumer-duty/consumer-duty-assessment-tool', desc:'FCA tool to produce annual Consumer Duty board reports (due 31 July each year)' },
+      { name:'Consumer Duty Board Report Template', url:'https://www.fca.org.uk/firms/consumer-duty/consumer-duty-assessment-tool', desc:'Guidance for the annual Consumer Duty board report' },
     ],
     applications:[
       { name:'FCA Authorisation', url:'https://www.fca.org.uk/firms/authorisation', desc:'Apply to be an FCA-authorised firm before conducting regulated financial activities', deadline:'Before conducting any regulated activity — processing takes 6-12 months' },
@@ -145,7 +145,7 @@ const UK_GOV_COMPLAINTS = [
       { name:'Cyber Essentials Self-Assessment Tool', url:'https://www.ncsc.gov.uk/cyberessentials/overview', desc:'Free online tool — required for some government contracts' },
     ],
     applications:[
-      { name:'Cyber Essentials Certification', url:'https://www.ncsc.gov.uk/cyberessentials/overview', desc:'Verified self-assessment — from £300+VAT; mandatory for MoD and some NHS/central gov contracts', deadline:'Annual renewal' },
+      { name:'Cyber Essentials Certification', url:'https://www.ncsc.gov.uk/cyberessentials/overview', desc:'Self-assessment checked by an IASME certification body; required for many central government and MoD contracts', deadline:'Annual renewal' },
       { name:'Cyber Essentials Plus', url:'https://www.ncsc.gov.uk/cyberessentials/overview', desc:'Independently tested by IASME-accredited body — higher assurance for enterprise clients', deadline:'Annual renewal' },
     ],
   },
@@ -155,7 +155,7 @@ const UK_GOV_COMPLAINTS = [
       { type:'DSPT Non-Compliance Report', url:'https://www.dsptoolkit.nhs.uk/', desc:'Report an NHS-connected organisation not meeting data security standards', timeLimit:'Submissions due 30 June annually', form:'NHS DSPT portal or via NHS England regional team' },
     ],
     audits:[
-      { name:'DSPT Self-Assessment 2024/25', url:'https://www.dsptoolkit.nhs.uk/', desc:'Annual mandatory submission — "Standards Met" or "Standards Exceeded"' },
+      { name:'DSPT annual self-assessment', url:'https://www.dsptoolkit.nhs.uk/', desc:'Annual submission for organisations with access to NHS patient data or systems' },
       { name:'NHS IG Training (ESR)', url:'https://www.e-lfh.org.uk/programmes/data-security-awareness/', desc:'Free online training for all staff with access to NHS patient data' },
     ],
     applications:[

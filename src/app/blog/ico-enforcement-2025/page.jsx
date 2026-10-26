@@ -12,27 +12,29 @@ const StatGrid=({stats})=><div style={{display:'grid',gridTemplateColumns:'repea
 export default function IcoEnforcement2025(){
   return(
     <Layout meta={{cat:'Compliance',date:'2 Jul 2026',read:'10 min',title:'ICO Enforcement in 2025–26: Key Lessons for UK SMEs'}}>
-      <P>The Information Commissioner's Office (ICO) continues to fine businesses of all sizes — and size is no defence. Meanwhile, across the EU, regulators have issued over <strong style={{color:'var(--ink)'}}>€6.31 billion in GDPR fines across 3,202 cases</strong> since enforcement began in 2018. The most common failures are consistent: no lawful basis for processing, weak security measures, and inadequate transparency. Here's what UK businesses can learn from both ICO enforcement and the EU-wide picture.</P>
+      <P>The Information Commissioner's Office (ICO) has fined organisations of every size in the last two years, from a £60,000 fine on a small law firm to £14 million on Capita. The failings behind them are consistent: weak security (above all, no multi-factor authentication), marketing without consent, and not protecting children's data. Here's what UK businesses can learn.</P>
       <StatGrid stats={[
-        {val:'3,202',label:'Total EU+UK enforcement cases (2018–2026)'},
-        {val:'€6.31B',label:'Total fines issued across 32 countries'},
-        {val:'€1.2B',label:'Largest single fine (Meta, Ireland, 2023)'},
-        {val:'Art. 5 & 6',label:'Most-cited GDPR articles in enforcement'},
+        {val:'£20m',label:'Largest ICO fine (British Airways, 2020)'},
+        {val:'£14.47m',label:'Reddit, children\'s data (Feb 2026)'},
+        {val:'£14m',label:'Capita, cyber attack (Oct 2025)'},
+        {val:'979 / 1,000',label:'Top UK websites passing the ICO\'s cookie test (Dec 2025)'},
       ]}/>
-      <Callout type="danger">The ICO has explicitly stated that size is not a defence. Sole traders and micro-businesses have received enforcement notices and fines. If you collect personal data, GDPR obligations apply to you regardless of company size.</Callout>
+      <Callout type="danger">Size is not a defence. Small firms have been fined too, such as a law firm fined £60,000 in 2025. If you collect personal data, UK GDPR applies to you whatever your size.</Callout>
 
       <H2 n="1">Notable ICO enforcement actions 2024–26</H2>
       <P>These cases illustrate the patterns in ICO enforcement and the specific failures that trigger action:</P>
-      <Case org="Software company (name withheld)" fine="£350,000" issue="Sent 107 million unsolicited marketing emails. The company had no valid consent from recipients and failed to provide an easy opt-out mechanism. Fine issued under PECR (Privacy and Electronic Communications Regulations)." />
-      <Case org="NHS Trust" fine="£200,000" issue="Emailed sensitive personal data (patient medical information) to wrong recipients on multiple occasions. ICO cited failure to implement adequate technical measures — a basic access control issue." />
-      <Case org="Law firm (SME)" fine="£60,000" issue="Cyber attack resulted in client data exposure. ICO investigation found the firm had not implemented multi-factor authentication, used outdated software, and had no documented incident response plan." />
-      <Case org="Marketing company" fine="£140,000" issue="Purchased marketing lists without verifying that individuals had given valid consent. Relied on consent claimed by the list vendor without independently checking consent records." />
-      <P>The SME law firm case is particularly instructive: the fine was not for the attack itself, but for failing to have reasonable security measures in place. The ICO's test is whether you took appropriate steps for the risk — not whether a breach happened.</P>
+      <Case org="DPP Law Ltd (April 2025)" fine="£60,000" issue="A small law firm. Attackers got in through a rarely used administrator account that had no multi-factor authentication and took 32GB of data. The firm reported the breach 43 days late, because it didn't realise that losing access to personal data is a breach too." />
+      <Case org="Advanced Computer Software (March 2025)" fine="£3.07 million" issue="Ransomware disrupted NHS 111 and other services. Attackers used a customer account without multi-factor authentication. It was the ICO's first fine on a data processor (a supplier), not the organisation that owns the data." />
+      <Case org="23andMe (June 2025)" fine="£2.31 million" issue="A credential stuffing attack exposed the data of 155,592 UK users. No mandatory multi-factor authentication, weak password rules, and a slow response." />
+      <Case org="Capita (October 2025)" fine="£14 million" issue="A 2023 cyber attack exposed data of 6.6 million people. Weak access controls and a 58-hour delay responding to a high-priority security alert." />
+      <Case org="Reddit (February 2026)" fine="£14.47 million" issue="No effective age checks, so children under 13 used the service and their data was processed without a lawful basis." />
+      <Case org="KRA Consultancy (May 2026)" fine="£300,000" issue="Sent over 5.5 million unsolicited marketing texts, including fake bailiff messages, leading to more than 60,000 complaints." />
+      <P>The DPP Law case is particularly instructive for small businesses: the fine was not for being attacked, but for missing a basic control (multi-factor authentication) and reporting late. The ICO's test is whether you took appropriate steps for the risk, not whether a breach happened.</P>
 
       <H2 n="2">What the ICO is actively targeting</H2>
       <P>Based on ICO enforcement notices, reprimands, and public guidance issued in 2024–25, these are the areas under active scrutiny:</P>
       <Ul items={[
-        'Cookie consent: banners that pre-tick analytics and marketing cookies, hide reject options, or use dark patterns to nudge acceptance. The ICO sent formal notices to several major news publishers in 2024.',
+        'Cookie consent: advertising cookies set before a choice, or rejecting made harder than accepting. The ICO tested the UK\'s top 1,000 websites and by December 2025 979 passed, many after ICO letters or preliminary enforcement notices.',
         'Marketing emails without valid consent: purchasing lists, using "soft opt-in" without understanding the rules, sending to contacts who haven\'t consented to email marketing.',
         'Inadequate security: no MFA on admin accounts, unpatched software, no data encryption at rest, no security incident response plan.',
         'Failure to respond to DSARs (Subject Access Requests): missing the one-month deadline, providing incomplete responses, or charging fees where none are permitted.',
@@ -40,17 +42,9 @@ export default function IcoEnforcement2025(){
         'Privacy notices: missing or inadequate notices that don\'t reflect actual data processing, or using generic templates without customisation.',
       ]}/>
 
-      <H2 n="3">The EU enforcement picture: what 9 years of data tells us</H2>
-      <P>The GDPR Enforcement Tracker (enforcementtracker.com) compiles all publicly disclosed GDPR enforcement actions across 32 European countries. The data since 2018 reveals consistent patterns that apply equally to UK businesses operating under UK GDPR:</P>
-      <Ul items={[
-        'Top violation #1 — Insufficient legal basis for data processing (Art. 6): ~950 cases. Processing personal data without a valid lawful basis is the single most-enforced violation. This means businesses processing data without consent, legitimate interest, or another Art. 6 ground documented in writing.',
-        'Top violation #2 — Non-compliance with data processing principles (Art. 5): ~800 cases. Article 5 covers the core GDPR principles — lawfulness, purpose limitation, data minimisation, accuracy, storage limitation, integrity. Regulators cite Art. 5 in nearly every serious enforcement action.',
-        'Top violation #3 — Insufficient technical & organisational measures (Art. 32): ~600 cases. Security failures — no encryption, no MFA, unpatched systems, inadequate access controls. Art. 32 is the most common route for fines following a data breach.',
-        'Top violation #4 — Transparency failures (Art. 13/14): ~540 cases. Failing to provide adequate privacy information at the point of data collection. Inadequate or missing privacy notices are among the easiest compliance gaps for regulators to identify.',
-        'Most fined sector: Industry & Commerce (~615 cases), followed by Media/Telecoms (~375), Public Sector (~370), Finance/Insurance (~335), and Healthcare (~285). No sector is exempt.',
-        'Most active DPA: Spain (1,078 cases tracked), followed by Italy, Romania, and Germany. The ICO is comparatively less active by case count but issues some of the largest individual fines.',
-      ]}/>
-      <Callout type="warn">The largest single GDPR fine ever issued was €1.2 billion against Meta Platforms Ireland (May 2023) for unlawful data transfers to the US without adequate safeguards. The next largest: TikTok €530 million (2025), Meta €405 million (2023), LinkedIn €310 million (2023), and Uber €290 million (2023). All relate to either data transfers, children's data, or insufficient lawful basis.</Callout>
+      <H2 n="3">The EU picture</H2>
+      <P>EU fines don't apply in the UK, but they show which failings regulators treat most seriously. The largest EU GDPR fines have been for unlawful international transfers and for advertising without a valid legal basis.</P>
+      <Callout type="warn">The largest single GDPR fine is €1.2 billion against Meta Platforms Ireland (May 2023) for US data transfers. Others include Amazon €746 million (2021, advertising), TikTok €530 million (2025, transfers to China), Instagram €405 million (2022, children's data), LinkedIn €310 million (2024, behavioural advertising) and Uber €290 million (2024, transfers).</Callout>
 
       <H2 n="4">The ICO's approach to SMEs</H2>
       <P>The ICO has published guidance on its approach to smaller organisations. In practice, the Commissioner uses a range of tools beyond fines — reprimands, enforcement notices, and published case summaries — that damage reputation even without a financial penalty.</P>
@@ -62,7 +56,7 @@ export default function IcoEnforcement2025(){
         '1. Cookie banners that don\'t actually block cookies before consent — analytics scripts load before the user clicks anything. Technically illegal, common, and increasingly enforced.',
         '2. Privacy policies copied from templates that don\'t reflect actual data processing. Your policy must accurately describe your specific tools, purposes, and lawful bases.',
         '3. No Data Processing Agreements with processors — if you use Mailchimp, HubSpot, Xero, or any SaaS tool, you need a DPA. Most providers offer one but you must accept it.',
-        '4. DSAR requests ignored or delayed past 30 days. Any individual can ask for all data you hold on them — you must respond within one calendar month.',
+        '4. Subject access requests ignored or answered late. Anyone can ask for the data you hold about them, and you must respond within one calendar month.',
         '5. No documented retention and deletion schedule. "We keep it forever" is not a lawful retention period. You need a documented schedule and you need to follow it.',
       ]}/>
 
@@ -72,7 +66,7 @@ export default function IcoEnforcement2025(){
         'Review your cookie banner: ensure the reject option is as prominent as accept, and nothing loads before consent is given.',
         'Check your privacy policy covers your actual tools and processing — not just generic categories.',
         'Audit your processor list: every SaaS tool that touches personal data needs a DPA. Go through your subscriptions and check.',
-        'Set up a DSAR process: know where data is held, designate someone to handle requests, set a calendar reminder to respond within 30 days.',
+        'Set up a DSAR process: know where data is held, designate someone to handle requests, and track each deadline (one calendar month from receipt).',
         'Implement basic security hygiene: MFA on all admin accounts, password manager, encrypted backups, basic incident response plan.',
         'Document everything: the ICO responds well to evidence of good faith efforts to comply. A documented compliance programme, even if imperfect, demonstrates accountability.',
       ]}/>

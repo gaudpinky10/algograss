@@ -1,6 +1,6 @@
 /**
- * Vercel Cron Job — runs every Monday at 8am UTC
- * Schedule: "0 8 * * 1"  (defined in vercel.json)
+ * Vercel Cron Job — runs every day at 8am UTC, scanning each user about once a week
+ * Schedule: "0 8 * * *"  (defined in vercel.json)
  *
  * What it does:
  *  1. Fetches all users who have a website set
@@ -34,12 +34,19 @@ export async function GET(request) {
     const scanHistory = await getCollection('scanHistory');
     if (!users) return NextResponse.json({ error: 'DB unavailable' }, { status: 500 });
 
-    // Only scan users who have a website on their profile
+    // Users with a website, the longest-waiting first. Each scan can take up to
+    // a minute, so each run covers a batch, three at a time, within the time
+    // limit; the rest are picked up next run.
+    // Runs daily; each user is scanned about once a week
+    const weekAgo = new Date(Date.now() - 6.5 * 864e5);
     const usersToScan = await users.find({
       website: { $exists: true, $ne: '' },
-    }).toArray();
+      $or: [{ lastMonitorScanAt: { $exists: false } }, { lastMonitorScanAt: { $lt: weekAgo } }],
+    }).sort({ lastMonitorScanAt: 1 }).limit(12).toArray();
+    const integrations = await getCollection('integrations');
+    const startedAt = Date.now();
 
-    for (const user of usersToScan) {
+    const scanOne = async (user) => {
       try {
         const website = user.website?.startsWith('http') ? user.website : `https://${user.website}`;
 
@@ -62,18 +69,19 @@ export async function GET(request) {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-cron-job': 'true' },
           body: JSON.stringify({ url: website }),
-          signal: AbortSignal.timeout(45000),
+          signal: AbortSignal.timeout(62000),
         });
+        await users.updateOne({ _id: user._id }, { $set: { lastMonitorScanAt: new Date() } });
 
         if (!scanRes.ok) {
           results.errors.push(`${user.email}: scan API returned ${scanRes.status}`);
-          continue;
+          return;
         }
 
         const scanResult = await scanRes.json();
         if (!scanResult.score && scanResult.score !== 0) {
           results.errors.push(`${user.email}: no score in scan result`);
-          continue;
+          return;
         }
 
         results.scanned++;
@@ -100,8 +108,29 @@ export async function GET(request) {
         const significantDrop = scoreDrop >= 5;
 
         const shouldEmail = firstScan || significantDrop || newHighIssues;
+        // Respect the email choices in Settings
+        const wantsEmail = user.notifications?.weeklyReport !== false && user.notifications?.scoreDrop !== false;
 
-        if (shouldEmail && process.env.RESEND_API_KEY) {
+        // Slack alert, if they connected a channel
+        if (shouldEmail && integrations) {
+          try {
+            const slack = await integrations.findOne({ userEmail: user.email, type: 'slack' });
+            if (slack?.webhookUrl?.startsWith('https://hooks.slack.com/')) {
+              const high = (scanResult.issues || []).filter(i => i.sev === 'High').map(i => `• ${i.title}`).slice(0, 5).join('\n');
+              const headline = firstScan ? `First weekly scan of ${website}: *${scanResult.score}/100*`
+                : significantDrop ? `Score for ${website} dropped from ${previousScore} to *${scanResult.score}/100*`
+                : `New serious issue on ${website} (score *${scanResult.score}/100*)`;
+              await fetch(slack.webhookUrl, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: `🛡️ AlgoGrass: ${headline}${high ? `\nHigh-severity issues:\n${high}` : ''}\n<https://www.algograss.com/dashboard|Open your dashboard>` }),
+                signal: AbortSignal.timeout(8000),
+              });
+              results.slack = (results.slack || 0) + 1;
+            }
+          } catch (e) { results.errors.push(`${user.email}: slack failed — ${e.message}`); }
+        }
+
+        if (shouldEmail && wantsEmail && process.env.RESEND_API_KEY) {
           try {
             await sendScanMonitorEmail(
               user.name || 'there',
@@ -116,13 +145,17 @@ export async function GET(request) {
           }
         }
 
-        // Small delay between scans to avoid hammering external sites
-        await new Promise(r => setTimeout(r, 2000));
-
       } catch (userErr) {
         results.errors.push(`${user.email}: ${userErr.message}`);
       }
-    }
+    };
+
+    // Three at a time; stop starting new scans when time is running out
+    const queue = [...usersToScan];
+    await Promise.all([0, 1, 2].map(async () => {
+      while (queue.length && Date.now() - startedAt < 220000) await scanOne(queue.shift());
+    }));
+    results.remaining = queue.length;
 
     return NextResponse.json({
       ok: true,

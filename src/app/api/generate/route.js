@@ -1,83 +1,54 @@
 import { askClaude } from '@/lib/ai'
+import { toolSystem } from '@/lib/ukDataFacts'
+import { currentUser, allowAiUse, tooMany, aiFailed } from '@/lib/toolGuard'
 
-const DOC_SYSTEM_PROMPT = 'You are AlgoGrass — an expert GDPR compliance platform. Draft complete, professional, legally structured compliance documents for UK and EU businesses. Write with authority and precision. Use clear headings, structured sections, and professional language. Include [INSERT: specific detail needed] tags where the business must add their specific information. Documents must be comprehensive, accurate, and ready to use.'
+const DOC_ROLE = 'You are the AlgoGrass document assistant. You draft clear, accurate UK data protection documents for small businesses, in plain English. You never invent facts about the business: anything you weren\'t told goes in an [INSERT: ...] placeholder.'
 
 export async function POST(request) {
+  const user = currentUser()
   const { docType, scanData } = await request.json()
-  if (!docType || !scanData) return Response.json({ error: 'Missing docType or scanData' }, { status: 400 })
+  if (!docType || !scanData?.url) return Response.json({ error: 'Scan your website first, then generate the document.' }, { status: 400 })
+  if (!(await allowAiUse('generate', user, user ? 30 : 3))) return tooMany()
 
-  const { url, trackers, checks, isHttps, issues } = scanData
-  const domain = url.replace(/^https?:\/\//, '').split('/')[0]
+  const trackers = Array.isArray(scanData.trackers) ? scanData.trackers.map(String).slice(0, 20) : []
+  const issues = Array.isArray(scanData.issues) ? scanData.issues.map(i => String(i?.title || '')).filter(Boolean).slice(0, 20) : []
+  const checks = scanData.checks || {}
+  const cookies = Array.isArray(scanData.trackingCookiesBeforeConsent) ? scanData.trackingCookiesBeforeConsent.map(String).slice(0, 20) : []
+  let domain = ''
+  try { domain = new URL(String(scanData.url)).hostname.replace(/^www\./, '') } catch { domain = String(scanData.url).replace(/^https?:\/\//, '').split('/')[0] }
+  const found = `What our scan of ${domain} found: tracking tools: ${trackers.join(', ') || 'none detected'}; tracking cookies set before consent: ${cookies.join(', ') || 'none'}; cookie banner found: ${checks.cookieBannerFound ?? checks.cookieBanner ? 'yes' : 'no'}; reject option: ${checks.cookieRejectFound ?? checks.cookieReject ? 'yes' : 'no'}; issues: ${issues.join('; ') || 'none'}. Only these tools were detected on the homepage; other pages or offline processing may involve more.`
 
   const prompts = {
-    privacy: `Draft a comprehensive, professional Privacy Policy for "${domain}".
+    privacy: `Draft a privacy notice for the website ${domain}, under UK GDPR and the Data Protection Act 2018 (add EU GDPR wording only as an optional section, for businesses that serve people in the EU).
 
-Scan context: HTTPS=${isHttps}, Trackers=${trackers.join(', ') || 'none'}, Issues=${issues.map(i=>i.title).join('; ') || 'none'}.
+${found}
 
-Include all required sections under GDPR Art. 13 & 14 and UK DPA 2018:
-1. Identity and contact details of the controller
-2. Purposes and legal basis for processing (Art. 6)
-3. Categories of personal data collected
-4. Cookies and tracking technologies${trackers.length > 0 ? ` — disclose: ${trackers.join(', ')}` : ''}
-5. Data sharing and third-party processors
-6. International transfers and safeguards
-7. Retention periods
-8. Data subject rights (Art. 15–22) — access, erasure, rectification, portability, restriction, objection
-9. Right to withdraw consent
-10. Right to complain to the ICO (ico.org.uk)
-11. Automated decision-making
-12. Policy updates
+Cover: who we are and how to contact us; the personal data we collect and where from; purposes, each with its lawful basis (Art. 6, and an Art. 9 condition for any special category data); cookies and similar technologies, naming each tracking tool found above and what it does; who we share data with (processors and other recipients, by name where known); international transfers and the safeguard used; how long we keep each type of data; people's rights; how to complain to us (and that we acknowledge complaints within 30 days) and to the ICO (ico.org.uk); automated decision-making, if any; changes to this notice.
+Use [INSERT: ...] for every business-specific detail you weren't given. Don't state retention periods, processors or purposes as facts unless they come from the scan above.`,
 
-Use professional, clear language. Include [INSERT: ...] tags for business-specific details. State this covers both EU GDPR and UK GDPR/DPA 2018.`,
+    cookie: `Draft a cookie policy for ${domain} under PECR and the ICO's guidance on storage and access technologies.
 
-    cookie: `Draft a comprehensive Cookie Policy for "${domain}".
+${found}
 
-Trackers detected: ${trackers.join(', ') || 'none'}. Cookie banner: ${checks.cookieBannerFound ?? checks.cookieBanner}. Reject option: ${checks.cookieRejectFound ?? checks.cookieReject}.${checks.cookieConsentNeeded === false ? ' No non-essential cookies or trackers were detected, so a consent banner may not be needed.' : ''}
+Cover: what cookies and similar technologies are; the categories we use (strictly necessary; functionality/preferences; analytics; advertising); a table (Name | Provider | Purpose | Duration | Category) with a row for each tool found above and [INSERT] rows for others; which need consent and which are exempt (strictly necessary, and since February 2026 some analytics and preference cookies, only with clear information and a simple way to object); how people give, refuse and withdraw consent (refusing as easy as accepting); third-party cookies; browser settings; changes.
+Don't claim the site already complies: if the scan found tracking before consent or no reject option, add a short note to the business (marked [NOTE TO YOU: ...]) saying what to fix first.`,
 
-Include:
-1. What cookies are and how we use them
-2. Cookie categories: strictly necessary, functional, analytics, marketing
-3. Complete cookie inventory table (Name | Provider | Purpose | Duration | Category)${trackers.length > 0 ? ` — include: ${trackers.join(', ')}` : ''}
-4. How to manage and withdraw consent
-5. Third-party cookies and their purposes
-6. Browser opt-out instructions (Chrome, Firefox, Safari, Edge)
-7. Updates to this policy
+    dpa: `Draft a data processing agreement under UK GDPR Article 28, for ${domain} as controller and a supplier as processor.
 
-Comply with UK ePrivacy Regulations and ICO Cookie Guidance 2023. Use [INSERT: ...] tags where needed.`,
+Suppliers that may be processors, from our scan: ${trackers.join(', ') || 'none detected'}. Note to the business: advertising and social pixels (e.g. Meta, LinkedIn, TikTok) usually act as separate or joint controllers and have their own terms, so a DPA like this is mainly for suppliers that process data only on your instructions (hosting, email, CRM, payroll and so on).
 
-    dpa: `Draft a Data Processing Agreement for "${domain}" under GDPR Article 28.
-
-Third-party processors detected: ${trackers.join(', ') || 'none detected'}.
-
-Include all required Art. 28(3) provisions:
-1. Definitions
-2. Subject matter, nature, purpose and duration of processing
-3. Categories of data and data subjects
-4. Controller obligations and instructions
-5. Processor obligations: (a) processing only on instructions (b) confidentiality obligations (c) security measures per Art. 32 (d) subprocessor restrictions and approval (e) data subject rights assistance (f) deletion or return of data (g) audit cooperation (h) DPIA assistance
-6. Subprocessors — listing and approval mechanism
-7. International transfer safeguards (SCCs/adequacy decisions)
-8. Liability and indemnity
-9. Term and termination
-10. Governing law — UK/EU option
-
-Use [INSERT: ...] tags throughout for business-specific details.`
+Include all Art. 28(3) terms: subject matter, duration, nature and purpose; types of data and data subjects; processing only on documented instructions; confidentiality; security (Art. 32); sub-processors (prior authorisation and flow-down); help with people's rights requests; help with security, breach notification (without undue delay) and DPIAs; deletion or return at the end; information and audits. Also: international transfers (UK adequacy regulations, the UK-US data bridge, the IDTA or the UK Addendum to the EU SCCs); liability; term and termination; governing law of England and Wales [INSERT: or Scotland / Northern Ireland].
+Use [INSERT: ...] throughout for details you weren't given.`,
   }
 
   const prompt = prompts[docType]
-  if (!prompt) return Response.json({ error: 'Invalid docType. Use: privacy, cookie, or dpa' }, { status: 400 })
+  if (!prompt) return Response.json({ error: 'Choose a privacy notice, cookie policy or data processing agreement.' }, { status: 400 })
 
   try {
-    const document = await askClaude({
-      system: DOC_SYSTEM_PROMPT,
-      prompt,
-      maxTokens: 4000,
-      temperature: 0.3,
-    })
-
-    return Response.json({ document, docType, domain, generatedAt: new Date().toISOString() })
-  } catch (err) {
-    const status = err.status === 503 ? 500 : 500
-    return Response.json({ error: err.message || 'Generation failed' }, { status })
+    const document = await askClaude({ system: toolSystem(DOC_ROLE), prompt, maxTokens: 4500 })
+    const note = 'AI-generated draft. Fill in every [INSERT] and check it matches how your business really uses data before you publish or sign it. Not legal advice.'
+    return Response.json({ document, note, docType, domain, generatedAt: new Date().toISOString() })
+  } catch (e) {
+    return aiFailed(e.status === 503 ? 503 : 502)
   }
 }

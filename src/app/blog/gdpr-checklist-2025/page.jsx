@@ -9,13 +9,13 @@ function Layout({meta,children}){return(<><section style={{padding:'56px 0 32px'
 
 export default function GdprChecklist(){
   return(
-    <Layout meta={{cat:'GDPR',date:'30 May 2026',read:'8 min',title:'The 2025 GDPR Compliance Checklist for UK SMEs'}}>
+    <Layout meta={{cat:'GDPR',date:'30 May 2026',read:'8 min',title:'GDPR Compliance Checklist for UK SMEs (2026)'}}>
       <P>If your website collects any personal data from UK or EU residents — an email address, a name, an IP address tracked by analytics — you are subject to UK GDPR. Non-compliance carries fines of up to £17.5 million or 4% of global turnover, and the ICO is increasingly active against SMEs. This checklist covers the 12 things every UK small business must have in place.</P>
       <Callout>This checklist covers UK GDPR under the Data Protection Act 2018. EU GDPR applies if you also process data from EU residents. The requirements are nearly identical — see our UK GDPR vs EU GDPR article for the differences.</Callout>
 
       <H2 n="1">Establish a lawful basis for every processing activity</H2>
-      <P>Under UK GDPR Article 6, every processing activity must have a lawful basis. You cannot collect or use personal data just because it would be useful. The six bases are: consent, contract, legal obligation, vital interests, public task, and legitimate interests. Most SMEs use consent (for marketing), contract (for order fulfilment and customer accounts), and legitimate interests (for fraud prevention, security).</P>
-      <P>Document your lawful bases in a Records of Processing Activities (ROPA) — even a simple spreadsheet counts. This is a legal requirement under Article 30 for organisations with 250 or more employees, and best practice for all.</P>
+      <P>Under UK GDPR Article 6, every processing activity must have a lawful basis. You cannot collect or use personal data just because it would be useful. The bases are: consent, contract, legal obligation, vital interests, public task, legitimate interests and, since February 2026, recognised legitimate interests (only for a short list of purposes such as crime prevention and safeguarding). Most SMEs use consent (for marketing), contract (for order fulfilment and customer accounts), and legitimate interests (for fraud prevention, security).</P>
+      <P>Document your lawful bases in a Records of Processing Activities (ROPA) — even a simple spreadsheet counts. Article 30 requires it of organisations with 250 or more staff, and of smaller ones too unless their processing is only occasional, low-risk and involves no special category or criminal offence data, so in practice most businesses should keep one.</P>
       <Check items={[
         'Identified and documented the lawful basis for each type of data processing',
         'Ensured consent is freely given, specific, informed, and unambiguous where used as the basis',
@@ -64,7 +64,7 @@ export default function GdprChecklist(){
       <Check items={[
         'Designated a contact point for data subject requests (email address or form)',
         'Documented how to locate all personal data across systems',
-        'Process in place to respond within 30 days',
+        'Process in place to respond within one calendar month',
         'Privacy policy explains rights and how to exercise them',
       ]}/>
 
@@ -102,10 +102,10 @@ export default function GdprChecklist(){
         'Passwords are not reused across accounts; password manager in use',
       ]}/>
 
-      <H2 n="11">Register with the ICO if required</H2>
-      <P>Most UK businesses that process personal data are required to pay the ICO data protection fee and register. The fee is £40/year for most small businesses and £60/year for medium businesses. There are exemptions for certain processing activities (e.g. purely for staff administration) but these are narrow.</P>
+      <H2 n="11">Pay the ICO data protection fee if required</H2>
+      <P>Most UK businesses that process personal data must pay the ICO data protection fee every year. Since February 2025 it is £52 for micro organisations (tier 1) and £78 for small and medium organisations (tier 2), £5 less by direct debit. There are exemptions for certain processing activities (e.g. purely for staff administration) but these are narrow.</P>
       <Check items={[
-        'Checked whether ICO registration is required using ico.org.uk self-assessment',
+        'Checked whether you need to pay the ICO fee using the self-assessment on ico.org.uk',
         'Registered and paying annual fee if required',
         'ICO registration number included in privacy policy',
       ]}/>

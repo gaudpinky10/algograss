@@ -109,6 +109,8 @@ export default function DpiaPage() {
           recipients:   form.recipients,
           retention:    form.retention,
           risks:        form.risks.join(', '),
+          mitigations:  form.mitigations.join(', '),
+          residualRisk: form.residualRisk,
         })
       })
       const data = await res.json()
@@ -142,7 +144,7 @@ export default function DpiaPage() {
         <div className="wrap" style={{maxWidth:800}}>
           <span style={{fontSize:11,fontWeight:700,letterSpacing:'.1em',textTransform:'uppercase',color:'var(--accent)',display:'block',marginBottom:10}}>GDPR Art. 35</span>
           <h1 style={{fontFamily:'Syne,sans-serif',fontSize:'clamp(26px,3vw,40px)',fontWeight:800,color:'var(--ink)',marginBottom:10}}>DPIA & Risk Assessment</h1>
-          <p style={{fontSize:15,color:'var(--ink2)',lineHeight:1.6}}>Data Protection Impact Assessment wizard — required for high-risk processing under GDPR Article 35. AI-generated, ICO-compliant output.</p>
+          <p style={{fontSize:15,color:'var(--ink2)',lineHeight:1.6}}>Data Protection Impact Assessment wizard — required for high-risk processing under GDPR Article 35. Drafted by AI from your answers, following the ICO's approach. Review it before you rely on it.</p>
         </div>
       </section>
 
@@ -279,8 +281,8 @@ export default function DpiaPage() {
 
               {form.residualRisk==='High'&&(
                 <div style={{background:'rgba(239,68,68,0.08)',border:'1px solid rgba(239,68,68,0.3)',borderRadius:12,padding:'14px 18px',marginBottom:20}}>
-                  <p style={{fontSize:13,color:'var(--red-text)',margin:0,fontWeight:600}}>⚠️ High residual risk — ICO prior consultation required</p>
-                  <p style={{fontSize:12,color:'var(--red-text)',margin:'4px 0 0',opacity:.8}}>Under GDPR Article 36, you must consult the ICO before proceeding with this processing if residual risk remains high.</p>
+                  <p style={{fontSize:13,color:'var(--red-text)',margin:0,fontWeight:600}}>⚠️ High remaining risk: you must consult the ICO first</p>
+                  <p style={{fontSize:12,color:'var(--red-text)',margin:'4px 0 0',opacity:.8}}>Under UK GDPR Article 36, if a high risk remains after your measures, you must consult the ICO before you start this processing.</p>
                 </div>
               )}
 

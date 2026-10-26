@@ -10,7 +10,7 @@ function Layout({meta,children}){return(<><section style={{padding:'56px 0 32px'
 export default function DataProcessingAgreement(){
   return(
     <Layout meta={{cat:'GDPR',date:'30 May 2026',read:'5 min',title:'When Does Your Business Need a Data Processing Agreement?'}}>
-      <P>If you use any third-party tool that processes personal data on your behalf — a cloud hosting provider, an email marketing platform, a payroll system, a CRM — you almost certainly need a Data Processing Agreement (DPA) in place. This is a legal requirement under Article 28 of UK GDPR, and the absence of a DPA is routinely cited in ICO enforcement actions.</P>
+      <P>If you use any third-party tool that processes personal data on your behalf — a cloud hosting provider, an email marketing platform, a payroll system, a CRM — you almost certainly need a Data Processing Agreement (DPA) in place. This is a legal requirement under Article 28 of UK GDPR, and a missing DPA is a breach of the law in its own right.</P>
       <Callout type="warn">Using Google Workspace, Mailchimp, HubSpot, AWS, Xero, or any SaaS tool that stores or processes your customers' or employees' data without a DPA in place is a GDPR violation — regardless of the size of your business.</Callout>
 
       <H2>Controllers vs Processors: The Key Distinction</H2>
@@ -78,7 +78,7 @@ export default function DataProcessingAgreement(){
 
       <div style={{background:'rgba(139,92,246,0.07)',border:'1px solid rgba(139,92,246,0.2)',borderRadius:16,padding:'28px 32px',marginTop:48,textAlign:'center'}}>
         <p style={{fontFamily:'Syne,sans-serif',fontSize:18,fontWeight:600,color:'var(--ink)',marginBottom:10}}>Generate a Data Processing Agreement for your business</p>
-        <p style={{fontSize:14,color:'var(--ink2)',marginBottom:20}}>AlgoGrass scans your website and identifies which third-party tools need DPAs — then generates the documents you need.</p>
+        <p style={{fontSize:14,color:'var(--ink2)',marginBottom:20}}>AlgoGrass scans your website for the third-party tools it uses and drafts a data processing agreement you can adapt for suppliers that process data on your behalf.</p>
         <a href="/scan" className="btn btn-primary">Scan my website →</a>
       </div>
     </Layout>

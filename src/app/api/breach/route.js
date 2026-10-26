@@ -1,60 +1,67 @@
-import { generateContent } from '@/lib/ai'
-import { NextResponse } from 'next/server';
-import { getCollection, trackActivity, parseUserCookie } from '@/lib/dbHelpers';
-import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server'
+import { askClaude } from '@/lib/ai'
+import { toolSystem } from '@/lib/ukDataFacts'
+import { getCollection, trackActivity } from '@/lib/dbHelpers'
+import { currentUser, allowAiUse, tooMany, aiFailed } from '@/lib/toolGuard'
 
+const fmt = d => d.toLocaleString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' })
+
+// Free to use without an account (someone dealing with a breach shouldn't have
+// to sign up first), with a lower hourly limit when logged out
 export async function POST(request) {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  const body = await request.json();
-  const { breachDescription, dataTypes, individualsAffected, consequences, measuresTaken, controllerName, dpoContact, breachDate } = body;
+  const user = currentUser()
+  const body = await request.json()
+  const { breachDescription, dataTypes, individualsAffected, consequences, measuresTaken, controllerName, dpoContact, breachDate } = body
+  if (!breachDescription || !String(breachDescription).trim()) return NextResponse.json({ error: 'Please describe what happened.' }, { status: 400 })
+  if (!(await allowAiUse('breach', user, user ? 40 : 8))) return tooMany()
 
-  if (!breachDescription) return NextResponse.json({ error: 'Breach description required' }, { status: 400 });
+  // 72 hours from when they became aware, worked out here
+  const aware = breachDate ? new Date(breachDate) : null
+  const awareOk = aware && !isNaN(aware)
+  const reportBy = awareOk ? new Date(aware.getTime() + 72 * 3600e3) : null
+  const overdue = reportBy && reportBy < new Date()
 
-  const prompt = `Generate a formal Data Breach Notification letter to the UK Information Commissioner's Office (ICO) under Article 33 of UK GDPR.
+  const prompt = `A UK organisation has had a possible personal data breach. Help them decide what to do and prepare their report.
 
-Details:
-- Controller: ${controllerName || 'The Organisation'}
-- DPO/Contact: ${dpoContact || 'Not specified'}
-- Breach occurred: ${breachDate || 'Date not specified'}
-- Description: ${breachDescription}
-- Data types affected: ${Array.isArray(dataTypes) ? dataTypes.join(', ') : dataTypes || 'Not specified'}
-- Number of individuals affected: ${individualsAffected || 'Unknown'}
-- Likely consequences: ${consequences || 'Under assessment'}
-- Measures taken: ${measuresTaken || 'Investigation ongoing'}
+Organisation (controller): ${controllerName || '[INSERT: organisation name]'}
+Contact for the ICO: ${dpoContact || '[INSERT: name, email, phone]'}
+Became aware of the breach: ${awareOk ? fmt(aware) : 'not stated'}
+72-hour reporting deadline (already calculated, use exactly this): ${reportBy ? fmt(reportBy) + (overdue ? ' (this has passed: if the breach is reportable, report now and explain the reasons for the delay)' : '') : 'not known until the date of awareness is given'}
+What happened: ${String(breachDescription).slice(0, 4000)}
+Types of data involved: ${Array.isArray(dataTypes) ? dataTypes.join(', ') : dataTypes || 'not stated'}
+Approximate number of people affected: ${individualsAffected || 'unknown'}
+Likely consequences: ${consequences || 'not yet assessed'}
+Measures taken or planned: ${measuresTaken || 'not stated'}
 
-Write a complete, formal ICO breach notification letter. Include:
-1. Nature of the personal data breach
-2. Categories and approximate number of data subjects concerned
-3. Categories and approximate number of personal data records concerned
-4. Name and contact details of the DPO or other contact point
-5. Likely consequences of the breach
-6. Measures taken or proposed to address the breach, including mitigation measures
+Write, with short headings:
+1. Does this need reporting to the ICO? Answer "Likely yes", "Likely no" or "Unclear", with the reasons. (Report unless the breach is unlikely to result in a risk to people's rights and freedoms.)
+2. Do the affected people need to be told? Only if it is likely to result in a high risk to them; say why.
+3. Deadline: the date above. Reports go through the ICO's online form (ico.org.uk/for-organisations/report-a-breach/) or by phone, and can be completed in stages if not everything is known yet.
+4. Information for the ICO report, filled in from the details above, with [INSERT: ...] where something is missing: what happened and when; how it was discovered; categories and approximate number of people and of records; the types of data; likely consequences; measures taken or planned, including to reduce harm; contact details.
+5. Draft notice to affected people (only if they need to be told), in plain English: what happened, likely consequences, what you are doing, what they can do, and a contact.
+6. Entry for the internal breach log (required even if not reported).
+Don't claim the report is final or guaranteed to be accepted.`
 
-Use formal UK GDPR legal language. Reference the relevant Articles (Article 33, Article 34 if applicable). Include a reference number placeholder [REF-YYYY-MM-DD]. Make it ready to submit to the ICO.`;
-
+  let report
   try {
-    const data = await generateContent({
-          systemInstruction: { parts: [{ text: 'You are a senior UK data protection solicitor specialising in GDPR breach notifications. Write formal, legally precise letters.' }] },
-          contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: 2000, temperature: 0.2 },
-        })
-    if (data.error) throw new Error(data.error.message);
-    const letter = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-    // Save to DB
-    try {
-      const col = await getCollection('breaches');
-      if (col && cookies().get('algograss_user')) {
-        const cookieStore = cookies();
-        const userCookie = cookieStore.get('algograss_user');
-        const user = userCookie ? parseUserCookie(userCookie.value) : null;
-        if (user?.email) await col.insertOne({ controllerName, breachDate, dataTypes, individualsAffected, userEmail: user.email, createdAt: new Date() }); // only kept for logged-in users
-        if (user?.email) await trackActivity({ userEmail: user.email, tool: 'breach', action: 'notification_generated', detail: `Breach notification for ${controllerName}` });
-      }
-    } catch {}
-
-    return NextResponse.json({ letter });
-  } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    report = await askClaude({
+      system: toolSystem('You are the AlgoGrass breach response assistant. You help UK small businesses assess a personal data breach and prepare the information for the ICO, calmly and accurately.'),
+      prompt,
+      maxTokens: 2500,
+    })
+  } catch (e) {
+    return aiFailed(e.status === 503 ? 503 : 502)
   }
+
+  if (user?.email) {
+    ;(async () => {
+      try {
+        const col = await getCollection('breaches')
+        if (col) await col.insertOne({ userEmail: user.email, controllerName, awareAt: awareOk ? aware : null, reportBy, dataTypes, individualsAffected, createdAt: new Date() })
+        await trackActivity({ userEmail: user.email, tool: 'breach', action: 'breach_report_prepared', detail: `Breach report for ${controllerName || 'organisation'}` })
+      } catch {}
+    })()
+  }
+
+  return NextResponse.json({ letter: report, report, reportBy: reportBy ? fmt(reportBy) : null, overdue: !!overdue })
 }

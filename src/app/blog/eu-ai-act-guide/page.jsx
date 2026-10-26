@@ -8,14 +8,14 @@ function Layout({meta,children}){return(<><section style={{padding:'56px 0 32px'
 
 export default function EuAiActGuide(){
   return(
-    <Layout meta={{cat:'AI Act',date:'2 Jul 2026',read:'11 min',title:'EU AI Act: What UK Businesses Need to Know in 2025'}}>
+    <Layout meta={{cat:'AI Act',date:'2 Jul 2026',read:'11 min',title:'EU AI Act: What UK Businesses Need to Know in 2026'}}>
       <P>The EU AI Act is now in force — the world's first comprehensive AI regulation. For UK businesses, it's more relevant than it may first appear: if you deploy AI-powered tools to EU customers, serve EU residents, or use AI systems that interact with EU data, the Act likely applies to you. And with the UK developing its own AI framework, understanding the EU's approach is essential groundwork.</P>
-      <Callout>The EU AI Act entered into force on 1 August 2024. Phased implementation means most obligations apply from August 2026, but high-risk AI provisions and the AI literacy requirement began applying earlier. Don't assume you have unlimited time.</Callout>
+      <Callout>The EU AI Act entered into force on 1 August 2024 and applies in stages: banned practices and AI literacy from 2 February 2025, general-purpose AI model rules from 2 August 2025, transparency duties from 2 August 2026. The EU's Digital Omnibus amendment (in force 27 July 2026) moved the high-risk rules to 2 December 2027 (Annex III, e.g. recruitment and credit scoring) and 2 August 2028 (AI in regulated products).</Callout>
 
       <H2 n="1">What the EU AI Act actually requires</H2>
       <P>The Act takes a risk-based approach, classifying AI systems into four tiers:</P>
       <Ul items={[
-        'Unacceptable risk — banned outright (social scoring by governments, real-time biometric surveillance in public spaces, AI that exploits vulnerabilities of vulnerable groups)',
+        'Unacceptable risk — banned outright (social scoring, harmful manipulation, AI that exploits vulnerable groups, emotion recognition at work or in education, and, with narrow exceptions, real-time biometric identification in public for law enforcement)',
         'High risk — permitted but subject to strict conformity assessments (AI in recruitment, credit scoring, education, critical infrastructure, law enforcement)',
         'Limited risk — transparency obligations only (chatbots must disclose they\'re AI; deepfakes must be labelled)',
         'Minimal/no risk — no mandatory requirements (most AI applications, including GDPR compliance tools, recommendation engines, spam filters)',
@@ -36,7 +36,7 @@ export default function EuAiActGuide(){
       <P>The Act distinguishes between providers (who develop or place AI systems on the market) and deployers (who use AI systems in their business). Most UK SMEs are deployers — using AI tools built by others.</P>
       <Ul items={[
         'Providers: conformity assessment, CE marking, registration in the EU AI database, post-market monitoring, incident reporting',
-        'Deployers of high-risk AI: conduct fundamental rights impact assessment, implement human oversight, maintain records, inform employees when AI monitors or evaluates them',
+        'Deployers of high-risk AI: use it as instructed, assign human oversight, keep logs, and tell employees when AI is used to evaluate them; public bodies and some others (e.g. credit scoring and insurance pricing) must also carry out a fundamental rights impact assessment',
         'Deployers of limited risk: disclose to users when they\'re interacting with AI (chatbot transparency)',
         'All organisations: AI literacy obligation — ensure staff have sufficient understanding of AI to use it responsibly',
       ]}/>
@@ -44,14 +44,14 @@ export default function EuAiActGuide(){
       <H2 n="4">The AI literacy obligation</H2>
       <P>Article 4 of the EU AI Act requires all providers and deployers to ensure a sufficient level of AI literacy among staff. This applies from 2 February 2025 — one of the earliest provisions to take effect.</P>
       <P>For practical purposes, this means organisations need to provide AI awareness training to staff who use, build, or make decisions based on AI tools. The requirement is proportionate to context and size, but it is a mandatory baseline, not a recommendation.</P>
-      <Callout>AlgoGrass's GDPR Training module includes AI literacy content aligned with Article 4 obligations — covering what AI is, how it makes decisions, risks to watch for, and how staff should apply human oversight. <a href="/training" style={{color:'var(--accent)'}}>Explore the training module →</a></Callout>
+      <Callout>AlgoGrass's AI Governance tool helps you list the AI tools you use, check their risk category and track what to do. <a href="/ai-governance" style={{color:'var(--accent)'}}>Open AI Governance →</a></Callout>
 
       <H2 n="5">AI Act and GDPR: the overlap</H2>
       <P>Most AI systems process personal data, which means GDPR applies alongside the AI Act. The two frameworks reinforce each other but have distinct requirements:</P>
       <Ul items={[
         'GDPR requires a lawful basis for processing personal data used to train or run AI — legitimate interests or consent are common bases, but require careful assessment',
         'GDPR Articles 13–14 require transparency about automated decision-making — if AI makes or significantly influences decisions affecting individuals, this must be disclosed',
-        'GDPR Article 22 gives individuals rights not to be subject to solely automated decisions with significant effects — consider whether human review is needed',
+        'Solely automated decisions with legal or similarly significant effects come with safeguards: in the UK, UK GDPR Articles 22A–22D (since February 2026) require telling people and letting them challenge the decision and get human review; in the EU, GDPR Article 22 applies',
         'AI Act fundamental rights impact assessments overlap with GDPR DPIAs — in many cases a combined assessment is practical',
       ]}/>
 
@@ -59,10 +59,10 @@ export default function EuAiActGuide(){
       <Ul items={[
         'Inventory all AI tools your business uses — including third-party tools like AI recruitment software, AI customer service, AI analytics',
         'Classify each: is it high-risk, limited-risk, or minimal-risk under the EU AI Act?',
-        'For any high-risk AI: start documenting your oversight processes and prepare for a fundamental rights impact assessment',
+        'For any high-risk AI: start documenting your oversight processes now, ahead of the December 2027 deadline',
         'Implement AI literacy training for staff (required since February 2025 if you serve EU users)',
         'Review your privacy notice and DPIA for AI tools that process personal data — GDPR transparency requirements apply',
-        'Monitor the UK AI framework: the Government is developing a sector-led, voluntary approach which may become more formal in 2025–26',
+        'Remember the UK has no AI Act: the ICO and other regulators apply existing law, so UK GDPR is the main rule for AI that uses personal data',
       ]}/>
       <Callout>Run a GDPR compliance scan to check whether your AI-related data processing disclosures are in order before the EU AI Act's transparency obligations bite further. <a href="/scan" style={{color:'var(--accent)'}}>Free scan →</a></Callout>
 

@@ -136,8 +136,8 @@ function Stats() {
 
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:16,marginBottom:40}}>
           {[
-            {icon:'⚖️',num:'€20M',label:'Maximum GDPR fine',sub:'or 4% global turnover'},
-            {icon:'⏱️',num:'72h',label:'To notify the ICO',sub:'after a data breach'},
+            {icon:'⚖️',num:'£17.5m',label:'Maximum UK GDPR fine',sub:'or 4% of global turnover, if higher'},
+            {icon:'⏱️',num:'72h',label:'To notify the ICO',sub:'after a reportable breach'},
             {icon:'📋',num:'8',label:'Data subject rights',sub:'you must uphold'},
             {icon:'🔍',num:'Art. 13',label:'Privacy notice required',sub:'for every data collection'},
           ].map(({icon,num,label,sub})=>(
@@ -214,13 +214,13 @@ function Features() {
     {
       icon:'🔍', title:'Live scanner', sub:'Checks cookies, trackers & consent on your real site',
       href:'/scan',
-      desc:'AlgoGrass scans your live website in real time — no install required. We detect missing cookie banners, third-party trackers, consent mechanisms, and GDPR-risk patterns across every page.',
+      desc:'AlgoGrass opens your live website in a real browser from London, as a UK visitor would — no install required. It checks your homepage for trackers and cookies set before consent and for your cookie banner\'s Reject option, then reads your privacy policy and terms and quotes the evidence for each finding.',
       bullets:['Detects cookies, pixels & trackers','Checks consent banner presence & wording','Flags missing privacy notices on forms','Severity-ranked findings in plain English'],
     },
     {
       icon:'📄', title:'AI documents', sub:'Privacy policy, cookie notice & DPA — one click',
       href:'/dashboard',
-      desc:'Our AI generates legally-grounded GDPR documents tailored to your business — privacy policy, cookie notice, data processing agreement, and more — in seconds, not hours.',
+      desc:'Draft a privacy notice, cookie policy or data processing agreement from your scan results in seconds. Every draft marks what you need to fill in, so you can check it before you publish.',
       bullets:['Privacy policy generator','Cookie notice & consent text','Data Processing Agreement (DPA)','Downloadable PDF & editable Word doc'],
     },
     {
@@ -232,13 +232,13 @@ function Features() {
     {
       icon:'🤖', title:'AI assistant', sub:'Ask GDPR questions in plain English, get instant answers',
       href:'/ai-assistant',
-      desc:'Ask anything about GDPR, UK DPA 2018, or EU AI Act and get an instant, accurate, plain-English answer — grounded in ICO guidance and real enforcement decisions.',
+      desc:'Ask about UK GDPR, PECR, the Data (Use and Access) Act or the EU AI Act and get a plain-English answer, using a fact sheet of current UK rules, deadlines and fines that we check and date.',
       bullets:['Powered by live ICO & EDPB guidance','Answers about lawful basis, consent, transfers','Cites real enforcement cases','Available 24/7 — no waiting for a solicitor'],
     },
     {
       icon:'📋', title:'DSAR handler', sub:'Respond to Subject Access Requests in minutes',
       href:'/dsar',
-      desc:'When someone asks for their data, you have 30 days. AlgoGrass guides you through every step — logging the request, gathering data, and generating the response letter automatically.',
+      desc:'When someone asks for their data, you have one calendar month. AlgoGrass works out your exact deadline, then guides you through identity checks, what to provide and a draft reply.',
       bullets:['Intake form for subjects to submit DSARs','30-day deadline tracker with alerts','Auto-generated response letter','Full audit trail for ICO evidence'],
     },
     {

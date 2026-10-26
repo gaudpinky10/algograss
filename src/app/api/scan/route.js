@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
-import { getCollection, trackActivity, parseUserCookie } from '@/lib/dbHelpers';
+import { getCollection, trackActivity, parseUserCookie, ensureTtl } from '@/lib/dbHelpers';
+import { checkApiKey } from '@/lib/apiKeys';
 import { createHash } from 'crypto';
 import { isPublicHttpUrl, isBlockedHostname } from '@/lib/safeUrl';
 
@@ -336,6 +337,9 @@ function detect(text, patterns) {
 
 export async function POST(request) {
   const startedAt = Date.now()
+  // A request with an API key must use a valid key and stay within its daily limit
+  const apiKey = await checkApiKey(request)
+  if (apiKey.error) return Response.json({ error: apiKey.error }, { status: apiKey.status })
   const { url } = await request.json()
   if (!url) return Response.json({ error: 'URL is required' }, { status: 400 })
   let targetUrl = url.trim()
@@ -368,7 +372,7 @@ export async function POST(request) {
     return Response.json({ error: 'Please enter the address of a public website, e.g. example.co.uk.' }, { status: 400 })
 
   const userCookie = cookies().get('algograss_user')
-  const user = userCookie ? parseUserCookie(userCookie.value) : null
+  const user = apiKey.ok ? { email: apiKey.userEmail } : (userCookie ? parseUserCookie(userCookie.value) : null)
 
   try {
     let mainResult = await fetchPage(targetUrl)
@@ -991,7 +995,10 @@ export async function POST(request) {
     ;(async () => {
       try {
         const col = await getCollection('scans')
-        if (col) await col.insertOne({ userEmail: user?.email || 'anonymous', url: finalUrl, score, issues, trackers, checks: result.checks, scannedAt: new Date() })
+        if (col) ensureTtl(col, 'scannedAt', 30 * 86400) // the scan log is kept for 30 days
+        if (col) await col.insertOne({ userEmail: user?.email || 'anonymous', url: finalUrl, score, issues, trackers, checks: result.checks, scannedAt: new Date(), via: apiKey.ok ? 'api' : 'web' })
+        // Scans made with an API key also appear in the key owner's dashboard history
+        if (apiKey.ok) { const hist = await getCollection('scanHistory'); if (hist) await hist.insertOne({ userEmail: apiKey.userEmail, url: finalUrl, score, issues, checks: result.checks, trackers, scannedAt: new Date(), source: 'api' }) }
         await trackActivity({ userEmail: user?.email, tool: 'scan', action: 'website_scanned', detail: finalUrl, meta: { score, issueCount: issues.length, highCount, medCount } })
       } catch {}
     })()

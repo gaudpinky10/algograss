@@ -33,8 +33,8 @@ export async function POST(request) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          text: '✅ *AlgoGrass Slack integration is working!*\nYou will receive weekly compliance scan reports and alerts in this channel.',
-          blocks: [{ type: 'section', text: { type: 'mrkdwn', text: '✅ *AlgoGrass Slack integration is working!*\n\nYou\'ll receive:\n• Weekly GDPR compliance scan reports\n• Score drop alerts\n• Regulatory change digests\n\nVisit <https://www.algograss.com/dashboard|your dashboard> to manage settings.' } }],
+          text: '✅ *AlgoGrass Slack integration is working!*\nWe will post here when your weekly website scan finds a score drop or a new serious issue.',
+          blocks: [{ type: 'section', text: { type: 'mrkdwn', text: '✅ *AlgoGrass Slack integration is working!*\n\nWe will post here when your weekly website scan:\n• is your first weekly scan\n• finds your score has dropped by 5 points or more\n• finds a new high-severity issue\n\nSet the website to monitor in <https://www.algograss.com/settings|your settings>.' } }],
         }),
       });
       if (!r.ok) throw new Error('Slack returned an error');

@@ -1,37 +1,81 @@
-import { generateContent } from '@/lib/ai'
-import { cookies } from 'next/headers';
-import { getCollection, trackActivity, parseUserCookie } from '@/lib/dbHelpers';
+import { askClaude } from '@/lib/ai'
+import { toolSystem, addCalendarMonths, ukDay, formatUK, todayUK } from '@/lib/ukDataFacts'
+import { getCollection, trackActivity } from '@/lib/dbHelpers'
+import { currentUser, allowAiUse, tooMany, aiFailed } from '@/lib/toolGuard'
+
+const TYPES = {
+  SAR: 'Subject access request (right of access, Art. 15)',
+  Erasure: 'Erasure request (Art. 17)',
+  Rectification: 'Rectification request (Art. 16)',
+  Restriction: 'Restriction request (Art. 18)',
+  Objection: 'Objection to processing (Art. 21)',
+  Portability: 'Data portability request (Art. 20)',
+}
 
 export async function POST(request) {
-  const { requestText, businessName, dataTypes, requesterName, requesterEmail, requestType } = await request.json()
-  if (!requestText) return Response.json({ error: 'Request text required' }, { status: 400 })
+  const user = currentUser()
+  const { requestText, businessName, dataTypes, requesterName, requesterEmail, requestType, dateReceived } = await request.json()
+  if (!requestText || !String(requestText).trim()) return Response.json({ error: 'Please paste the request.' }, { status: 400 })
+  if (!(await allowAiUse('dsar', user, user ? 40 : 5))) return tooMany()
 
-  const userCookie = cookies().get('algograss_user')
-  const user = userCookie ? parseUserCookie(userCookie.value) : null
+  // The deadline is worked out here, not by the AI: one calendar month from
+  // the day the request arrived, moved to the next working day if needed
+  const received = ukDay(dateReceived) || ukDay(new Date().toISOString())
+  const deadline = addCalendarMonths(received, 1)
+  const extendedDeadline = addCalendarMonths(received, 3)
+  const type = TYPES[requestType] ? requestType : 'SAR'
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) return Response.json({ error: 'AI not configured.' }, { status: 503 })
+  const prompt = `A UK organisation has received the request below. Help them respond correctly under UK GDPR and the Data Protection Act 2018.
 
+Organisation: ${businessName || '[INSERT: organisation name]'}
+Personal data they say they hold: ${dataTypes || 'not stated'}
+Request type selected: ${TYPES[type]}
+Requester: ${requesterName || 'not stated'}${requesterEmail ? ` (${requesterEmail})` : ''}
+Date received: ${formatUK(received)}
+Response deadline (already calculated, use exactly this): ${formatUK(deadline)}. If the deadline is extended because the request is complex or there are several, the latest date is ${formatUK(extendedDeadline)}, and the person must be told within the first month.
+
+Request text:
+"""
+${String(requestText).slice(0, 6000)}
+"""
+
+Write, with short headings:
+1. Is this a valid request? (A request doesn't need special wording or a form; say if it is really a different right or not a data protection request at all.)
+2. Deadline: state the dates above. Say the clock pauses only while genuinely needed ID or clarification is awaited.
+3. Identity: what proportionate checks are reasonable here (don't ask for more than needed).
+4. What to provide: for a subject access request, a copy of the data plus the Art. 15 information (purposes, categories, recipients, retention, rights, source, automated decisions, transfers). For other rights, what action is needed.
+5. Searching: where to look, keeping the search reasonable and proportionate.
+6. Exemptions that might apply (DPA 2018 Schedules 2 to 4), only if relevant, and that other people's data may need redacting.
+7. Draft acknowledgement email.
+8. Draft response template with [INSERT: ...] placeholders.
+9. Step-by-step checklist.`
+
+  let responseText
   try {
-    const data = await generateContent({
-        systemInstruction: { parts: [{ text: 'You are a GDPR Subject Access Request assistant. Help UK/EU businesses handle DSARs correctly under GDPR Art. 15. Be practical and clear.' }] },
-        contents: [{ role: 'user', parts: [{ text: `Business: ${businessName || 'Unknown'}\nData types held: ${dataTypes || 'Not specified'}\n\nSAR Request:\n${requestText}\n\nProvide: 1) Is this a valid DSAR 2) Response deadline 3) What data to provide 4) Identity verification steps 5) Draft acknowledgement email 6) Draft response template with [PLACEHOLDER] tags 7) Any exemptions 8) Step checklist` }] }],
-        generationConfig: { maxOutputTokens: 2000, temperature: 0.3 },
-      })
-    if (data.error) return Response.json({ error: data.error.message }, { status: 500 })
-    const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated.'
+    responseText = await askClaude({
+      system: toolSystem('You are the AlgoGrass DSAR assistant. You help UK small businesses handle subject access and other data protection rights requests correctly. Be practical and clear.'),
+      prompt,
+      maxTokens: 2500,
+    })
+  } catch (e) {
+    return aiFailed(e.status === 503 ? 503 : 502)
+  }
 
-    ;(async () => {
-      try {
-        const col = await getCollection('dsars')
-        if (col && user?.email) { // only kept for logged-in users, in their own account
-          const deadline = new Date(); deadline.setDate(deadline.getDate() + 30)
-          await col.insertOne({ userEmail: user?.email || 'anonymous', requesterName: requesterName || 'Unknown', requesterEmail: requesterEmail || '', requestType: requestType || 'SAR', requestDetails: requestText, aiGuide: responseText, deadline, createdAt: new Date() })
-        }
-        await trackActivity({ userEmail: user?.email, tool: 'dsar', action: 'dsar_processed', detail: `${requestType || 'SAR'} from ${requesterName || 'Unknown'}`, meta: { requestType, requesterEmail } })
-      } catch {}
-    })()
+  // Only kept for logged-in users, in their own account
+  if (user?.email) void (async () => {
+    try {
+      const col = await getCollection('dsars')
+      if (col) await col.insertOne({ userEmail: user.email, requesterName: requesterName || 'Unknown', requesterEmail: requesterEmail || '', requestType: type, requestDetails: requestText, aiGuide: responseText, receivedAt: received, deadline, extendedDeadline, createdAt: new Date() })
+      await trackActivity({ userEmail: user.email, tool: 'dsar', action: 'dsar_processed', detail: `${type} from ${requesterName || 'Unknown'}`, meta: { requestType: type } })
+    } catch {}
+  })()
 
-    return Response.json({ response: responseText, generatedAt: new Date().toISOString() })
-  } catch (err) { return Response.json({ error: 'Failed: ' + err.message }, { status: 500 }) }
+  return Response.json({
+    response: responseText,
+    received: formatUK(received),
+    deadline: formatUK(deadline),
+    extendedDeadline: formatUK(extendedDeadline),
+    generatedAt: new Date().toISOString(),
+    today: todayUK(),
+  })
 }

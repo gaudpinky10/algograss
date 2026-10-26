@@ -1,32 +1,31 @@
-import { generateContent } from '@/lib/ai'
-import { cookies } from 'next/headers';
-import { getCollection, parseUserCookie } from '@/lib/dbHelpers';
+import { askClaude } from '@/lib/ai'
+import { toolSystem } from '@/lib/ukDataFacts'
+import { getCollection } from '@/lib/dbHelpers'
+import { currentUser, allowAiUse, tooMany, aiFailed } from '@/lib/toolGuard'
 
 export async function POST(request) {
+  const user = currentUser()
   const { type, data } = await request.json()
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) return Response.json({ error: 'AI not configured.' }, { status: 500 })
   const prompts = {
-    riskAssessment: `Assess this business risk for a UK SME:\nRisk: ${data?.riskTitle}\nCategory: ${data?.category}\nLikelihood: ${data?.likelihood}\nImpact: ${data?.impact}\nOwner: ${data?.owner}\n\nProvide: risk score (1-10), GDPR/regulatory implications, specific mitigation steps, residual risk, review timeline.`,
-    policyReview: `Review this policy for a UK SME:\nPolicy: ${data?.policyName}\nLast reviewed: ${data?.lastReviewed}\nOwner: ${data?.owner}\n\nProvide: compliance gaps, recommended updates, priority actions, next review date.`,
-    incidentAssessment: `Assess this data incident for a UK SME:\nIncident: ${data?.incidentTitle}\nDescription: ${data?.description}\nSeverity: ${data?.severity}\nData types affected: ${data?.dataTypes}\nPeople affected: ${data?.affectedCount}\n\nProvide: breach notification required (ICO 72hr rule), risk to individuals, immediate actions, notification template if needed.`,
+    riskAssessment: `Assess this risk for a UK small business:\nRisk: ${data?.riskTitle}\nCategory: ${data?.category}\nLikelihood: ${data?.likelihood}\nImpact: ${data?.impact}\nOwner: ${data?.owner}\n\nGive: a risk score (1-10) with reasons, the legal or regulatory points (UK GDPR, PECR or other UK law, only where relevant), specific mitigation steps, the remaining risk after them, and when to review.`,
+    policyReview: `Review this policy for a UK small business:\nPolicy: ${data?.policyName}\nLast reviewed: ${data?.lastReviewed}\nOwner: ${data?.owner}\n\nYou can't see the policy itself, so give: what a policy of this kind must cover under UK law, common gaps to check for, priority actions, and a sensible next review date.`,
+    incidentAssessment: `Assess this incident for a UK small business:\nIncident: ${data?.incidentTitle}\nDescription: ${data?.description}\nSeverity: ${data?.severity}\nData types affected: ${data?.dataTypes}\nPeople affected: ${data?.affectedCount}\n\nGive: whether it is a personal data breach; whether it is likely reportable to the ICO within 72 hours of becoming aware, and whether affected people must be told (only if high risk), with reasons; immediate actions; and a note to record it in the breach log either way.`,
+  }
+  if (!prompts[type]) return Response.json({ error: 'Unknown request type.' }, { status: 400 })
+  if (!(await allowAiUse('grc', user, user ? 40 : 5))) return tooMany()
+  let aiText
+  try {
+    aiText = await askClaude({
+      system: toolSystem('You are the AlgoGrass GRC assistant, an expert in UK GDPR, ISO 27001 and practical compliance for small businesses. Give practical, actionable advice.'),
+      prompt: prompts[type],
+      maxTokens: 1500,
+    })
+  } catch (e) {
+    return aiFailed(e.status === 503 ? 503 : 502)
   }
   try {
-    const result = await generateContent({
-        systemInstruction: { parts: [{ text: 'You are a GRC expert specialising in UK/EU GDPR, ISO 27001, and SME compliance. Give practical, actionable advice.' }] },
-        contents: [{ role: 'user', parts: [{ text: prompts[type] || prompts.riskAssessment }] }],
-        generationConfig: { maxOutputTokens: 1500, temperature: 0.3 },
-      })
-    if (result.error) return Response.json({ error: result.error.message }, { status: 500 })
-    const aiText = result.candidates?.[0]?.content?.parts?.[0]?.text || ''
-    try {
-      const userCookie = cookies().get('algograss_user')
-      if (userCookie) {
-        const user = parseUserCookie(userCookie.value)
-        const col = prompts[type] ? await getCollection('grc_' + type) : null
-        if (col && user?.email) await col.insertOne({ userEmail: user.email, type, data, aiText, createdAt: new Date() })
-      }
-    } catch (dbErr) { console.error('DB (non-fatal):', dbErr) }
-    return Response.json({ result: aiText, generatedAt: new Date().toISOString() })
-  } catch (err) { return Response.json({ error: err.message }, { status: 500 }) }
+    const col = await getCollection('grc_' + type)
+    if (col && user?.email) await col.insertOne({ userEmail: user.email, type, data, aiText, createdAt: new Date() })
+  } catch {}
+  return Response.json({ result: aiText, generatedAt: new Date().toISOString() })
 }
