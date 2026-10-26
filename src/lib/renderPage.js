@@ -85,6 +85,8 @@ export async function createRenderer({ timeoutMs = 12000, maxConcurrent = 3, dea
       await page.setUserAgent(UA)
       await page.setViewport({ width: 1280, height: 900 })
       await page.setExtraHTTPHeaders({ 'Accept-Language': 'en-GB,en;q=0.9' })
+      // Some consent tools decide by time zone which banner to show: be a UK visitor
+      await page.emulateTimezone('Europe/London').catch(() => {})
       // Images, video and fonts don't change the text, links or cookies we
       // check, so skip downloading them (their URLs are still recorded).
       // Stylesheets are kept when checking the banner, as CSS decides what

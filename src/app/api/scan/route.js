@@ -54,6 +54,35 @@ function visibleText(html) {
     .trim()
 }
 
+// The page as blocks of text (paragraphs, list items, headings...)
+function textBlocks(html) {
+  return (html || '')
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ')
+    .replace(/<(br|hr)\b[^>]*>/gi, '\n')
+    .replace(/<\/?(p|div|li|ul|ol|h[1-6]|section|article|aside|header|footer|nav|main|tr|td|th|table|dt|dd|dl|blockquote|figure|figcaption|dialog|form)\b[^>]*>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;|&#160;/g, ' ').replace(/&amp;/g, '&').replace(/&#\d+;|&[a-z]+;/gi, ' ')
+    .split('\n')
+    .map(s => s.replace(/\s+/g, ' ').trim())
+    .filter(Boolean)
+}
+const blockKey = s => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
+
+// The policy itself, without the site's menus, footer and cookie banner.
+// Anything that also appears on the homepage is page furniture, not policy:
+// a footer link to LinkedIn or a "cookies from Google" banner does not mean
+// the policy names LinkedIn or Google.
+function policyBody(html, homeHtmls = []) {
+  const home = new Set(homeHtmls.flatMap(textBlocks).map(blockKey))
+  const keep = h => textBlocks(h).filter(b => !home.has(blockKey(b))).join('\n')
+  const full = visibleText(html)
+  const body = keep((html || '').replace(/<(header|nav|footer)\b[\s\S]*?<\/\1>/gi, '\n'))
+  // Unusual markup (e.g. the whole page inside <header>): only drop shared text
+  return body.length >= full.length * 0.4 ? body : keep(html)
+}
+
 const PRIVACY_PATH = /privacy|data-protection|data-privacy|personal-data|gdpr|your-data|data-rights|ccpa|california/i
 // Footer/nav links worth following: policy and legal pages are often at paths
 // we would never guess (e.g. /website-verification/policy), so we use the
@@ -286,6 +315,7 @@ async function fetchSubPages(baseUrl, mainHtml = '', pageUrl = baseUrl, opts = {
   return {
     text: pages.map(pg => pg.html).join('\n'),
     policyText: policyPages.map(pg => pg.vis).join('\n'),
+    policyBody: policyPages.map(pg => policyBody(pg.html, [mainHtml, opts.rawMainHtml].filter(Boolean))).join('\n'),
     policyPaths: policyPages.map(pg => pg.path),
     termsPaths: termsPages.map(pg => pg.path),
     brokenPrivacyLinks: broken.privacy,
@@ -395,7 +425,7 @@ export async function POST(request) {
       else if (renderedInBrowser) subOpts.renderThin = u => renderer.render(u)
       sub = mainResult.ok
         ? await fetchSubPages(targetUrl, mainResult.text, mainResult.finalUrl, subOpts)
-        : { text: '', policyText: '', policyPaths: [], termsPaths: [], brokenPrivacyLinks: [], brokenTermsLinks: [], blockedCount: 0, requestCount: 0, reRendered: [] }
+        : { text: '', policyText: '', policyBody: '', policyPaths: [], termsPaths: [], brokenPrivacyLinks: [], brokenTermsLinks: [], blockedCount: 0, requestCount: 0, reRendered: [] }
     } finally {
       if (renderer) await renderer.close()
     }
@@ -715,6 +745,11 @@ export async function POST(request) {
     if (detect(allScanText, [/amplitude\.com\/libs|amplitude\.getInstance/i]))                                                trackers.push('Amplitude')
     if (detect(allScanText, [/posthog\.com\/static|posthog\.init/i]))                                                         trackers.push('PostHog')
     if (detect(allScanText, [/client\.crisp\.chat/i]))                                                                         trackers.push('Crisp Chat')
+    if (detect(allScanText, [/sc\.lfeeder\.com|tr\.lfeeder\.com|lftracker\.leadfeeder\.com|lftracker_v1_/i]))                trackers.push('Leadfeeder')
+    if (detect(allScanText, [/secure\.leadforensics\.com|\.leadforensics\.com\/js\//i]))                                      trackers.push('Lead Forensics')
+    if (detect(allScanText, [/cdn\.heapanalytics\.com|heap\.load\(/i]))                                                       trackers.push('Heap')
+    if (detect(allScanText, [/redditstatic\.com\/ads\/pixel|rdt\(\s*['"]init['"]/i]))                                         trackers.push('Reddit Pixel')
+    if (detect(allScanText, [/sc-static\.net\/scevent|snaptr\(\s*['"]init['"]/i]))                                            trackers.push('Snap Pixel')
 
     // ─── COOKIES SET ON FIRST VISIT (real header check, not text matching) ─────
     let setCookieNames = []
@@ -726,7 +761,7 @@ export async function POST(request) {
     // Known analytics/advertising cookies on the site itself, plus well-known
     // advertising cookies from other domains. Other cookies are listed but
     // never assumed to be tracking.
-    const FIRST_PARTY_TRACKING = /^(_ga|_gid|_gat|_fbp|_fbc|_hj|_clck|_clsk|_uet|_pin_|__hs|hubspotutk|ajs_|mp_|_tt_|_ttp|ph_|amp_|_gcl)/i
+    const FIRST_PARTY_TRACKING = /^(_ga|_gid|_gat|_fbp|_fbc|_hj|_clck|_clsk|_uet|_pin_|__hs|hubspotutk|ajs_|mp_|_tt_|_ttp|ph_|amp_|_gcl|_lfa$|li_fat_id$|_rdt_uuid$|_scid|_hp2_)/i
     const THIRD_PARTY_TRACKING = [[/doubleclick\.net$/i, /^(IDE|test_cookie|DSID)$/], [/facebook\.com$/i, /^fr$/], [/linkedin\.com$/i, /^(bcookie|lidc|UserMatchHistory|AnalyticsSyncHistory)$/], [/(bing\.com|clarity\.ms)$/i, /^MUID$/], [/tiktok\.com$/i, /^_ttp$/]]
     const siteHost = (() => { try { return new URL(finalUrl).hostname.replace(/^www\./, '') } catch { return '' } })()
     const isFirstParty = d => { const h = (d || '').replace(/^\./, ''); return !h || h === siteHost || h.endsWith('.' + siteHost) || siteHost.endsWith('.' + h) }
@@ -777,8 +812,14 @@ export async function POST(request) {
     }
 
     // Seen in a real browser: tracking cookies set before the visitor chose anything
+    // Which tool each tracking cookie belongs to, so the report says what to fix
+    const COOKIE_OWNERS = [[/^(_ga|_gid|_gat)/i, 'Google Analytics'], [/^_gcl|^IDE$|^test_cookie$|^DSID$/i, 'Google Ads'], [/^_fbp|^_fbc|^fr$/i, 'Meta'],
+      [/^_hj/i, 'Hotjar'], [/^_clck|^_clsk/i, 'Microsoft Clarity'], [/^_uet|^MUID$/i, 'Microsoft Advertising'], [/^__hs|^hubspotutk/i, 'HubSpot'],
+      [/^li_fat_id$|^bcookie$|^lidc$|^UserMatchHistory$|^AnalyticsSyncHistory$/i, 'LinkedIn'], [/^_lfa$/i, 'Leadfeeder'], [/^_tt_|^_ttp/i, 'TikTok'],
+      [/^_pin_/i, 'Pinterest'], [/^ajs_/i, 'Segment'], [/^mp_/i, 'Mixpanel'], [/^ph_/i, 'PostHog'], [/^amp_/i, 'Amplitude'], [/^_rdt_uuid$/i, 'Reddit'], [/^_scid/i, 'Snap'], [/^_hp2_/i, 'Heap']]
+    const withOwner = n => { const o = COOKIE_OWNERS.find(([re]) => re.test(n)); return o ? `${n} (${o[1]})` : n }
     if (nonEssentialCookies.length > 0 && hasCookieBanner && renderedInBrowser)
-      issues.push({ sev:'High', title:'Tracking cookies set before visitors choose', desc:`When we opened your homepage without clicking anything, these tracking cookies were already set: ${nonEssentialCookies.slice(0, 6).join(', ')}. PECR requires consent before they are set, so your banner should hold them back until a visitor accepts.`, reg:'ePrivacy / PECR Reg. 6', evidence: `Cookies set before any click: ${nonEssentialCookies.join(', ')}` })
+      issues.push({ sev:'High', title:'Tracking cookies set before visitors choose', desc:`When we opened your homepage without clicking anything, these tracking cookies were already set: ${nonEssentialCookies.slice(0, 6).map(withOwner).join(', ')}. PECR requires consent before they are set, so your banner should hold them back until a visitor accepts.`, reg:'ePrivacy / PECR Reg. 6', evidence: `Cookies set before any click: ${nonEssentialCookies.map(withOwner).join(', ')}` })
 
     if (nonEssentialCookies.length > 0 && !hasCookieBanner)
       issues.push({ sev:'High', title:'Tracking cookies set on first visit without a consent banner', desc:`The server set non-essential cookies (${nonEssentialCookies.slice(0,5).join(', ')}) on the very first request, and no cookie consent mechanism was found. PECR requires consent before these are set.`, reg:'ePrivacy / PECR Reg. 6' })
@@ -799,12 +840,28 @@ export async function POST(request) {
       'LinkedIn Insight': /linkedin/i, 'HubSpot': /hubspot/i, 'Intercom': /intercom/i, 'Mixpanel': /mixpanel/i,
       'Segment': /segment/i, 'TikTok Pixel': /tiktok/i, 'Microsoft Clarity': /clarity|microsoft/i,
       'Pinterest Tag': /pinterest/i, 'X/Twitter Pixel': /twitter|\bx corp/i, 'Amplitude': /amplitude/i,
-      'PostHog': /posthog/i, 'Crisp Chat': /crisp/i,
+      'PostHog': /posthog/i, 'Crisp Chat': /crisp/i, 'Leadfeeder': /leadfeeder|dealfront/i, 'Lead Forensics': /lead\s?forensics/i,
+      'Heap': /\bheap\b/i, 'Reddit Pixel': /reddit/i, 'Snap Pixel': /snap(chat)?\b/i,
     }
-    const undisclosedTrackers = hasReadPrivacyPage ? trackers.filter(t => !(TRACKER_NAMES[t] || /$^/).test(privacyText)) : []
+    // Names are looked for in the policy itself, not in the site's footer,
+    // menus or cookie banner that appear around it
+    const policyOwnText = sub.policyBody || privacyText
+    const undisclosedTrackers = hasReadPrivacyPage ? trackers.filter(t => !(TRACKER_NAMES[t] || /$^/).test(policyOwnText)) : []
+    // Art. 13(1)(e) allows "recipients or categories of recipients", so a
+    // policy that covers the type of tool (e.g. "third-party analytics tools")
+    // is a smaller gap than one that says nothing at all
+    const categoryDisclosed = /(third[\s-]?part(y|ies)|external)[\s-]+(analytics|tracking|advertising|marketing|cookies?)|analytics\s+(tools?|providers?|services?|partners?|cookies?|software|platforms?)|advertising\s+(partners?|networks?|providers?|cookies?)|marketing\s+(partners?|cookies?|tools?|platforms?)|(tracking|performance|statistics?|statistical|analytical)\s+cookies/i.test(policyOwnText)
+    const bannerText = seenBanner ? seenBanner.text : ''
+    const namedInBanner = t => !!bannerText && (TRACKER_NAMES[t] || /$^/).test(bannerText)
     if (trackers.length > 0 && hasPrivacyLink) {
       if (hasReadPrivacyPage && undisclosedTrackers.length) {
-        issues.push({ sev:'Medium', title:'Tracking tools not named in your privacy policy', desc:`${undisclosedTrackers.join(', ')} ${undisclosedTrackers.length > 1 ? 'are' : 'is'} used on your site, but we couldn't find ${undisclosedTrackers.length > 1 ? 'them' : 'it'} named in your privacy policy${policyWhere}. GDPR Art. 13(1)(e) requires you to say who receives personal data.`, reg:'GDPR Art. 13(1)(e)' })
+        const list = undisclosedTrackers.join(', '), many = undisclosedTrackers.length > 1
+        const coveredSomehow = categoryDisclosed || undisclosedTrackers.every(namedInBanner)
+        const how = categoryDisclosed ? ' Your policy mentions this type of tool in general terms, but not by name.'
+          : undisclosedTrackers.every(namedInBanner) ? ' Your cookie banner mentions it, but your privacy policy does not.' : ''
+        issues.push(coveredSomehow
+          ? { sev:'Low', title:'Name your tracking tools in your privacy policy', desc:`${list} ${many ? 'are' : 'is'} used on your site, but ${many ? "they aren't" : "it isn't"} named in your privacy policy${policyWhere}.${how} Naming each tool, what it collects and why makes the policy clear (GDPR Art. 13(1)(e), ICO cookie guidance).`, reg:'GDPR Art. 13(1)(e)', evidence: `Found on your site: ${trackers.join(', ')}. Not named in your policy: ${list}.` }
+          : { sev:'Medium', title:'Tracking tools not mentioned in your privacy policy', desc:`${list} ${many ? 'are' : 'is'} used on your site, but your privacy policy${policyWhere} doesn't mention ${many ? 'them' : 'it'}, or analytics and advertising tools at all. GDPR Art. 13(1)(e) requires you to say who receives personal data.`, reg:'GDPR Art. 13(1)(e)', evidence: `Found on your site: ${trackers.join(', ')}. Not named in your policy: ${list}.` })
       } else if (!hasReadPrivacyPage && !hasSubprocessors) {
         issues.push({ sev:'Low', title:'Verify trackers are disclosed in privacy policy', desc:`${trackers.join(', ')} detected. Could not fully read the privacy policy. Verify these are named in it.`, reg:'GDPR Art. 13(1)(e)' })
       }
@@ -851,7 +908,8 @@ export async function POST(request) {
     // ─── NOTE ────────────────────────────────────────────────────────────────
     let note = 'This is an automated scan of publicly visible HTML. JS-rendered content, authenticated areas, and dynamically loaded privacy policies may not be fully captured.'
     if (isSpa) note = 'This site uses a JavaScript framework. Content rendered after page load (including some cookie banners and privacy policy text) may not be captured in this scan.'
-    if (renderedInBrowser) note = 'AlgoGrass opened your homepage in a real browser, as a visitor would, and recorded the trackers and cookies it loads before anyone clicks.'
+    const scannedFrom = process.env.VERCEL_REGION || null
+    if (renderedInBrowser) note = `AlgoGrass opened your homepage in a real browser${scannedFrom === 'lhr1' ? ' in London, as a UK visitor would see it,' : ', as a visitor would,'} and recorded the trackers and cookies it loads before anyone clicks.`
     if (renderedInBrowser && jsShell) note += ' This site builds its pages with JavaScript, so its policy pages were also read in the browser.'
     if (aiUsed) note += ' Your privacy policy was read in full, and each finding about it is based on a quote from the policy.'
     if (hasReadPrivacyPage && !aiUsed) note += ' Policy content checks were run against the privacy policy page itself.'
@@ -887,6 +945,7 @@ export async function POST(request) {
       termsPagesFound: sub.termsPaths,
       brokenPolicyLinks: [...sub.brokenPrivacyLinks, ...sub.brokenTermsLinks],
       scannedAt: new Date().toISOString(),
+      scannedFrom,
       note,
     }
 
