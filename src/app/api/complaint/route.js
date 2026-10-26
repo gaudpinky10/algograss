@@ -60,7 +60,7 @@ Pick the category for what the person is actually asking for (e.g. "send me my d
       const raw = await askClaude({
         system: toolSystem('You are the AlgoGrass complaint classifier. You sort data protection requests and complaints for UK organisations accurately and calmly.'),
         prompt,
-        maxTokens: 1200,
+        maxTokens: 2000,
       })
       ai = extractJson(raw)
     } catch (e) {

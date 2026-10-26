@@ -40,14 +40,14 @@ Write, with short headings:
 4. Information for the ICO report, filled in from the details above, with [INSERT: ...] where something is missing: what happened and when; how it was discovered; categories and approximate number of people and of records; the types of data; likely consequences; measures taken or planned, including to reduce harm; contact details.
 5. Draft notice to affected people (only if they need to be told), in plain English: what happened, likely consequences, what you are doing, what they can do, and a contact.
 6. Entry for the internal breach log (required even if not reported).
-Don't claim the report is final or guaranteed to be accepted.`
+Don't claim the report is final or guaranteed to be accepted. Keep it under 1,300 words.`
 
   let report
   try {
     report = await askClaude({
       system: toolSystem('You are the AlgoGrass breach response assistant. You help UK small businesses assess a personal data breach and prepare the information for the ICO, calmly and accurately.'),
       prompt,
-      maxTokens: 2500,
+      maxTokens: 4000,
     })
   } catch (e) {
     return aiFailed(e.status === 503 ? 503 : 502)

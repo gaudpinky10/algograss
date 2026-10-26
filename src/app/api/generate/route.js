@@ -45,7 +45,7 @@ Use [INSERT: ...] throughout for details you weren't given.`,
   if (!prompt) return Response.json({ error: 'Choose a privacy notice, cookie policy or data processing agreement.' }, { status: 400 })
 
   try {
-    const document = await askClaude({ system: toolSystem(DOC_ROLE), prompt, maxTokens: 4500 })
+    const document = await askClaude({ system: toolSystem(DOC_ROLE), prompt: prompt + '\n\nKeep it complete but concise: under 2,000 words.', maxTokens: 7000 })
     const note = 'AI-generated draft. Fill in every [INSERT] and check it matches how your business really uses data before you publish or sign it. Not legal advice.'
     return Response.json({ document, note, docType, domain, generatedAt: new Date().toISOString() })
   } catch (e) {

@@ -48,14 +48,15 @@ Write, with short headings:
 6. Exemptions that might apply (DPA 2018 Schedules 2 to 4), only if relevant, and that other people's data may need redacting.
 7. Draft acknowledgement email.
 8. Draft response template with [INSERT: ...] placeholders.
-9. Step-by-step checklist.`
+9. Step-by-step checklist.
+Keep it practical and under 1,400 words.`
 
   let responseText
   try {
     responseText = await askClaude({
       system: toolSystem('You are the AlgoGrass DSAR assistant. You help UK small businesses handle subject access and other data protection rights requests correctly. Be practical and clear.'),
       prompt,
-      maxTokens: 2500,
+      maxTokens: 4500,
     })
   } catch (e) {
     return aiFailed(e.status === 503 ? 503 : 502)
