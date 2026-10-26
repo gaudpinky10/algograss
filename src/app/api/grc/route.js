@@ -12,7 +12,7 @@ export async function POST(request) {
     incidentAssessment: `Assess this incident for a UK small business:\nIncident: ${data?.incidentTitle}\nDescription: ${data?.description}\nSeverity: ${data?.severity}\nData types affected: ${data?.dataTypes}\nPeople affected: ${data?.affectedCount}\n\nGive: whether it is a personal data breach; whether it is likely reportable to the ICO within 72 hours of becoming aware, and whether affected people must be told (only if high risk), with reasons; immediate actions; and a note to record it in the breach log either way.`,
   }
   if (!prompts[type]) return Response.json({ error: 'Unknown request type.' }, { status: 400 })
-  if (!(await allowAiUse('grc', user, user ? 40 : 5))) return tooMany()
+  if (!(await allowAiUse('grc', user, user ? 40 : 5))) return tooMany(user)
   let aiText
   try {
     aiText = await askClaude({

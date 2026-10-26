@@ -2,6 +2,7 @@ import { streamClaude } from '@/lib/ai'
 import { UK_DATA_FACTS, HONESTY_RULES, todayUK } from '@/lib/ukDataFacts'
 import { cookies } from 'next/headers'
 import { getCollection, parseUserCookie, trackActivity } from '@/lib/dbHelpers'
+import { allowAiUse } from '@/lib/toolGuard'
 
 const BASE_SYSTEM_PROMPT = `You are AlgoGrass AI, the GDPR, UK data protection and GRC compliance assistant of AlgoGrass (algograss.com).
 
@@ -91,8 +92,13 @@ export async function POST(request) {
   const userCookie = cookies().get('algograss_user')
   const user = userCookie ? parseUserCookie(userCookie.value) : null
 
-  const { messages, sessionId } = await request.json()
-  if (!messages?.length) return Response.json({ error: 'Messages required' }, { status: 400 })
+  const body = await request.json()
+  const sessionId = body.sessionId
+  if (!body.messages?.length) return Response.json({ error: 'Messages required' }, { status: 400 })
+  if (!(await allowAiUse('chat', user, user ? 60 : 10)))
+    return Response.json({ error: user ? "You've sent a lot of questions in the last hour. Please try again a little later." : 'You have reached the hourly limit for the assistant without an account. Log in or sign up free to keep going.' }, { status: 429 })
+  // Only the recent conversation is sent, and long messages are trimmed
+  const messages = body.messages.slice(-20).map(m => ({ ...m, content: String(m?.content || '').slice(0, 8000) }))
 
   const lastUserMsg = messages[messages.length - 1]
 

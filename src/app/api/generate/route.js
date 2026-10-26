@@ -8,7 +8,7 @@ export async function POST(request) {
   const user = currentUser()
   const { docType, scanData } = await request.json()
   if (!docType || !scanData?.url) return Response.json({ error: 'Scan your website first, then generate the document.' }, { status: 400 })
-  if (!(await allowAiUse('generate', user, user ? 30 : 3))) return tooMany()
+  if (!(await allowAiUse('generate', user, user ? 30 : 3))) return tooMany(user)
 
   const trackers = Array.isArray(scanData.trackers) ? scanData.trackers.map(String).slice(0, 20) : []
   const issues = Array.isArray(scanData.issues) ? scanData.issues.map(i => String(i?.title || '')).filter(Boolean).slice(0, 20) : []

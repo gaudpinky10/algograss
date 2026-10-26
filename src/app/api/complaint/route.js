@@ -37,7 +37,7 @@ export async function POST(request) {
   const user = currentUser()
   const { complaint, businessName, channel, dateReceived } = await request.json()
   if (!complaint || !String(complaint).trim()) return Response.json({ error: 'Please paste the message.' }, { status: 400 })
-  if (!(await allowAiUse('complaint', user, user ? 40 : 5))) return tooMany()
+  if (!(await allowAiUse('complaint', user, user ? 40 : 5))) return tooMany(user)
   const received = ukDay(dateReceived) || ukDay(new Date().toISOString())
 
   const prompt = `Classify this message received by a UK organisation and suggest how to handle it.

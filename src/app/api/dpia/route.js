@@ -8,7 +8,7 @@ export async function POST(request) {
   const body = await request.json()
   const { project, purpose, dataTypes, legalBasis, recipients, retention, risks, mitigations, residualRisk, businessName } = body
   if (!project && !purpose) return Response.json({ error: 'Please describe the project and its purpose.' }, { status: 400 })
-  if (!(await allowAiUse('dpia', user, user ? 40 : 5))) return tooMany()
+  if (!(await allowAiUse('dpia', user, user ? 40 : 5))) return tooMany(user)
 
   // Only kept for logged-in users, in their own account
   if (user?.email) void (async () => {
