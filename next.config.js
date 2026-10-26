@@ -12,6 +12,14 @@ const securityHeaders = [
 ]
 
 const nextConfig = {
+  experimental: {
+    // Headless Chromium for scanning JavaScript-only sites (see src/lib/renderPage.js).
+    // Kept out of the bundle, and its compressed browser files shipped with the scan route.
+    serverComponentsExternalPackages: ['@sparticuz/chromium', 'puppeteer-core'],
+    outputFileTracingIncludes: {
+      '/api/scan': ['./node_modules/@sparticuz/chromium/bin/**'],
+    },
+  },
   async headers() {
     return [{ source: '/(.*)', headers: securityHeaders }]
   },

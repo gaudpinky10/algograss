@@ -1,6 +1,9 @@
 import { cookies } from 'next/headers';
 import { getCollection, trackActivity, parseUserCookie } from '@/lib/dbHelpers';
 
+// JavaScript-only sites are loaded in a real browser, which takes longer
+export const maxDuration = 60
+
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
 
 async function fetchPage(url, timeoutMs = 15000) {
@@ -140,7 +143,7 @@ async function fetchWithRetry(url, timeoutMs) {
 
 const TERMS_FALLBACK = ['/terms', '/terms-of-service', '/terms-and-conditions', '/terms-of-use', '/legal', '/legal/terms', '/legal/terms-of-service', '/policies/terms']
 
-async function fetchSubPages(baseUrl, mainHtml = '', pageUrl = baseUrl) {
+async function fetchSubPages(baseUrl, mainHtml = '', pageUrl = baseUrl, opts = {}) {
   const paths = [
     '/privacy-policy', '/privacy', '/privacy-notice', '/privacy-statement', '/privacy-center',
     '/data-protection', '/data-privacy', '/personal-data',
@@ -212,14 +215,17 @@ async function fetchSubPages(baseUrl, mainHtml = '', pageUrl = baseUrl) {
   // 1. The site's own policy links first. That is usually only a few requests,
   //    so bot protection is rarely triggered and results stay the same between scans.
   const phase1 = legalLinks.map(l => l.path)
-  take(phase1, await Promise.allSettled(phase1.map(p => fetchWithRetry(pageOrigin + p, 8000))))
+  const getPage = opts.render ? (u => opts.render(u)) : (u => fetchWithRetry(u, 8000))
+  take(phase1, await Promise.allSettled(phase1.map(p => getPage(pageOrigin + p))))
   let { policyPages, termsPages } = classify()
 
   // 2. Only if those links gave no privacy policy (or no terms), guess common
   //    addresses. Skipped if the site is already refusing our requests.
   const tried = new Set(phase1)
   const fallback = policyPages.length === 0 ? paths : termsPages.length === 0 ? TERMS_FALLBACK : []
-  const phase2 = blocked > 0 ? [] : fallback.filter(p => !tried.has(p))
+  // Guessing addresses is skipped for browser-loaded sites: a JavaScript app
+  // answers every address with the same shell, and each browser load is slow
+  const phase2 = (blocked > 0 || opts.render) ? [] : fallback.filter(p => !tried.has(p))
   if (phase2.length) {
     const b1 = phase2.slice(0, 16).map(p => fetchPage(origin + p, 6000))
     const b2 = phase2.slice(16).map(p => fetchPage(origin + p, 5000))
@@ -290,16 +296,45 @@ export async function POST(request) {
         : 'This website blocked our automated scan (many sites use bot protection). Please try again in a few minutes. If it keeps happening, the site blocks automated checks, so we cannot give an accurate result.'
       return Response.json({ error, blocked: true }, { status: 422 })
     }
-    // An empty JavaScript app shell has nothing for this scan to read, so do
-    // not report its policies as missing
+    // An empty JavaScript app shell has nothing for a plain download to read,
+    // so load the site in a real browser instead. If that fails, say so
+    // rather than report its policies as missing.
+    let renderer = null
+    let renderedInBrowser = false
+    let browserRequests = []
+    let browserCookies = []
     if (mainResult.ok && isJsShell(mainResult.text)) {
-      await trackActivity({ userEmail: user?.email, tool: 'scan', action: 'scan_js_only', detail: targetUrl })
-      return Response.json({
-        error: "This website builds its pages with JavaScript in the browser, so our scanner can't read its content yet. Rather than guess, we haven't given it a score. Support for sites like this is coming soon.",
-        jsOnly: true,
-      }, { status: 422 })
+      try {
+        const { createRenderer } = await import('@/lib/renderPage')
+        renderer = await createRenderer()
+        const r = await renderer.render(mainResult.finalUrl || targetUrl)
+        if (r.ok && r.status < 400 && !isBlocked(r) && !isJsShell(r.text)) {
+          // Keep the original response's headers (security headers, cookies)
+          mainResult = { ...mainResult, text: r.text, finalUrl: r.finalUrl || mainResult.finalUrl }
+          browserRequests = r.requests || []
+          browserCookies = r.cookies || []
+          renderedInBrowser = true
+        }
+      } catch (e) {
+        console.error('scan: browser load failed', e?.message || e)
+      }
+      if (!renderedInBrowser) {
+        if (renderer) await renderer.close()
+        await trackActivity({ userEmail: user?.email, tool: 'scan', action: 'scan_js_only', detail: targetUrl })
+        return Response.json({
+          error: "This website builds its pages with JavaScript in the browser, and we couldn't load it in our browser this time. Please try again in a minute. Rather than guess, we haven't given it a score.",
+          jsOnly: true,
+        }, { status: 422 })
+      }
     }
-    const sub = mainResult.ok ? await fetchSubPages(targetUrl, mainResult.text, mainResult.finalUrl) : { text: '', policyText: '', policyPaths: [], termsPaths: [], brokenPrivacyLinks: [], brokenTermsLinks: [], blockedCount: 0, requestCount: 0 }
+    let sub
+    try {
+      sub = mainResult.ok
+        ? await fetchSubPages(targetUrl, mainResult.text, mainResult.finalUrl, renderedInBrowser ? { render: u => renderer.render(u) } : {})
+        : { text: '', policyText: '', policyPaths: [], termsPaths: [], brokenPrivacyLinks: [], brokenTermsLinks: [], blockedCount: 0, requestCount: 0 }
+    } finally {
+      if (renderer) await renderer.close()
+    }
     const subText = sub.text
     if (!mainResult.ok) {
       await trackActivity({ userEmail: user?.email, tool: 'scan', action: 'scan_failed', detail: targetUrl })
@@ -320,7 +355,7 @@ export async function POST(request) {
     const scriptSrcs    = (scanHtml.match(/src=["']([^"']+\.js[^"']*)/gi) || []).join('\n')
     const jsContent     = inlineScripts + '\n' + scriptSrcs
     // Combined text used for all tracker / banner detection
-    const allScanText  = scanHtml + '\n' + jsContent
+    const allScanText  = scanHtml + '\n' + jsContent + (browserRequests.length ? '\n' + browserRequests.join('\n') : '')
 
     const allText  = mainHtml + '\n' + subText
     // Separate privacy-specific content (more strict matching within sub-pages)
@@ -369,6 +404,8 @@ export async function POST(request) {
       /customise[\s_-]?cookies/i, /customize[\s_-]?cookies/i,
       /decline[\s_-]?all/i,
       /only (necessary|essential|required) cookies/i,
+      // A button or link labelled just "Reject", "Decline", "Deny" or "Refuse"
+      />\s*(reject|decline|deny|refuse)(\s+all)?\s*<\/(button|a|span)>/i,
     ]
     const hasCookieRejectSignal = detect(allScanText, rejectControlPatterns)
     // A page can only offer a "reject all" / "manage preferences" control if a
@@ -447,6 +484,9 @@ export async function POST(request) {
       /right to know/i, /right to delete/i, /right to opt.out/i,
       /california (privacy|consumer)/i, /ccpa/i,
       /you (may|can) (request|ask us|contact us) (to )?(access|delete|correct|update|remove)/i,
+      // Rights listed by name, e.g. "rights including access, rectification, erasure"
+      /\brights?\s+(including|such as|to|of)\s+(access|rectification|correction|erasure|deletion|portability|restriction|object)/i,
+      /\b(access|rectification|correction|erasure|deletion|portability|restriction|objection)\b[^.]{0,60}\b(rectification|correction|erasure|deletion|portability|restriction|objection|object)\b/i,
     ])
 
     // ─── DATA RETENTION ──────────────────────────────────────────────────────
@@ -470,7 +510,15 @@ export async function POST(request) {
     ])
 
     // ─── DSAR CONTACT ────────────────────────────────────────────────────────
-    const hasDsarContact  = detect(policyScope, [
+    // An email given in the privacy policy for privacy, data protection or
+    // rights queries counts, whatever the address is called (e.g. "For all
+    // queries regarding data protection, contact Gary at: gary@...")
+    const EMAIL = '[\\w.+-]+@[\\w-]+\\.[\\w.-]+'
+    const DSAR_TOPIC = '(data protection|privacy|personal (data|information)|your (data )?rights|these rights|exercise|subject access|data request)'
+    const policyEmailContact = hasReadPrivacyPage && (
+      new RegExp(DSAR_TOPIC + '[^.]{0,200}?' + EMAIL, 'i').test(privacyText) ||
+      new RegExp(EMAIL + '[^.]{0,80}?' + DSAR_TOPIC, 'i').test(privacyText))
+    const hasDsarContact  = policyEmailContact || detect(policyScope, [
       /dpo@/i, /privacy@/i, /data[\s_-]?protection@/i, /sar@/i, /gdpr@/i,
       /subject[\s_-]?access[\s_-]?request/i,
       /contact[\s_-]?(our[\s_-]?)?dpo/i, 'data protection officer',
@@ -568,6 +616,7 @@ export async function POST(request) {
       const raw = typeof mainResult.headers.getSetCookie === 'function' ? mainResult.headers.getSetCookie() : []
       setCookieNames = raw.map(c => c.split('=')[0].trim()).filter(Boolean)
     } catch {}
+    for (const n of browserCookies) if (!setCookieNames.includes(n)) setCookieNames.push(n)
     const nonEssentialCookies = setCookieNames.filter(n => /^(_ga|_gid|_gat|_fbp|_fbc|_hj|_clck|_clsk|_uet|_pin_|__hs|hubspotutk|ajs_|mp_|_tt_|_ttp|ph_|amp_|IDE|NID|fr$|_gcl)/i.test(n))
 
     // ─── BUILD ISSUES ────────────────────────────────────────────────────────
@@ -599,7 +648,7 @@ export async function POST(request) {
       } else {
         issues.push({ sev:'Medium', title:'No cookie consent mechanism detected', desc:'No cookie consent banner found. Required under PECR before setting non-essential cookies.', reg:'ePrivacy Reg. 6' })
       }
-    } else if (hasCookieBanner && !hasCookieReject) {
+    } else if (hasCookieBanner && !hasCookieReject && cookieConsentNeeded) {
       issues.push({ sev:'Medium', title:'Cookie banner may lack a "Reject All" option', desc:'A cookie banner was detected but no "Reject All" button found in page source. ICO 2023 guidance requires this to be as easy as accepting. If your banner is JS-rendered, verify manually.', reg:'ICO Cookie Guidance 2023' })
     }
 
@@ -672,18 +721,19 @@ export async function POST(request) {
     // ─── NOTE ────────────────────────────────────────────────────────────────
     let note = 'This is an automated scan of publicly visible HTML. JS-rendered content, authenticated areas, and dynamically loaded privacy policies may not be fully captured.'
     if (isSpa) note = 'This site uses a JavaScript framework. Content rendered after page load (including some cookie banners and privacy policy text) may not be captured in this scan.'
+    if (renderedInBrowser) note = 'This site builds its pages with JavaScript, so AlgoGrass loaded it in a real browser to read it.'
     if (hasReadPrivacyPage) note += ' Policy content checks were run against the privacy policy page itself.'
     if (!hasReadPrivacyPage && hasPrivacyLink) note += ' Privacy policy pages could not be fully read — some checks may be marked Low severity as a result.'
     if (sub.blockedCount > 0) note += ' Some pages on this site refused automated access, so a few checks may be incomplete.'
 
     const result = {
-      url: finalUrl, score, isHttps, trackers, issues, isSpa,
+      url: finalUrl, score, isHttps, trackers, issues, isSpa, renderedInBrowser,
       checks: {
         https: isHttps, hsts: hasHsts, privacyPolicy: hasPrivacyLink,
         privacyLinkBroken, termsLinkBroken,
         // No trackers or non-essential cookies means no consent is needed, so these pass
         cookieBanner: hasCookieBanner || !cookieConsentNeeded,
-        cookieReject: hasCookieReject || (!hasCookieBanner && !cookieConsentNeeded),
+        cookieReject: hasCookieReject || !cookieConsentNeeded,
         cookieConsentNeeded,
         cookieBannerFound: hasCookieBanner, cookieRejectFound: hasCookieReject,
         termsOfService: hasTerms, lawfulBasis: hasLawfulBasis,
