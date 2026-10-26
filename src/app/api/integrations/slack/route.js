@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { getCollection } from '@/lib/dbHelpers';
+import { getCollection, parseUserCookie } from '@/lib/dbHelpers';
 import { cookies } from 'next/headers';
 
 function getUser() {
   try {
     const c = cookies().get('algograss_user');
-    return c ? JSON.parse(Buffer.from(c.value, 'base64').toString()) : null;
+    return c ? parseUserCookie(c.value) : null;
   } catch { return null; }
 }
 

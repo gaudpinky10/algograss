@@ -1,12 +1,36 @@
 import { Resend } from 'resend'
+import { getCollection } from '@/lib/dbHelpers'
+
+const PER_ADDRESS_PER_HOUR = 3
+const PER_IP_PER_HOUR = 10
 
 export async function POST(request) {
-  const { email, result } = await request.json()
-  if (!email || !result) return Response.json({ error: 'Missing email or result' }, { status: 400 })
+  const body = await request.json().catch(() => ({}))
+  const email = String(body.email || '').trim().toLowerCase()
+  const url = String(body.url || body.result?.url || '')
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !url) return Response.json({ error: 'Please enter a valid email address.' }, { status: 400 })
   if (!process.env.RESEND_API_KEY) {
     console.error('email-report: RESEND_API_KEY is not set') // visible in Vercel logs, not to users
     return Response.json({ error: "Emailing reports isn't available right now. Please use Download Report instead." }, { status: 503 })
   }
+
+  // The email only ever contains a real scan our scanner made in the last two
+  // hours, never report text sent by the browser, so nobody can use AlgoGrass
+  // to send made-up messages. Sends are limited per address and per visitor.
+  const scans = await getCollection('scans')
+  const sends = await getCollection('email_sends')
+  if (!scans || !sends) return Response.json({ error: "Emailing reports isn't available right now. Please use Download Report instead." }, { status: 503 })
+  const ip = (request.headers.get('x-real-ip') || request.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'unknown'
+  const hourAgo = new Date(Date.now() - 3600e3)
+  const [toAddress, fromIp] = await Promise.all([
+    sends.countDocuments({ to: email, createdAt: { $gt: hourAgo } }),
+    sends.countDocuments({ ip, createdAt: { $gt: hourAgo } }),
+  ])
+  if (toAddress >= PER_ADDRESS_PER_HOUR || fromIp >= PER_IP_PER_HOUR)
+    return Response.json({ error: 'Too many reports emailed in the last hour. Please try again later, or use Download Report.' }, { status: 429 })
+  const result = await scans.findOne({ url, scannedAt: { $gt: new Date(Date.now() - 2 * 3600e3) } }, { sort: { scannedAt: -1 } })
+  if (!result) return Response.json({ error: 'Please run the scan again, then email the report.' }, { status: 404 })
+  await sends.insertOne({ to: email, ip, url, createdAt: new Date() })
 
   const resend = new Resend(process.env.RESEND_API_KEY)
   const sc = result.score
@@ -138,12 +162,11 @@ export async function POST(request) {
     await resend.emails.send({
       from: 'AlgoGrass Reports <reports@algograss.com>',
       to: email,
-      subject: `GDPR Compliance Report: ${result.url} — Score ${sc}/100`,
+      subject: `GDPR Compliance Report: ${String(result.url).replace(/^https?:\/\//, '').slice(0, 80)} — Score ${sc}/100`,
       html,
     })
     return Response.json({ success: true })
   } catch (err) {
-    console.error('Email error:', err)
     console.error('email-report: send failed', err)
     return Response.json({ error: "We couldn't send the email just now. Please try again, or use Download Report instead." }, { status: 500 })
   }

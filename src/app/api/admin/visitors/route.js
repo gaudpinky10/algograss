@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getCollection } from '@/lib/dbHelpers'
+import { getCollection, parseUserCookie } from '@/lib/dbHelpers'
 import { cookies } from 'next/headers'
 
 export const runtime = 'nodejs'
@@ -8,7 +8,7 @@ function isAdmin() {
   try {
     const c = cookies().get('algograss_user')
     if (!c) return false
-    const u = JSON.parse(Buffer.from(c.value, 'base64').toString())
+    const u = parseUserCookie(c.value)
     return u.isAdmin === true
   } catch { return false }
 }

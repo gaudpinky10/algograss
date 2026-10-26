@@ -13,8 +13,8 @@ export async function POST(request) {
   ;(async () => {
     try {
       const col = await getCollection('dpias')
-      if (col) await col.insertOne({
-        userEmail: user?.email || 'anonymous',
+      if (col && user?.email) await col.insertOne({ // only kept for logged-in users
+        userEmail: user.email,
         businessName: businessName || '',
         project, purpose, dataTypes, legalBasis, recipients, retention, risks,
         status: 'submitted', createdAt: new Date()

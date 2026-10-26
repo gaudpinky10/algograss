@@ -1,11 +1,11 @@
 import { cookies } from 'next/headers';
-import { getCollection } from '@/lib/dbHelpers';
+import { getCollection, parseUserCookie } from '@/lib/dbHelpers';
 
 export async function GET() {
   try {
     const userCookie = cookies().get('algograss_user')
     if (!userCookie) return Response.json({ scans: [] })
-    const user = JSON.parse(Buffer.from(userCookie.value, 'base64').toString())
+    const user = parseUserCookie(userCookie.value)
     if (!user?.email) return Response.json({ scans: [] })
     const col = await getCollection('scans')
     if (!col) return Response.json({ scans: [] })
@@ -18,7 +18,7 @@ export async function DELETE(request) {
   try {
     const userCookie = cookies().get('algograss_user')
     if (!userCookie) return Response.json({ error: 'Not authenticated' }, { status: 401 })
-    const user = JSON.parse(Buffer.from(userCookie.value, 'base64').toString())
+    const user = parseUserCookie(userCookie.value)
     if (!user?.email) return Response.json({ error: 'Not authenticated' }, { status: 401 })
     const { id } = await request.json()
     if (!id) return Response.json({ error: 'ID required' }, { status: 400 })

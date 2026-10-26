@@ -45,7 +45,7 @@ export async function POST(request) {
     if (session.error) return Response.json({ error: session.error.message }, { status: 500 })
 
     const userCookie = cookies().get('algograss_user')
-    const user = userCookie ? (() => { try { return JSON.parse(Buffer.from(userCookie.value,'base64').toString()) } catch { return null } })() : null
+    const user = userCookie ? (() => { try { return parseUserCookie(userCookie.value) } catch { return null } })() : null
     await trackActivity({ userEmail: email || user?.email, tool:'billing', action:'verification_started', detail: plan, meta:{ plan, trial:!!trial } })
 
     return Response.json({ url: session.url })
