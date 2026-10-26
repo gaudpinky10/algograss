@@ -6,7 +6,7 @@ export async function POST(request) {
   const user = currentUser()
   const { toolName, purpose, dataTypes, hasPersonalData, sharesWithThirdParty, businessName } = await request.json()
   if (!toolName && !purpose) return Response.json({ error: 'Please name the AI tool and what you use it for.' }, { status: 400 })
-  if (!(await allowAiUse('ai-governance', user, user ? 40 : 5))) return tooMany()
+  if (!(await allowAiUse('ai-governance', user, user ? 40 : 5))) return tooMany(user)
   try {
     const assessment = await askClaude({
       system: toolSystem('You are the AlgoGrass AI governance assistant. You help UK small businesses use AI tools in line with UK GDPR, and the EU AI Act where it applies to them.'),

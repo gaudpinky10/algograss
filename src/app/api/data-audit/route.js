@@ -16,7 +16,7 @@ export async function POST(request) {
   const user = currentUser()
   const { area, answers, businessName } = await request.json()
   const key = AREAS[area] ? area : 'crm'
-  if (!(await allowAiUse('data-audit', user, user ? 40 : 5))) return tooMany()
+  if (!(await allowAiUse('data-audit', user, user ? 40 : 5))) return tooMany(user)
 
   const prompt = `Review how a UK organisation handles ${AREAS[key]}
 Organisation: ${businessName || 'not stated'}

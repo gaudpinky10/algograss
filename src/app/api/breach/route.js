@@ -13,7 +13,7 @@ export async function POST(request) {
   const body = await request.json()
   const { breachDescription, dataTypes, individualsAffected, consequences, measuresTaken, controllerName, dpoContact, breachDate } = body
   if (!breachDescription || !String(breachDescription).trim()) return NextResponse.json({ error: 'Please describe what happened.' }, { status: 400 })
-  if (!(await allowAiUse('breach', user, user ? 40 : 8))) return tooMany()
+  if (!(await allowAiUse('breach', user, user ? 40 : 8))) return tooMany(user)
 
   // 72 hours from when they became aware, worked out here
   const aware = breachDate ? new Date(breachDate) : null

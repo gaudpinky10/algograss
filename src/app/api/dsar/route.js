@@ -16,7 +16,7 @@ export async function POST(request) {
   const user = currentUser()
   const { requestText, businessName, dataTypes, requesterName, requesterEmail, requestType, dateReceived } = await request.json()
   if (!requestText || !String(requestText).trim()) return Response.json({ error: 'Please paste the request.' }, { status: 400 })
-  if (!(await allowAiUse('dsar', user, user ? 40 : 5))) return tooMany()
+  if (!(await allowAiUse('dsar', user, user ? 40 : 5))) return tooMany(user)
 
   // The deadline is worked out here, not by the AI: one calendar month from
   // the day the request arrived, moved to the next working day if needed

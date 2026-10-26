@@ -122,7 +122,7 @@ export default function AlgoGrassAI() {
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}))
-        setMessages(m => [...m.slice(0,-1), { role: 'assistant', content: 'Sorry, the AI assistant is temporarily unavailable. Please try again shortly.' }])
+        setMessages(m => [...m.slice(0,-1), { role: 'assistant', content: err.error && res.status === 429 ? err.error : 'Sorry, the AI assistant is temporarily unavailable. Please try again shortly.' }])
         return
       }
 
