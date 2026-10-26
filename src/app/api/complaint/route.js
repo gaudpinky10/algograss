@@ -53,17 +53,20 @@ Reply with JSON only, in exactly this shape (the values here are descriptions, n
 {"isGdprComplaint": true or false, "category": one of ${JSON.stringify(CATEGORIES)}, "urgency": "High" | "Medium" | "Low", "summary": "one sentence", "recommendedAction": "the specific next steps", "templateResponse": "a short, polite acknowledgement to send, with [INSERT: ...] placeholders, that doesn't promise anything you can't know", "riskLevel": "High" | "Medium" | "Low", "riskExplanation": "one or two sentences"}
 Pick the category for what the person is actually asking for (e.g. "send me my data" is a Subject Access Request even if they call it a complaint). Don't state any deadline: it is added separately.`
 
-  let raw
-  try {
-    raw = await askClaude({
-      system: toolSystem('You are the AlgoGrass complaint classifier. You sort data protection requests and complaints for UK organisations accurately and calmly.'),
-      prompt,
-      maxTokens: 1200,
-    })
-  } catch (e) {
-    return aiFailed(e.status === 503 ? 503 : 502)
+  // Ask again once if the reply wasn't usable JSON
+  let ai = null
+  for (let attempt = 0; attempt < 2 && !ai; attempt++) {
+    try {
+      const raw = await askClaude({
+        system: toolSystem('You are the AlgoGrass complaint classifier. You sort data protection requests and complaints for UK organisations accurately and calmly.'),
+        prompt,
+        maxTokens: 1200,
+      })
+      ai = extractJson(raw)
+    } catch (e) {
+      if (attempt) return aiFailed(e.status === 503 ? 503 : 502)
+    }
   }
-  const ai = extractJson(raw)
   if (!ai) return aiFailed()
   const category = CATEGORIES.includes(ai.category) ? ai.category : 'General Privacy'
   const result = {
