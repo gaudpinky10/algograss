@@ -214,7 +214,11 @@ async function fetchSubPages(baseUrl, mainHtml = '', pageUrl = baseUrl, opts = {
 
   // 1. The site's own policy links first. That is usually only a few requests,
   //    so bot protection is rarely triggered and results stay the same between scans.
-  const phase1 = legalLinks.map(l => l.path)
+  const legalPaths = legalLinks.map(l => l.path)
+  // In the browser only privacy and terms pages are loaded (each load is slow)
+  const phase1 = opts.render
+    ? (legalLinks.some(l => l.kind !== 'other') ? legalLinks.filter(l => l.kind !== 'other') : legalLinks).slice(0, 3).map(l => l.path)
+    : legalPaths
   const getPage = opts.render ? (u => opts.render(u)) : (u => fetchWithRetry(u, 8000))
   take(phase1, await Promise.allSettled(phase1.map(p => getPage(pageOrigin + p))))
   let { policyPages, termsPages } = classify()
@@ -251,6 +255,7 @@ function detect(text, patterns) {
 }
 
 export async function POST(request) {
+  const startedAt = Date.now()
   const { url } = await request.json()
   if (!url) return Response.json({ error: 'URL is required' }, { status: 400 })
   let targetUrl = url.trim()
@@ -306,7 +311,7 @@ export async function POST(request) {
     if (mainResult.ok && isJsShell(mainResult.text)) {
       try {
         const { createRenderer } = await import('@/lib/renderPage')
-        renderer = await createRenderer()
+        renderer = await createRenderer({ deadline: startedAt + 48000 })
         const r = await renderer.render(mainResult.finalUrl || targetUrl)
         if (r.ok && r.status < 400 && !isBlocked(r) && !isJsShell(r.text)) {
           // Keep the original response's headers (security headers, cookies)
@@ -404,10 +409,13 @@ export async function POST(request) {
       /customise[\s_-]?cookies/i, /customize[\s_-]?cookies/i,
       /decline[\s_-]?all/i,
       /only (necessary|essential|required) cookies/i,
-      // A button or link labelled just "Reject", "Decline", "Deny" or "Refuse"
-      />\s*(reject|decline|deny|refuse)(\s+all)?\s*<\/(button|a|span)>/i,
     ]
-    const hasCookieRejectSignal = detect(allScanText, rejectControlPatterns)
+    // A real button labelled just "Reject", "Decline", "Deny" or "Refuse",
+    // looked for in the page markup only (not inside scripts)
+    const markupOnly = scanHtml.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    const hasRejectButton = /<button\b[^>]*>\s*(reject|decline|deny|refuse)(\s+all)?\s*<\/button>/i.test(markupOnly) ||
+      /<[a-z]+\b[^>]*role=["']button["'][^>]*>\s*(reject|decline|deny|refuse)(\s+all)?\s*<\/[a-z]+>/i.test(markupOnly)
+    const hasCookieRejectSignal = hasRejectButton || detect(allScanText, rejectControlPatterns)
     // A page can only offer a "reject all" / "manage preferences" control if a
     // cookie banner exists to attach it to — so finding one of those controls
     // is itself proof of a banner, even if the banner's own wrapper text

@@ -26,7 +26,7 @@ async function launch() {
 // Returns { render(url) -> page result, close() }. Each result has the same
 // shape as a plain download: { ok, status, text, headers, finalUrl } plus the
 // URLs the page requested and the cookies it set without any interaction.
-export async function createRenderer({ timeoutMs = 15000, maxConcurrent = 3 } = {}) {
+export async function createRenderer({ timeoutMs = 12000, maxConcurrent = 3, deadline = Infinity } = {}) {
   const browser = await launch()
   let active = 0
   const queue = []
@@ -37,17 +37,27 @@ export async function createRenderer({ timeoutMs = 15000, maxConcurrent = 3 } = 
 
   async function render(url) {
     await acquire()
+    const left = deadline - Date.now()
+    if (left < 3000) { release(); return { ok: false, status: 0, text: '', headers: new Headers(), finalUrl: url, requests: [], cookies: [], timedOut: true } }
+    const pageTimeout = Math.min(timeoutMs, left - 1500)
     const page = await browser.newPage()
     const requests = []
     try {
       await page.setUserAgent(UA)
       await page.setViewport({ width: 1280, height: 900 })
       await page.setExtraHTTPHeaders({ 'Accept-Language': 'en-GB,en;q=0.9' })
-      page.on('request', r => { if (requests.length < 300) requests.push(r.url()) })
-      const res = await page.goto(url, { waitUntil: 'load', timeout: timeoutMs })
+      // Images, video, fonts and stylesheets don't change the text or links we
+      // check, so skip downloading them. Their URLs are still recorded.
+      await page.setRequestInterception(true)
+      page.on('request', r => {
+        if (requests.length < 300) requests.push(r.url())
+        if (['image', 'media', 'font', 'stylesheet'].includes(r.resourceType())) r.abort().catch(() => {})
+        else r.continue().catch(() => {})
+      })
+      const res = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: pageTimeout })
       // Wait for the app to put real content on the page, then a moment for footers
-      await page.waitForFunction(() => document.body && document.body.innerText.trim().length > 200, { timeout: 6000 }).catch(() => {})
-      await new Promise(r => setTimeout(r, 700))
+      await page.waitForFunction(() => document.body && document.body.innerText.trim().length > 200, { timeout: Math.max(1000, Math.min(5000, deadline - Date.now() - 1500)) }).catch(() => {})
+      await new Promise(r => setTimeout(r, 400))
       const text = await page.content()
       const cookies = (await page.cookies()).map(c => c.name)
       const headers = new Headers()
