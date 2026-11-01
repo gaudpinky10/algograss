@@ -131,7 +131,7 @@ export default function SignupPage() {
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <a href="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 20 }}>
-            <img src="/logo.png" alt="AlgoGrass" style={{ height: 40, width: 'auto' }} />
+            <img src="/logo-white.png" alt="AlgoGrass" style={{ height: 40, width: 'auto' }} />
           </a>
           <h1 style={{ fontFamily: 'var(--f-head,Syne,sans-serif)', fontWeight: 800, fontSize: 26, color: '#F1F5F9', marginBottom: 8 }}>Start for free</h1>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 100, padding: '6px 14px', marginBottom: 4 }}>

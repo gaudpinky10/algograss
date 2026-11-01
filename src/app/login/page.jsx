@@ -1,9 +1,20 @@
 'use client'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // Map URL error codes to friendly messages
+  const urlError = searchParams.get('error')
+  const urlErrorMsg = urlError === 'google_not_configured'
+    ? 'Google login is not yet enabled. Please sign in with email below.'
+    : urlError === 'google_denied'
+    ? 'Google sign-in was cancelled.'
+    : urlError === 'google_failed'
+    ? 'Google sign-in failed. Please try again or use email below.'
+    : null
   const [form, setForm]     = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError]   = useState('')
@@ -55,7 +66,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
           <a href="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 28 }}>
-            <img src="/logo.png" alt="AlgoGrass" style={{ height: 40, width: 'auto' }} />
+            <img src="/logo-white.png" alt="AlgoGrass" style={{ height: 40, width: 'auto' }} />
           </a>
           <h1 style={{ fontFamily: 'var(--font-syne,"Syne"),sans-serif', fontWeight: 800, fontSize: 28, color: '#F1F5F9', marginBottom: 8, lineHeight: 1.2 }}>
             Welcome back
@@ -103,6 +114,16 @@ export default function LoginPage() {
             <span style={{ fontSize: 12, color: '#94A3B8' }}>or sign in with email</span>
             <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
           </div>
+
+          {/* URL error banner (Google OAuth errors) */}
+          {urlErrorMsg && (
+            <div style={{
+              background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)',
+              borderRadius: 12, padding: '12px 16px', marginBottom: 18,
+            }}>
+              <p style={{ fontSize: 13, color: '#FCD34D', margin: 0 }}>{urlErrorMsg}</p>
+            </div>
+          )}
 
           {/* Not found banner */}
           {notFound && (

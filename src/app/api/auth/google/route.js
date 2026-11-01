@@ -2,14 +2,15 @@ import { NextResponse } from 'next/server'
 import { randomBytes } from 'crypto'
 
 export async function GET(request) {
-  const clientId    = process.env.GOOGLE_CLIENT_ID
-  const redirectUri = process.env.NEXT_PUBLIC_APP_URL
-    ? `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google/callback`
-    : 'https://www.algograss.com/api/auth/google/callback'
+  const clientId = process.env.GOOGLE_CLIENT_ID
+  const appUrl   = process.env.NEXT_PUBLIC_APP_URL || 'https://www.algograss.com'
+  const redirectUri = `${appUrl}/api/auth/google/callback`
 
   if (!clientId) {
-    // Google OAuth not configured — redirect to signup with message
-    return NextResponse.redirect(new URL('/signup?error=google_not_configured', redirectUri.replace('/api/auth/google/callback', '')))
+    // Google OAuth not configured — redirect to login with friendly message, no loop
+    const loginUrl = new URL('/login', appUrl)
+    loginUrl.searchParams.set('error', 'google_not_configured')
+    return NextResponse.redirect(loginUrl.toString())
   }
 
   // Start on the same host Google will send the visitor back to, so the
