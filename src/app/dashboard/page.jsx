@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import Markdown from '@/components/Markdown'
+import { SCAN_HANDOFF_KEY } from '@/lib/scanHandoff'
 
 const HISTORY_KEY = 'algograss_scan_history'
 const MAX_HISTORY = 10
@@ -11,7 +12,9 @@ function getUser() {
     const cookies = document.cookie.split(';').map(c => c.trim())
     const cookie = cookies.find(c => c.startsWith('algograss_user='))
     if (!cookie) return null
-    return JSON.parse(atob(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
+    const u = JSON.parse(atob(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
+    if (!u?.email || (typeof u.exp === 'number' && Date.now() > u.exp)) return null
+    return u
   } catch { return null }
 }
 
@@ -395,6 +398,27 @@ function Dashboard() {
       .catch(() => setActivitiesLoading(false))
 
     const params = new URLSearchParams(window.location.search)
+
+    // Arrived from "Fix issues" on the scanner: show that scan's action plan
+    if (params.get('from') === 'scan') {
+      let handed = null
+      try {
+        handed = JSON.parse(sessionStorage.getItem(SCAN_HANDOFF_KEY) || 'null')
+        sessionStorage.removeItem(SCAN_HANDOFF_KEY)
+      } catch {}
+      const wanted = params.get('url') || ''
+      if (handed && Array.isArray(handed.issues) && handed.checks) {
+        setResult(handed)
+        setScanUrl(handed.url || wanted)
+        setTab('roadmap')
+      } else if (wanted) {
+        // Nothing handed over (e.g. opened in a new tab): scan it here instead
+        setScanUrl(wanted)
+        runScan(wanted).then(() => setTab('roadmap'))
+      }
+      window.history.replaceState({}, '', '/dashboard')
+    }
+
     if (params.get('upgraded') === 'true') {
       const plan = params.get('plan') || ''
       const isTrial = params.get('trial') === '1'
@@ -454,9 +478,10 @@ function Dashboard() {
     const hist = [...messages, { role: 'user', text: q }]
     setMessages(hist); setAiLoading(true)
     try {
-      const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: hist.map(m => ({ role: m.role, content: m.text })) }) })
+      // The "cut short" note is for the reader, not part of the answer, so it isn't sent back
+      const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: hist.map(m => ({ role: m.role, content: String(m.text || '').replace(/\n*\[This answer was cut short[^\]]*\]\s*$/, '') })) }) })
       const data = await res.json()
-      setMessages([...hist, { role: 'assistant', text: data.reply || 'Something went wrong.' }])
+      setMessages([...hist, { role: 'assistant', text: data.reply || 'Something went wrong.', cutShort: !!data.cutShort }])
     } catch { setMessages([...hist, { role: 'assistant', text: 'Connection error. Please try again.' }]) }
     setAiLoading(false)
   }
@@ -913,7 +938,7 @@ function Dashboard() {
                     {Object.entries(docState).filter(([, v]) => v).map(([k, text]) => (
                       <div key={k} style={{ marginBottom: 16 }}>
                         <p style={{ fontSize: 12, fontWeight: 600, color: 'var(--green)', marginBottom: 8, textTransform: 'capitalize' }}>{k === 'dpa' ? 'Data Processing Agreement' : k === 'privacy' ? 'Privacy Policy' : 'Cookie Policy'}</p>
-                        <pre style={{ fontSize: 12, color: 'var(--ink)', lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'break-word', background: 'var(--cream)', borderRadius: 8, padding: 16, maxHeight: 400, overflowY: 'auto', border: '1px solid var(--border)' }}>{text}</pre>
+                        <div style={{ fontSize: 13, color: 'var(--ink)', lineHeight: 1.7, wordBreak: 'break-word', background: 'var(--cream)', borderRadius: 8, padding: 16, maxHeight: 400, overflowY: 'auto', border: '1px solid var(--border)' }}><Markdown text={text} breaks /></div>
                       </div>
                     ))}
                   </div>
@@ -939,7 +964,15 @@ function Dashboard() {
                   <div ref={chatRef} style={{ padding: '20px 22px', minHeight: 340, maxHeight: 420, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
                     {messages.map((m, i) => (
                       <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start' }}>
-                        <div style={{ maxWidth: '82%', padding: '11px 15px', borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', background: m.role === 'user' ? 'var(--green)' : 'var(--green-p)', color: m.role === 'user' ? '#fff' : 'var(--ink)', fontSize: 13, lineHeight: 1.65, whiteSpace: m.role === 'user' ? 'pre-wrap' : 'normal' }}>{m.role === 'user' ? m.text : <Markdown text={m.text} />}</div>
+                        <div style={{ maxWidth: '82%', padding: '11px 15px', borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', background: m.role === 'user' ? 'var(--green)' : 'var(--green-p)', color: m.role === 'user' ? '#fff' : 'var(--ink)', fontSize: 13, lineHeight: 1.65, whiteSpace: m.role === 'user' ? 'pre-wrap' : 'normal' }}>
+                          {m.role === 'user' ? m.text : <Markdown text={m.text} />}
+                          {m.cutShort && i === messages.length - 1 && !aiLoading && (
+                            <button onClick={() => sendMessage('Please continue exactly where you stopped.')}
+                              style={{ marginTop: 10, fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 20, border: '1px solid var(--green-m)', background: 'var(--white)', color: 'var(--green)', cursor: 'pointer' }}>
+                              Continue ↓
+                            </button>
+                          )}
+                        </div>
                       </div>
                     ))}
                     {aiLoading && <div style={{ display: 'flex' }}><div style={{ padding: '11px 15px', borderRadius: '16px 16px 16px 4px', background: 'var(--green-p)', fontSize: 13, color: 'var(--ink2)' }}>Thinking...</div></div>}

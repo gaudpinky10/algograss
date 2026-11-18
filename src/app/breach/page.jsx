@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
+import Markdown, { markdownToPlain } from '@/components/Markdown'
 
 const S = {
   page: { minHeight: '100vh', background: '#06060F', padding: '40px 20px', fontFamily: "'Segoe UI', sans-serif" },
@@ -19,8 +20,17 @@ const S = {
   check: { display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 12 },
   checkIcon: { fontSize: 16, flexShrink: 0, marginTop: 1 },
   checkText: { fontSize: 14, color: '#CBD5E1', lineHeight: 1.5 },
-  letter: { background: '#06060F', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 12, padding: 24, color: '#CBD5E1', fontSize: 13, lineHeight: 1.8, whiteSpace: 'pre-wrap', fontFamily: 'Georgia, serif' },
+  letter: { background: '#06060F', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 12, padding: 24, color: '#CBD5E1', fontSize: 14, lineHeight: 1.7 },
 }
+
+// The current local time in the format a datetime-local input uses (YYYY-MM-DDTHH:MM)
+function nowLocalInput() {
+  const d = new Date()
+  d.setSeconds(0, 0)
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16)
+}
+// You cannot become aware of a breach in the future; allow a minute for clock drift
+const isFuture = value => !!value && new Date(value).getTime() > Date.now() + 60000
 
 const DATA_TYPES = ['Names','Email addresses','Financial data','Health data','Passwords','Location data','Phone numbers',"Children's data",'Biometric data','Criminal records']
 
@@ -40,6 +50,7 @@ function Countdown({ breachDateTime }) {
   }, [breachDateTime])
 
   if (!breachDateTime) return <p style={{ color: '#475569', fontSize: 14 }}>Enter breach discovery date/time above to start the countdown</p>
+  if (isFuture(breachDateTime)) return <p style={{ color: '#F59E0B', fontSize: 14 }}>The date you became aware can't be in the future. Enter when you actually found out about the breach.</p>
   if (remaining === null) return null
 
   if (remaining <= 0) {
@@ -77,6 +88,18 @@ function Countdown({ breachDateTime }) {
 
 export default function BreachPage() {
   const [breachDate, setBreachDate] = useState('')
+  const [dateError, setDateError] = useState('')
+  const [maxDate, setMaxDate] = useState('')
+  useEffect(() => {
+    setMaxDate(nowLocalInput())
+    const t = setInterval(() => setMaxDate(nowLocalInput()), 30000)
+    return () => clearInterval(t)
+  }, [])
+  const onDateChange = value => {
+    if (isFuture(value)) { setDateError("The date you became aware can't be in the future."); setBreachDate(''); return }
+    setDateError('')
+    setBreachDate(value)
+  }
   const [form, setForm] = useState({ breachDescription: '', dataTypes: [], individualsAffected: '', consequences: '', measuresTaken: '', controllerName: '', dpoContact: '' })
   const [letter, setLetter] = useState('')
   const [loading, setLoading] = useState(false)
@@ -97,6 +120,7 @@ export default function BreachPage() {
 
   const generate = async () => {
     if (!form.breachDescription.trim()) return setError('Please describe the breach')
+    if (isFuture(breachDate)) return setError("The date you became aware can't be in the future.")
     setLoading(true); setError('')
     const res = await fetch('/api/breach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, breachDate: breachDate ? new Date(breachDate).toISOString() : '' }) })
     const data = await res.json()
@@ -106,7 +130,7 @@ export default function BreachPage() {
     setTimeout(() => letterRef.current?.scrollIntoView({ behavior: 'smooth' }), 100)
   }
 
-  const copy = () => { navigator.clipboard.writeText(letter); }
+  const copy = () => { navigator.clipboard?.writeText(markdownToPlain(letter)) }
 
   return (
     <div style={S.page}>
@@ -122,7 +146,8 @@ export default function BreachPage() {
           <div style={S.cardTitle}>⏱️ 72-Hour Countdown</div>
           <div style={S.row}>
             <label style={S.label}>When did you become aware of the breach?</label>
-            <input type="datetime-local" style={S.input} value={breachDate} onChange={e => setBreachDate(e.target.value)} />
+            <input type="datetime-local" style={S.input} value={breachDate} max={maxDate || undefined} onChange={e => onDateChange(e.target.value)} aria-invalid={!!dateError} />
+            {dateError && <p role="alert" style={{ color: '#F59E0B', fontSize: 13, margin: '8px 0 0' }}>{dateError}</p>}
           </div>
           <Countdown breachDateTime={breachDate} />
         </div>
@@ -200,15 +225,23 @@ export default function BreachPage() {
 
         {/* Generated Letter */}
         {letter && (
-          <div style={S.card} ref={letterRef}>
+          <div style={S.card} ref={letterRef} id="breach-report">
+            <style>{`@media print {
+              body * { visibility: hidden !important; }
+              #breach-report, #breach-report * { visibility: visible !important; }
+              #breach-report { position: absolute; left: 0; top: 0; width: 100%; background: #fff !important; border: 0 !important; padding: 0 !important; }
+              #breach-report .breach-doc { background: #fff !important; color: #000 !important; border: 0 !important; padding: 0 !important; font-size: 12pt; }
+              #breach-report .no-print { display: none !important; }
+              #breach-report .md-placeholder { background: #fde68a !important; }
+            }`}</style>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
               <div style={S.cardTitle}>📄 Breach assessment and ICO report</div>
-              <div style={{ display: 'flex', gap: 8 }}>
+              <div className="no-print" style={{ display: 'flex', gap: 8 }}>
                 <button onClick={copy} style={S.btnOutline}>📋 Copy</button>
                 <button onClick={() => window.print()} style={S.btnOutline}>🖨️ Print</button>
               </div>
             </div>
-            <div style={S.letter}>{letter}</div>
+            <div className="breach-doc" style={S.letter}><Markdown text={letter} breaks /></div>
             <p style={{ color: '#475569', fontSize: 12, marginTop: 12 }}>AI-generated guidance, not legal advice. Check the details before you submit them through the ICO's online form, and take advice if you're unsure whether to report.</p>
           </div>
         )}

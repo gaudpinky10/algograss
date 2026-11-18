@@ -18,6 +18,8 @@ export async function POST(request) {
   // 72 hours from when they became aware, worked out here
   const aware = breachDate ? new Date(breachDate) : null
   const awareOk = aware && !isNaN(aware)
+  // You cannot become aware of a breach in the future (a minute allowed for clock drift)
+  if (awareOk && aware.getTime() > Date.now() + 60000) return NextResponse.json({ error: "The date you became aware of the breach can't be in the future." }, { status: 400 })
   const reportBy = awareOk ? new Date(aware.getTime() + 72 * 3600e3) : null
   const overdue = reportBy && reportBy < new Date()
 
