@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Markdown, { markdownToPlain } from '@/components/Markdown'
 import { useRouter } from 'next/navigation'
 
 const CHANNELS = [
@@ -195,10 +196,10 @@ export default function ComplaintPage() {
                 <div style={{ background: 'var(--green-p)', border: '1px solid var(--green-m)', borderRadius: 12, padding: '16px 18px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                     <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--green)' }}>📧 Draft Response Email</div>
-                    <button onClick={() => navigator.clipboard?.writeText(result.templateResponse)}
+                    <button onClick={() => navigator.clipboard?.writeText(markdownToPlain(result.templateResponse))}
                       style={{ fontSize: 11, padding: '5px 10px', borderRadius: 6, border: '1px solid var(--green-m)', background: 'var(--white)', color: 'var(--green)', cursor: 'pointer' }}>Copy</button>
                   </div>
-                  <pre style={{ fontSize: 12, color: 'var(--ink)', lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'break-word', background: 'transparent', margin: 0 }}>{result.templateResponse}</pre>
+                  <div style={{ fontSize: 13, color: 'var(--ink)', lineHeight: 1.7, wordBreak: 'break-word' }}><Markdown text={result.templateResponse} breaks /></div>
                 </div>
 
                 <div style={{ display: 'flex', gap: 8 }}>

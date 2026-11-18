@@ -134,7 +134,7 @@ export async function POST(request) {
     const up = await streamClaude({
       system: systemPrompt,
       messages,
-      maxTokens: 900,
+      maxTokens: 1500,
       model: process.env.AI_CHAT_MODEL || 'claude-haiku-5-5',
     })
     if (!up.ok) {
@@ -151,6 +151,8 @@ export async function POST(request) {
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`))
           }
         } catch {}
+        // Tell the page the answer ran out of room, so it can offer to continue
+        if (up.stopReason?.() === 'max_tokens') controller.enqueue(encoder.encode(`data: ${JSON.stringify({ truncated: true })}\n\n`))
         controller.enqueue(encoder.encode(`data: [DONE]\n\n`))
         controller.close()
 

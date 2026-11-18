@@ -1,4 +1,4 @@
-import { askClaude } from '@/lib/ai'
+import { askClaude, CUT_SHORT_NOTE } from '@/lib/ai'
 import { UK_DATA_FACTS, HONESTY_RULES, todayUK } from '@/lib/ukDataFacts'
 import { currentUser, allowAiUse } from '@/lib/toolGuard'
 
@@ -10,6 +10,12 @@ ${UK_DATA_FACTS}
 
 ${HONESTY_RULES}`
 
+// Long answers can take two model calls (the answer, then the rest of it)
+export const maxDuration = 120
+
+// Shown when an answer is still incomplete; the dashboard offers a Continue button for it
+const CHAT_CUT_SHORT = '[This answer was cut short. Select Continue to get the rest.]'
+
 export async function POST(request) {
   try {
     const { messages } = await request.json()
@@ -19,13 +25,16 @@ export async function POST(request) {
     // Only the recent conversation is sent, and long messages are trimmed
     const recent = (Array.isArray(messages) ? messages : []).slice(-20).map(m => ({ ...m, content: String(m?.content || '').slice(0, 8000) }))
 
-    const reply = await askClaude({
+    const answer = await askClaude({
       system: SYSTEM_PROMPT + `\n\nToday's date is ${todayUK()}.`,
       messages: recent,
-      maxTokens: 1500,
+      maxTokens: 2500,
+      continuations: 1,
     })
+    const cutShort = answer.endsWith(CUT_SHORT_NOTE)
+    const reply = cutShort ? answer.slice(0, -CUT_SHORT_NOTE.length) + CHAT_CUT_SHORT : answer
 
-    return Response.json({ reply })
+    return Response.json({ reply, cutShort })
   } catch (err) {
     if (err.status === 503) {
       return Response.json({ reply: 'The AI assistant needs an ANTHROPIC_API_KEY configured in Vercel Environment Variables.' })

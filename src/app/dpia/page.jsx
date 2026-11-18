@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Markdown from '@/components/Markdown'
 import { useRouter } from 'next/navigation'
 
 const STEPS = [
@@ -293,7 +294,7 @@ export default function DpiaPage() {
               ) : (
                 <div>
                   <div style={{background:'rgba(139,92,246,0.06)',border:'1px solid rgba(139,92,246,0.2)',borderRadius:12,padding:'20px',marginBottom:16,maxHeight:320,overflowY:'auto'}}>
-                    <pre style={{fontSize:12,color:'var(--ink2)',lineHeight:1.7,whiteSpace:'pre-wrap',fontFamily:'inherit'}}>{result}</pre>
+                    <div style={{fontSize:13,color:'var(--ink)',lineHeight:1.7}}><Markdown text={result} breaks /></div>
                   </div>
                   <div style={{display:'flex',gap:10}}>
                     <button onClick={downloadDPIA} className="btn btn-primary" style={{flex:1,fontSize:14}}>⬇ Download DPIA (.txt)</button>

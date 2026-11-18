@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
+import Markdown from '@/components/Markdown'
 import { useRouter } from 'next/navigation'
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
@@ -206,7 +207,7 @@ const S = {
   btn:       { padding:'6px 14px', borderRadius:6, border:'1px solid rgba(139,92,246,0.4)', background:'rgba(139,92,246,0.08)', color:'var(--accent)', fontSize:12, cursor:'pointer', fontWeight:500 },
   btnSm:     { padding:'4px 10px', borderRadius:6, border:'1px solid rgba(255,255,255,0.09)', background:'transparent', color:'#94A3B8', fontSize:11, cursor:'pointer' },
   btnDanger: { padding:'4px 10px', borderRadius:6, border:'1px solid rgba(239,68,68,0.3)', background:'transparent', color:'#EF4444', fontSize:11, cursor:'pointer' },
-  aiBox:     { background:'rgba(139,92,246,0.06)', border:'1px solid rgba(139,92,246,0.2)', borderRadius:8, padding:14, marginTop:12, fontSize:13, lineHeight:1.8, color:'#CBD5E1', whiteSpace:'pre-wrap' },
+  aiBox:     { background:'rgba(139,92,246,0.06)', border:'1px solid rgba(139,92,246,0.2)', borderRadius:8, padding:14, marginTop:12, fontSize:13, lineHeight:1.7, color:'#CBD5E1' },
   tag:   c => ({ display:'inline-block', padding:'2px 8px', borderRadius:4, fontSize:11, fontWeight:600, background:`${c}22`, color:c, border:`1px solid ${c}44`, marginRight:4 }),
   link:      { color:'var(--accent)', textDecoration:'none', fontSize:13, fontWeight:500 },
   grid2:     { display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(310px,1fr))', gap:14 },
@@ -485,7 +486,7 @@ ${CYBER_CONTROLS.filter(c=>(grcState.cyber?.[c.id]||'Not Started')==='Not Starte
                       <button style={S.btn} onClick={() => getSuggestion(ctrl, framework)}>
                         {loadingAI[ctrl.id] ? '⏳ Loading…' : suggestions[ctrl.id] ? '✕ Hide AI Advice' : '🤖 Get AI Advice'}
                       </button>
-                      {suggestions[ctrl.id] && <div style={S.aiBox}>{suggestions[ctrl.id]}</div>}
+                      {suggestions[ctrl.id] && <div style={S.aiBox}><Markdown text={suggestions[ctrl.id]} breaks /></div>}
                     </div>
                   )}
                 </div>

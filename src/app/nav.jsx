@@ -34,7 +34,10 @@ function getUser() {
     const cookies = document.cookie.split(';').map(c => c.trim())
     const cookie = cookies.find(c => c.startsWith('algograss_user='))
     if (!cookie) return null
-    return JSON.parse(atob(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
+    const u = JSON.parse(atob(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
+    // An expired session is signed out, so don't show the profile for it
+    if (!u?.email || (typeof u.exp === 'number' && Date.now() > u.exp)) return null
+    return u
   } catch { return null }
 }
 
@@ -62,10 +65,19 @@ export default function Nav() {
     function handleClick(e) {
       if (menuRef.current && !menuRef.current.contains(e.target)) setToolsOpen(false)
     }
-    function handleScroll() { setScrolled(window.scrollY > 20) }
+    // Scrolling the page closes the Tools menu, so it never sits over the content
+    function handleScroll() { setScrolled(window.scrollY > 20); setToolsOpen(false) }
+    function handleKey(e) { if (e.key === 'Escape') setToolsOpen(false) }
     document.addEventListener('mousedown', handleClick)
-    window.addEventListener('scroll', handleScroll)
-    return () => { document.removeEventListener('mousedown', handleClick); window.removeEventListener('scroll', handleScroll) }
+    document.addEventListener('touchstart', handleClick, { passive: true })
+    document.addEventListener('keydown', handleKey)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      document.removeEventListener('mousedown', handleClick)
+      document.removeEventListener('touchstart', handleClick)
+      document.removeEventListener('keydown', handleKey)
+      window.removeEventListener('scroll', handleScroll)
+    }
   }, [])
 
   // Close everything on route change
@@ -98,7 +110,7 @@ export default function Nav() {
         <ul className="nav-links" style={{display:'flex', alignItems:'center', gap:4, listStyle:'none', margin:0, padding:0}}>
           {/* Tools dropdown */}
           <li ref={menuRef} style={{position:'relative'}}>
-            <button onClick={()=>setToolsOpen(o=>!o)} style={{
+            <button onClick={()=>setToolsOpen(o=>!o)} aria-expanded={toolsOpen} aria-haspopup="true" style={{
               background:toolsOpen?'rgba(139,92,246,0.1)':'none',
               border:'1px solid', borderColor:toolsOpen?'rgba(139,92,246,0.3)':'transparent',
               cursor:'pointer', fontSize:14, color:toolsOpen?'#9B7BFA':'#94A3B8',
@@ -113,15 +125,17 @@ export default function Nav() {
               </svg>
             </button>
             {toolsOpen && (
-              <div style={{
+              <div role="menu" style={{
                 position:'absolute', top:'calc(100% + 8px)', left:0,
-                background:'rgba(9,9,20,0.97)', border:'1px solid rgba(255,255,255,0.09)',
+                background:'rgba(9,9,20,0.98)', border:'1px solid rgba(255,255,255,0.09)',
                 borderRadius:16, padding:'8px',
                 boxShadow:'0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(139,92,246,0.12)',
-                width:320, zIndex:200, backdropFilter:'blur(20px)',
+                width:'min(640px, calc(100vw - 32px))', zIndex:1000, backdropFilter:'blur(20px)',
+                display:'grid', gridTemplateColumns:'repeat(2, minmax(0, 1fr))', gap:2,
+                maxHeight:'calc(100vh - 88px)', overflowY:'auto', overscrollBehavior:'contain',
               }}>
                 {TOOLS.map(t=>(
-                  <a key={t.href} href={t.href} onClick={()=>setToolsOpen(false)} style={{
+                  <a key={t.href} href={t.href} role="menuitem" onClick={()=>setToolsOpen(false)} style={{
                     display:'flex', alignItems:'flex-start', gap:12,
                     padding:'10px 12px', borderRadius:10, textDecoration:'none',
                     background:path===t.href?'rgba(139,92,246,0.08)':'transparent', transition:'background .15s',

@@ -32,7 +32,7 @@ function TypingDots() {
   )
 }
 
-function Message({ msg }) {
+function Message({ msg, onContinue }) {
   const isUser = msg.role === 'user'
   return (
     <div style={{ display: 'flex', justifyContent: isUser ? 'flex-end' : 'flex-start', marginBottom: 16, gap: 10, alignItems: 'flex-start' }}>
@@ -57,6 +57,14 @@ function Message({ msg }) {
       }}>
         {isUser ? msg.content : <Markdown text={msg.content} />}
         {msg.streaming && <TypingDots />}
+        {msg.truncated && onContinue && (
+          <div style={{ marginTop: 10 }}>
+            <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 8 }}>This answer was cut short.</div>
+            <button onClick={onContinue} style={{ fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 20, border: '1px solid rgba(155,123,250,0.4)', background: 'rgba(155,123,250,0.12)', color: '#C4B5FD', cursor: 'pointer' }}>
+              Continue ↓
+            </button>
+          </div>
+        )}
       </div>
       {isUser && (
         <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0, marginTop: 2 }}>
@@ -129,6 +137,7 @@ export default function AlgoGrassAI() {
       const reader = res.body.getReader()
       const decoder = new TextDecoder()
       let full = ''
+      let truncated = false
 
       while (true) {
         const { done, value } = await reader.read()
@@ -141,6 +150,7 @@ export default function AlgoGrassAI() {
             if (data === '[DONE]') break
             try {
               const parsed = JSON.parse(data)
+              if (parsed.truncated) truncated = true
               if (parsed.text) {
                 full += parsed.text
                 setMessages(m => [...m.slice(0,-1), { role: 'assistant', content: full, streaming: true }])
@@ -149,7 +159,7 @@ export default function AlgoGrassAI() {
           }
         }
       }
-      setMessages(m => [...m.slice(0,-1), { role: 'assistant', content: full || 'Sorry, I could not get a response just now. Please try again in a moment.' }])
+      setMessages(m => [...m.slice(0,-1), { role: 'assistant', content: full || 'Sorry, I could not get a response just now. Please try again in a moment.', truncated: truncated && !!full }])
     } catch (err) {
       if (err.name !== 'AbortError') {
         setMessages(m => [...m.slice(0,-1), { role: 'assistant', content: 'Sorry, something went wrong. Please try again.' }])
@@ -242,7 +252,7 @@ export default function AlgoGrassAI() {
         )}
 
         {/* Chat messages */}
-        {messages.map((msg, i) => <Message key={i} msg={msg} />)}
+        {messages.map((msg, i) => <Message key={i} msg={msg} onContinue={i === messages.length - 1 && !loading ? () => send('Please continue exactly where you stopped.') : null} />)}
         <div ref={bottomRef} />
       </div>
 

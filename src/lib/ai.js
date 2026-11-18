@@ -18,6 +18,26 @@ export function normaliseMessages(messages = []) {
   return cleaned
 }
 
+// Added to an answer that still ran out of room after any continuations
+export const CUT_SHORT_NOTE = '[This answer was cut short. Please try again, or ask for less at once.]'
+
+// Where to stop a cut-off answer before asking for the rest: the last line break,
+// or failing that the last full sentence, so the join never splits a word
+function cleanCut(text) {
+  const nl = text.lastIndexOf('\n')
+  if (nl > text.length * 0.6) {
+    const before = text.slice(0, nl)
+    // Keep a paragraph break as a paragraph break
+    return { kept: before.trimEnd(), joiner: /\n\s*$/.test(before) ? '\n\n' : '\n' }
+  }
+  const m = text.match(/^[\s\S]*[.!?:](?=\s)/)
+  if (m && m[0].length > text.length * 0.6) return { kept: m[0], joiner: ' ' }
+  // Otherwise at least drop the half-finished last word
+  const sp = text.trimEnd().lastIndexOf(' ')
+  if (sp > text.length * 0.6) return { kept: text.slice(0, sp), joiner: ' ' }
+  return { kept: text.trimEnd(), joiner: ' ' }
+}
+
 export async function askClaude({
   system,
   messages,
@@ -25,6 +45,7 @@ export async function askClaude({
   maxTokens = 2048,
   temperature, // accepted for backwards compatibility; not sent — deprecated on current models
   model = DEFAULT_MODEL,
+  continuations = 0, // if the answer hits maxTokens, ask for the rest this many times
 }) {
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) {
@@ -42,7 +63,7 @@ export async function askClaude({
 
   // One retry when the API is busy or briefly unreachable, so a passing
   // hiccup doesn't become an error for the user
-  const send = () => fetch(ANTHROPIC_URL, {
+  const send = (msgs = finalMessages) => fetch(ANTHROPIC_URL, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
@@ -53,38 +74,60 @@ export async function askClaude({
       model,
       max_tokens: maxTokens,
       system,
-      messages: finalMessages,
+      messages: msgs,
     }),
   })
   const busy = st => st === 429 || st === 529 || st >= 500
-  let res
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try { res = await send() } catch (e) { if (attempt) throw e; await new Promise(r => setTimeout(r, 1500)); continue }
-    if (!busy(res.status) || attempt) break
-    const wait = Math.min(5000, Math.max(1000, (parseFloat(res.headers.get('retry-after')) || 2) * 1000))
-    await new Promise(r => setTimeout(r, wait))
+  // One call, with a single retry if the API is busy. Returns { text, stopReason }.
+  async function callOnce(msgs) {
+    let res
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try { res = await send(msgs) } catch (e) { if (attempt) throw e; await new Promise(r => setTimeout(r, 1500)); continue }
+      if (!busy(res.status) || attempt) break
+      const wait = Math.min(5000, Math.max(1000, (parseFloat(res.headers.get('retry-after')) || 2) * 1000))
+      await new Promise(r => setTimeout(r, wait))
+    }
+
+    if (!res.ok) {
+      let detail = ''
+      try {
+        const j = await res.json()
+        detail = j?.error?.message || ''
+      } catch {}
+      const e = new Error(detail || `AI request failed (${res.status})`)
+      e.status = res.status
+      throw e
+    }
+
+    const data = await res.json()
+    const text = (data.content || [])
+      .filter(b => b.type === 'text')
+      .map(b => b.text)
+      .join('')
+      .trim()
+    return { text, stopReason: data.stop_reason }
   }
 
-  if (!res.ok) {
-    let detail = ''
+  let { text, stopReason } = await callOnce(finalMessages)
+
+  // Ran out of room: ask for the rest, picking up from a clean break
+  for (let i = 0; i < continuations && stopReason === 'max_tokens' && text; i++) {
+    const { kept, joiner } = cleanCut(text)
+    let next
     try {
-      const j = await res.json()
-      detail = j?.error?.message || ''
-    } catch {}
-    const e = new Error(detail || `AI request failed (${res.status})`)
-    e.status = res.status
-    throw e
+      next = await callOnce([
+        ...finalMessages,
+        { role: 'assistant', content: kept },
+        { role: 'user', content: 'Continue exactly where your last message stopped. Do not repeat anything, and do not add an introduction.' },
+      ])
+    } catch { break } // keep what we have; the note below says it is incomplete
+    if (!next.text) break
+    text = kept + joiner + next.text
+    stopReason = next.stopReason
   }
-
-  const data = await res.json()
-  const text = (data.content || [])
-    .filter(b => b.type === 'text')
-    .map(b => b.text)
-    .join('')
-    .trim()
 
   // Never pass off a cut-short answer as complete
-  if (data.stop_reason === 'max_tokens' && text) return text + '\n\n[This answer was cut short. Please try again, or ask for less at once.]'
+  if (stopReason === 'max_tokens' && text) return text + '\n\n' + CUT_SHORT_NOTE
   return text || 'No response received.'
 }
 
@@ -149,6 +192,8 @@ export async function streamClaude({ system, messages, maxTokens = 900, model })
     return { ok: false, status: res.status || 500, error: detail || `AI request failed (${res.status})` }
   }
 
+  // Set from the stream's message_delta event; 'max_tokens' means the answer was cut off
+  let stopReason = null
   async function* deltas() {
     const reader = res.body.getReader()
     const decoder = new TextDecoder()
@@ -164,9 +209,10 @@ export async function streamClaude({ system, messages, maxTokens = 900, model })
         try {
           const ev = JSON.parse(line.slice(5).trim())
           if (ev.type === 'content_block_delta' && ev.delta?.type === 'text_delta' && ev.delta.text) yield ev.delta.text
+          else if (ev.type === 'message_delta' && ev.delta?.stop_reason) stopReason = ev.delta.stop_reason
         } catch {}
       }
     }
   }
-  return { ok: true, body: deltas() }
+  return { ok: true, body: deltas(), stopReason: () => stopReason }
 }

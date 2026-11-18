@@ -1,6 +1,19 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { SCAN_HANDOFF_KEY } from '@/lib/scanHandoff'
+
+// The signed-in user from the session cookie (same cookie the nav reads), or null if
+// there is none or it has expired
+function getUser() {
+  try {
+    const c = document.cookie.split(';').map(x => x.trim()).find(x => x.startsWith('algograss_user='))
+    if (!c) return null
+    const u = JSON.parse(atob(decodeURIComponent(c.slice(c.indexOf('=') + 1).trim())))
+    if (!u?.email || (typeof u.exp === 'number' && Date.now() > u.exp)) return null
+    return u
+  } catch { return null }
+}
 
 // Show the evidence behind a finding, unless the description already quotes it
 const showEvidence = iss => !!iss.evidence && !String(iss.desc || '').includes(String(iss.evidence).slice(0, 60))
@@ -16,6 +29,16 @@ function ScanPageInner() {
   const [email, setEmail]   = useState('')
   const [emailStatus, setEmailStatus] = useState('idle') // idle|sending|sent|error
   const [emailError, setEmailError]   = useState('')
+  const [user, setUser] = useState(null)
+  useEffect(() => { setUser(getUser()) }, [])
+
+  // Signed in: go to the dashboard's action plan for this scan. Signed out: sign up first.
+  function fixIssues(e) {
+    if (!user || !result) return // the link's /signup href handles signed-out visitors
+    e.preventDefault()
+    try { sessionStorage.setItem(SCAN_HANDOFF_KEY, JSON.stringify(result)) } catch {}
+    router.push('/dashboard?from=scan&url=' + encodeURIComponent(result.url || ''))
+  }
 
   // Auto-populate and run scan if URL came from homepage or another page
   useEffect(() => {
@@ -316,7 +339,7 @@ function ScanPageInner() {
                   <span>⬇</span> Download PDF
                 </button>
                 <button onClick={()=>setStatus('idle')} className="btn btn-secondary" style={{fontSize:13}}>Scan another site</button>
-                <a href="/signup" className="btn btn-primary" style={{fontSize:13}}>Fix issues →</a>
+                <a href={user ? '/dashboard' : '/signup'} onClick={fixIssues} className="btn btn-primary" style={{fontSize:13}}>Fix issues →</a>
               </div>
             </div>
 

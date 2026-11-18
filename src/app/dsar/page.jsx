@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Markdown from '@/components/Markdown'
 import { useRouter } from 'next/navigation'
 
 
@@ -116,7 +117,7 @@ export default function DsarPage() {
                     <div style={{ fontSize: 12, color: 'var(--ink2)' }}>If complex or one of several requests, you can extend to {dates.extendedDeadline}, but you must tell them within the first month.</div>
                   </div>
                 )}
-                <pre style={{ fontSize: 13, color: "var(--ink)", lineHeight: 1.8, whiteSpace: 'pre-wrap', wordBreak: 'break-word', maxHeight: 600, overflowY: 'auto' }}>{result}</pre>
+                <div style={{ fontSize: 13, color: "var(--ink)", lineHeight: 1.75, wordBreak: 'break-word', maxHeight: 600, overflowY: 'auto' }}><Markdown text={result} breaks /></div>
                 <p style={{ fontSize: 11, color: 'var(--ink3)', marginTop: 10 }}>AI-generated guidance, not legal advice. Check it before you send anything, and take advice before refusing a request or relying on an exemption.</p>
               </div>
             )}
