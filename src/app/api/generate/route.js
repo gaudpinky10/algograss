@@ -2,6 +2,9 @@ import { askClaude } from '@/lib/ai'
 import { toolSystem } from '@/lib/ukDataFacts'
 import { currentUser, allowAiUse, tooMany, aiFailed } from '@/lib/toolGuard'
 
+// AI answers can take a while; without this the host may stop the request early
+export const maxDuration = 120
+
 const DOC_ROLE = 'You are the AlgoGrass document assistant. You draft clear, accurate UK data protection documents for small businesses, in plain English. You never invent facts about the business: anything you weren\'t told goes in an [INSERT: ...] placeholder.'
 
 export async function POST(request) {

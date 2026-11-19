@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { b64utf8 } from '@/lib/clientSession'
 
 const S = {
   bg: '#06060F', surface: '#0D0D1E', border: 'rgba(255,255,255,0.09)',
@@ -18,7 +19,7 @@ export default function ReferralPage() {
     try {
       const c = document.cookie.split(';').find(x => x.trim().startsWith('algograss_user='))
       if (c) {
-        const u = JSON.parse(atob(decodeURIComponent(c.slice(c.indexOf('=')+1).trim())))
+        const u = JSON.parse(b64utf8(decodeURIComponent(c.slice(c.indexOf('=')+1).trim())))
         setUser(u)
         loadStats(u.email)
       } else setLoading(false)

@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { getCollection } from '@/lib/dbHelpers'
 
 export const runtime = 'nodejs'
+// Run on every request: a build-time copy would show a frozen count
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {

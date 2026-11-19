@@ -3,6 +3,9 @@ import { toolSystem } from '@/lib/ukDataFacts'
 import { trackActivity } from '@/lib/dbHelpers'
 import { currentUser, allowAiUse } from '@/lib/toolGuard'
 
+// AI answers can take a while; without this the host may stop the request early
+export const maxDuration = 60
+
 export async function POST(request) {
   const { controlId, controlName, status, category } = await request.json()
   if (!controlId) return Response.json({ error: 'controlId required' }, { status: 400 })

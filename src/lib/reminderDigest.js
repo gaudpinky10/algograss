@@ -9,12 +9,14 @@ export async function sendReminderDigests() {
   const [users, reminders] = await Promise.all([getCollection('users'), getCollection('reminders')])
   if (!users || !reminders) return { ...out, skipped: 'db unavailable' }
   const soon = new Date(Date.now() + 7 * 864e5)
-  const opted = await users.find({ reminderDigest: true }, { projection: { email: 1, name: 1 } }).limit(500).toArray()
+  const today = new Date().toISOString().slice(0, 10)
+  const opted = await users.find({ reminderDigest: true, reminderDigestSentOn: { $ne: today } }, { projection: { email: 1, name: 1 } }).limit(500).toArray()
   for (const u of opted) {
     try {
       const due = await reminders.find({ userEmail: u.email, completed: { $ne: true }, dueDate: { $lte: soon } }).sort({ dueDate: 1 }).limit(30).toArray()
       if (!due.length) continue
       await sendReminderDigestEmail(u.name || 'there', u.email, due)
+      await users.updateOne({ _id: u._id }, { $set: { reminderDigestSentOn: today } })
       out.digests++
       await new Promise(r => setTimeout(r, 200))
     } catch (e) { out.errors.push(`${u.email}: ${e.message}`) }

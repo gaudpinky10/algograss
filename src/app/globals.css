@@ -497,7 +497,47 @@ select option{background:#0D0D1E;color:var(--ink)}
   .nav-hamburger { display:flex !important; }
   .nav-root { padding:0 20px !important; }
 
-  /* Mobile nav drawer */
+  .blog-grid { grid-template-columns:1fr !important; }
+  .step-card { border-radius:14px !important; }
+  .pricing-grid { grid-template-columns:1fr !important; max-width:400px; margin:0 auto; }
+  .footer-grid { grid-template-columns:1fr !important; gap:32px !important; }
+  .dashboard-layout { flex-direction:column !important; }
+  .dashboard-sidebar { width:100% !important; height:auto !important; position:static !important; border-right:none !important; border-bottom:1px solid var(--border) !important; }
+  .table-wrap { overflow-x:auto !important; }
+  .form-row { flex-direction:column !important; gap:12px !important; }
+  .scan-form { flex-direction:column !important; gap:10px !important; }
+  .scan-form input, .scan-form button { width:100% !important; border-radius:10px !important; }
+  .particle-canvas { display:none !important; }
+  .tilt-card { transform:none !important; transition:none !important; }
+  .tilt-card:hover { transform:none !important; box-shadow:none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   SMALL MOBILE — max-width: 480px
+═══════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .wrap { padding-left:16px !important; padding-right:16px !important; }
+  .btn-lg { padding:12px 20px !important; font-size:14px !important; }
+  .card   { padding:18px !important; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   NAV ON LAPTOP WIDTHS — keep every item on one line
+   (logged-in, the links used to wrap onto two lines below ~1400px)
+═══════════════════════════════════════════════════════ */
+.nav-links a, .nav-links button { white-space: nowrap; }
+@media (max-width: 1400px) and (min-width: 769px) {
+  .nav-root { padding: 0 20px !important; }
+  .nav-links { gap: 0 !important; }
+  .nav-links > li > a, .nav-links > li > button { padding: 6px 8px !important; font-size: 13px !important; }
+}
+/* Too narrow for every link: use the menu button, as on phones */
+@media (max-width: 1180px) and (min-width: 769px) {
+  .nav-links { display: none !important; }
+  .nav-hamburger { display: flex !important; }
+}
+
+/* Nav drawer (opened by the menu button on phones and narrow laptops) */
   .nav-drawer {
     position:fixed;
     top:64px; left:0; right:0; bottom:0;
@@ -546,27 +586,3 @@ select option{background:#0D0D1E;color:var(--ink)}
     text-align:center;
     text-decoration:none;
   }
-
-  .blog-grid { grid-template-columns:1fr !important; }
-  .step-card { border-radius:14px !important; }
-  .pricing-grid { grid-template-columns:1fr !important; max-width:400px; margin:0 auto; }
-  .footer-grid { grid-template-columns:1fr !important; gap:32px !important; }
-  .dashboard-layout { flex-direction:column !important; }
-  .dashboard-sidebar { width:100% !important; height:auto !important; position:static !important; border-right:none !important; border-bottom:1px solid var(--border) !important; }
-  .table-wrap { overflow-x:auto !important; }
-  .form-row { flex-direction:column !important; gap:12px !important; }
-  .scan-form { flex-direction:column !important; gap:10px !important; }
-  .scan-form input, .scan-form button { width:100% !important; border-radius:10px !important; }
-  .particle-canvas { display:none !important; }
-  .tilt-card { transform:none !important; transition:none !important; }
-  .tilt-card:hover { transform:none !important; box-shadow:none !important; }
-}
-
-/* ═══════════════════════════════════════════════════════
-   SMALL MOBILE — max-width: 480px
-═══════════════════════════════════════════════════════ */
-@media (max-width: 480px) {
-  .wrap { padding-left:16px !important; padding-right:16px !important; }
-  .btn-lg { padding:12px 20px !important; font-size:14px !important; }
-  .card   { padding:18px !important; }
-}

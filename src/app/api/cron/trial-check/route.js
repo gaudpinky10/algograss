@@ -55,9 +55,12 @@ export async function GET(request) {
     }
 
     // ── Trial expired today ────────────────────────────────────────────────────
+    // Any trial that has ended and hasn't been handled yet (not only today's,
+    // so a day the job didn't run doesn't leave someone on Pro for ever)
     const justExpired = await users.find({
       plan: { $in: ['pro', 'trial'] },
-      trialEndsAt: { $gte: todayStart, $lte: todayEnd },
+      trialEndsAt: { $lte: todayEnd },
+      $or: [{ trialExpiredAt: { $exists: false } }, { $expr: { $lt: ['$trialExpiredAt', '$trialEndsAt'] } }],
     }).toArray();
 
     for (const user of justExpired) {

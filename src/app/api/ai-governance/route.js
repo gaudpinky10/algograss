@@ -2,6 +2,9 @@ import { askClaude } from '@/lib/ai'
 import { toolSystem } from '@/lib/ukDataFacts'
 import { currentUser, allowAiUse, tooMany, aiFailed } from '@/lib/toolGuard'
 
+// AI answers can take a while; without this the host may stop the request early
+export const maxDuration = 120
+
 export async function POST(request) {
   const user = currentUser()
   const { toolName, purpose, dataTypes, hasPersonalData, sharesWithThirdParty, businessName } = await request.json()

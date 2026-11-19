@@ -3,6 +3,9 @@ import { toolSystem, extractJson } from '@/lib/ukDataFacts'
 import { getCollection } from '@/lib/dbHelpers'
 import { currentUser, allowAiUse, tooMany, aiFailed } from '@/lib/toolGuard'
 
+// AI answers can take a while; without this the host may stop the request early
+export const maxDuration = 120
+
 const AREAS = {
   crm: 'customer and CRM data. Cover: lawful basis, consent records where consent is relied on, data minimisation, accuracy, retention, people\'s rights, sharing with third parties, security.',
   hr: 'HR and employee records. Cover: lawful basis for employee data, special category data and the Art. 9 / DPA 2018 Schedule 1 conditions, criminal records checks, retention, access controls, monitoring of staff, the employee privacy notice.',

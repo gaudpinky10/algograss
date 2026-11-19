@@ -1,6 +1,7 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
+import { b64utf8 } from '@/lib/clientSession'
 
 const TOOLS = [
   { href: '/scan',                 label: 'Website Scanner',        icon: '🔍', desc: 'GDPR compliance scan of any website' },
@@ -34,7 +35,7 @@ function getUser() {
     const cookies = document.cookie.split(';').map(c => c.trim())
     const cookie = cookies.find(c => c.startsWith('algograss_user='))
     if (!cookie) return null
-    const u = JSON.parse(atob(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
+    const u = JSON.parse(b64utf8(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
     // An expired session is signed out, so don't show the profile for it
     if (!u?.email || (typeof u.exp === 'number' && Date.now() > u.exp)) return null
     return u
@@ -161,8 +162,7 @@ export default function Nav() {
                 padding:'6px 12px', borderRadius:8, transition:'color .2s, background .2s',
                 background: l.highlight ? 'rgba(139,92,246,0.08)' : path===l.href?'rgba(139,92,246,0.08)':'transparent',
                 border: l.highlight ? '1px solid rgba(139,92,246,0.25)' : '1px solid transparent',
-                fontWeight: l.highlight ? 600 : 400,
-                fontWeight:path===l.href?500:400,
+                fontWeight: l.highlight ? 600 : path===l.href ? 500 : 400,
               }}
                 onMouseEnter={e=>{e.currentTarget.style.color='#9B7BFA';e.currentTarget.style.background='rgba(139,92,246,0.08)'}}
                 onMouseLeave={e=>{e.currentTarget.style.color=path===l.href?'#9B7BFA':'#94A3B8';e.currentTarget.style.background=path===l.href?'rgba(139,92,246,0.08)':'transparent'}}>

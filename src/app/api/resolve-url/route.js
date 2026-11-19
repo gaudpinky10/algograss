@@ -23,8 +23,20 @@ async function probe(url) {
 }
 
 export async function POST(request) {
-  const { input } = await request.json()
-  if (!input?.trim()) return Response.json({ error: 'Input required' }, { status: 400 })
+  const { input } = await request.json().catch(() => ({}))
+  if (typeof input !== 'string' || !input.trim()) return Response.json({ error: 'Input required' }, { status: 400 })
+
+  // A full address (with http:// or https://) is used as typed, including any
+  // subdomain, port or page path. Guessing "www." in front of it could scan a
+  // different site, or one that doesn't exist.
+  if (/^https?:\/\//i.test(input.trim())) {
+    let typed = null
+    try { typed = new URL(input.trim()) } catch {}
+    if (typed) {
+      const found = await probe(typed.href)
+      return Response.json(found ? { resolved: found } : { resolved: typed.href, fallback: true })
+    }
+  }
 
   // Normalise: strip protocol & leading www & trailing slash/path
   let clean = input.trim()

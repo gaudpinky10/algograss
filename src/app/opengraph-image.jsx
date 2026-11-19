@@ -50,20 +50,21 @@ export default function Image() {
           }}>AlgoGrass</span>
         </div>
 
-        {/* Headline */}
-        <div style={{ fontSize: 64, fontWeight: 800, color: '#0F172A', lineHeight: 1.1, marginBottom: 24 }}>
-          GDPR Compliance{'\n'}Made Simple
+        {/* Headline (two lines; the image renderer needs display:flex for more than one child,
+            and the text must be light to show on the dark background) */}
+        <div style={{ display: 'flex', flexDirection: 'column', fontSize: 64, fontWeight: 800, color: '#FFFFFF', lineHeight: 1.1, marginBottom: 24 }}>
+          <span>GDPR Compliance</span>
+          <span>Made Simple</span>
         </div>
 
         {/* Description */}
-        <div style={{ fontSize: 26, color: '#475569', lineHeight: 1.5, marginBottom: 48, maxWidth: 800 }}>
-          Free website scanner + compliance tools for UK & EU businesses.
-          60 days free — no credit card required.
+        <div style={{ display: 'flex', fontSize: 26, color: '#CBD5E1', lineHeight: 1.5, marginBottom: 48, maxWidth: 800 }}>
+          Free website scanner + compliance tools for UK & EU businesses. 60 days free, no credit card required.
         </div>
 
         {/* Badges */}
         <div style={{ display: 'flex', gap: 16 }}>
-          {['UK GDPR', 'ICO Compliant', 'Free Scanner', '14 Tools'].map(badge => (
+          {['UK GDPR', 'ICO Guidance', 'Free Scanner', '14 Tools'].map(badge => (
             <div key={badge} style={{
               padding: '10px 22px',
               borderRadius: 24,
@@ -78,7 +79,7 @@ export default function Image() {
 
         {/* URL */}
         <div style={{
-          position: 'absolute', bottom: 48, right: 96,
+          display: 'flex', position: 'absolute', bottom: 48, right: 96,
           fontSize: 22, color: '#94A3B8',
         }}>algograss.com</div>
       </div>

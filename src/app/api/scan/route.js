@@ -992,7 +992,9 @@ export async function POST(request) {
       note,
     }
 
-    ;(async () => {
+    // Saved before replying: the dashboard history and "email this report" read
+    // this record, and work left running after the response can be stopped on Vercel
+    await (async () => {
       try {
         const col = await getCollection('scans')
         if (col) ensureTtl(col, 'scannedAt', 30 * 86400) // the scan log is kept for 30 days

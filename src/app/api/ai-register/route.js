@@ -3,6 +3,9 @@ import { toolSystem, extractJson } from '@/lib/ukDataFacts'
 import { cookies } from 'next/headers';
 import { getCollection, parseUserCookie } from '@/lib/dbHelpers';
 
+// AI answers can take a while; without this the host may stop the request early
+export const maxDuration = 60
+
 async function getUserEmail() {
   try {
     const userCookie = cookies().get('algograss_user')

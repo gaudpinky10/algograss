@@ -4,6 +4,9 @@ import { toolSystem } from '@/lib/ukDataFacts'
 import { getCollection, trackActivity } from '@/lib/dbHelpers'
 import { currentUser, allowAiUse, tooMany, aiFailed } from '@/lib/toolGuard'
 
+// AI answers can take a while; without this the host may stop the request early
+export const maxDuration = 120
+
 const fmt = d => d.toLocaleString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' })
 
 // Free to use without an account (someone dealing with a breach shouldn't have
@@ -56,7 +59,8 @@ Don't claim the report is final or guaranteed to be accepted. Keep it under 1,30
   }
 
   if (user?.email) {
-    ;(async () => {
+    // Saved before replying, so it isn't cut off when the response is sent
+    await (async () => {
       try {
         const col = await getCollection('breaches')
         if (col) await col.insertOne({ userEmail: user.email, controllerName, awareAt: awareOk ? aware : null, reportBy, dataTypes, individualsAffected, createdAt: new Date() })

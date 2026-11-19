@@ -7,7 +7,7 @@ export async function GET(request) {
   if (!user?.email) return Response.json({ activities: [] })
 
   const { searchParams } = new URL(request.url)
-  const limit  = Math.min(parseInt(searchParams.get('limit') || '50'), 100)
+  const limit  = Math.min(parseInt(searchParams.get('limit') || '50') || 50, 100)
   const tool   = searchParams.get('tool') || null
 
   try {
@@ -25,6 +25,7 @@ export async function GET(request) {
 
     return Response.json({ activities, total: activities.length })
   } catch (err) {
-    return Response.json({ activities: [], error: err.message })
+    console.error('activities:', err.message)
+    return Response.json({ activities: [], error: 'Could not load activity.' })
   }
 }

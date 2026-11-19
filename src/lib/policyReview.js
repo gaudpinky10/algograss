@@ -5,7 +5,8 @@
 // Returns { ok: true, checks } or { ok: false, reason }. Callers fall back to
 // the rule-based checks whenever ok is false or a check is "unclear".
 
-const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages'
+import { ANTHROPIC_URL, messagesBody, thinkingRejected } from './ai'
+
 const MAX_POLICY_CHARS = 60000
 // Change this whenever the questions or rules below change, so saved reviews
 // of the same policy text are not reused after the change
@@ -87,12 +88,16 @@ export async function reviewPolicy(policyText, { timeoutMs = 20000, deadline = D
   const truncated = policyText.length > MAX_POLICY_CHARS
   const text = policyText.slice(0, MAX_POLICY_CHARS)
   const models = [...new Set([process.env.POLICY_REVIEW_MODEL || 'claude-sonnet-5-5', 'claude-haiku-5-5'])]
-  const body = model => JSON.stringify({
+  // Thinking is turned off (see messagesBody): it would share the 900-token
+  // budget with the answer and could leave no room for the JSON
+  let thinking = true
+  const body = model => JSON.stringify(messagesBody({
     model,
-    max_tokens: 900,
+    maxTokens: 900,
     system: SYSTEM,
     messages: [{ role: 'user', content: `Privacy policy text:\n<policy>\n${text}\n</policy>\n\n${QUESTIONS}` }],
-  })
+    thinking,
+  }))
   let reason = 'no model available'
   for (const model of models) {
     // One retry on the same model when the API is busy, if there is time
@@ -123,7 +128,13 @@ export async function reviewPolicy(policyText, { timeoutMs = 20000, deadline = D
         if (attempt === 0 && deadline - Date.now() > wait + 8000) { await sleep(wait); continue }
         break // busy: try the next model
       }
-      if (!res.ok) return { ok: false, reason: `AI ${res.status}` }
+      if (!res.ok) {
+        let detail = ''
+        try { detail = (await res.json())?.error?.message || '' } catch {}
+        // The thinking setting was refused: ask again without it
+        if (thinking && thinkingRejected(res.status, detail)) { thinking = false; attempt--; continue }
+        return { ok: false, reason: `AI ${res.status}` }
+      }
       const data = await res.json()
       const raw = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('')
       const checks = parseReview(raw, text, truncated)

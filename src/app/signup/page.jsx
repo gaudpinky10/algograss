@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation'
 function validateName(v) {
   if (!v.trim()) return 'Full name is required.'
   if (v.trim().length < 2) return 'Name must be at least 2 characters.'
-  if (!/^[a-zA-Z\s'\-]+$/.test(v.trim())) return 'Name can only contain letters, spaces, hyphens and apostrophes.'
+  // Any alphabet (José, Zoë, Siobhán, प्रिया...), plus spaces, hyphens, apostrophes and full stops
+  if (!/^[\p{L}\p{M}\s'’.\-]+$/u.test(v.trim())) return 'Name can only contain letters, spaces, hyphens and apostrophes.'
   return ''
 }
 function validateEmail(v) {
@@ -56,6 +57,7 @@ export default function SignupPage() {
   const [loading, setLoading]   = useState(false)
   const [serverError, setServerError] = useState('')
   const [exists, setExists]     = useState(false)
+  const [refCode, setRefCode]   = useState('')
 
   const strength = getStrength(form.password)
 
@@ -64,6 +66,12 @@ export default function SignupPage() {
     const params = new URLSearchParams(window.location.search)
     const email = params.get('email')
     if (email) setForm(f => ({ ...f, email }))
+    // Referral links look like /signup?ref=CODE: keep the code for this visit
+    const ref = params.get('ref')
+    try {
+      if (ref) sessionStorage.setItem('ag_ref', ref)
+      setRefCode(ref || sessionStorage.getItem('ag_ref') || '')
+    } catch { if (ref) setRefCode(ref) }
   }, [])
 
   function setField(k, v) {
@@ -104,7 +112,7 @@ export default function SignupPage() {
       const res  = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, plan: 'free' }),
+        body: JSON.stringify({ ...form, plan: 'free', ...(refCode ? { refCode } : {}) }),
       })
       const data = await res.json()
       if (data.error) {
@@ -145,7 +153,7 @@ export default function SignupPage() {
         <div style={{ background: 'rgba(248,250,252,0.85)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: '28px 28px', backdropFilter: 'blur(20px)', boxShadow: '0 32px 80px rgba(255,255,255,0.09), 0 0 0 1px rgba(139,92,246,0.06)' }}>
 
           {/* Google OAuth */}
-          <a href="/api/auth/google" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, width: '100%', padding: '12px 20px', borderRadius: 12, background: 'rgba(15,23,42,0.05)', border: '1px solid #E2E8F0', color: '#0F172A', fontSize: 14, fontWeight: 500, textDecoration: 'none', transition: 'all .2s', marginBottom: 20, boxSizing: 'border-box' }}
+          <a href={refCode ? `/api/auth/google?ref=${encodeURIComponent(refCode)}` : '/api/auth/google'} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, width: '100%', padding: '12px 20px', borderRadius: 12, background: 'rgba(15,23,42,0.05)', border: '1px solid #E2E8F0', color: '#0F172A', fontSize: 14, fontWeight: 500, textDecoration: 'none', transition: 'all .2s', marginBottom: 20, boxSizing: 'border-box' }}
             onMouseEnter={e => { e.currentTarget.style.background = '#F1F5F9'; e.currentTarget.style.borderColor = '#94A3B8' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.05)'; e.currentTarget.style.borderColor = '#E2E8F0' }}>
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">

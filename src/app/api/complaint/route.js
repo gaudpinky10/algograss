@@ -3,6 +3,9 @@ import { toolSystem, extractJson, addCalendarMonths, addDays, ukDay, formatUK } 
 import { getCollection, trackActivity } from '@/lib/dbHelpers'
 import { currentUser, allowAiUse, tooMany, aiFailed } from '@/lib/toolGuard'
 
+// AI answers can take a while; without this the host may stop the request early
+export const maxDuration = 120
+
 const CATEGORIES = ['Subject Access Request', 'Erasure Request', 'Rectification Request', 'Restriction Request', 'Objection to Processing', 'Data Portability', 'Marketing Consent', 'Data Breach', 'Cookie Complaint', 'Employee/HR Data', 'Vendor Compliance', 'General Privacy', 'Not GDPR Related']
 const RIGHTS = { 'Subject Access Request': 'UK GDPR Art. 15', 'Erasure Request': 'UK GDPR Art. 17', 'Rectification Request': 'UK GDPR Art. 16', 'Restriction Request': 'UK GDPR Art. 18', 'Objection to Processing': 'UK GDPR Art. 21', 'Data Portability': 'UK GDPR Art. 20' }
 const LEVELS = ['High', 'Medium', 'Low']
@@ -83,7 +86,8 @@ Pick the category for what the person is actually asking for (e.g. "send me my d
   }
 
   // Only kept for logged-in users, in their own account
-  if (user?.email) void (async () => {
+  // Saved before replying, so it is in their history straight away (and isn't cut off)
+  if (user?.email) await (async () => {
     try {
       const col = await getCollection('complaints')
       if (col) await col.insertOne({ userEmail: user.email, channel: channel || 'Website Form', complaintText: complaint, businessName: businessName || '', receivedAt: received, ...result, createdAt: new Date() })

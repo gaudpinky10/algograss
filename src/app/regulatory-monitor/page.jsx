@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { b64utf8 } from '@/lib/clientSession'
 
 const UPDATES = [
   { id:1,  date:'Jul 2026', title:'EU AI Act: high-risk rules delayed by the Digital Omnibus', body:'The EU\'s amendment to the AI Act came into force on 27 July 2026. Rules for stand-alone high-risk AI systems (Annex III, such as recruitment and credit scoring) now apply from 2 December 2027, and for AI in regulated products (Annex I) from 2 August 2028. Generative AI systems already on the market before 2 August 2026 have until 2 December 2026 to label AI-generated content. Affects UK businesses that place AI on the EU market or whose AI output is used in the EU.', source:'Digital Omnibus on AI', severity:'high', category:'EU AI Act', url:'https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689' },
@@ -39,7 +40,7 @@ function getUser() {
     const cookies = document.cookie.split(';').map(c => c.trim())
     const cookie = cookies.find(c => c.startsWith('algograss_user='))
     if (!cookie) return null
-    return JSON.parse(atob(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
+    return JSON.parse(b64utf8(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
   } catch { return null }
 }
 export default function RegulatoryMonitorPage() {

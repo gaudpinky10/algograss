@@ -1,33 +1,33 @@
 import { NextResponse } from 'next/server'
-import { getCollection } from '@/lib/dbHelpers'
+import { cookies } from 'next/headers'
+import { getCollection, getSessionUser } from '@/lib/dbHelpers'
 
-// GET /api/referral?email=xxx — get referral stats for a user
-export async function GET(request) {
+// GET /api/referral — referral stats for the logged-in user only.
+// (It used to take any ?email= and return the emails that person had referred.)
+export async function GET() {
+  const user = getSessionUser(cookies())
+  if (!user?.email) return NextResponse.json({ error: 'Please log in to see your referrals.' }, { status: 401 })
   try {
-    const { searchParams } = new URL(request.url)
-    const email = searchParams.get('email')
-    if (!email) return NextResponse.json({ error: 'email required' }, { status: 400 })
-
     const users = await getCollection('users')
+    if (!users) return NextResponse.json({ referralCount: 0, freeMonths: 0, rank: null, referrals: [] })
+    const email = user.email
     const referrals = await users.find(
       { referredBy: email },
       { projection: { email: 1, createdAt: 1, _id: 0 } }
     ).sort({ createdAt: -1 }).toArray()
 
-    // Count how many referrals each user has (for leaderboard rank)
-    const pipeline = [
+    // Rank among everyone who has referred at least one person
+    const leaderboard = await users.aggregate([
       { $match: { referredBy: { $exists: true } } },
       { $group: { _id: '$referredBy', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
-    ]
-    const leaderboard = await users.aggregate(pipeline).toArray()
+    ]).toArray()
     const myIdx = leaderboard.findIndex(x => x._id === email)
-    const rank = myIdx >= 0 ? myIdx + 1 : leaderboard.length + 1
 
     return NextResponse.json({
       referralCount: referrals.length,
       freeMonths: referrals.length, // 1 month per referral
-      rank,
+      rank: myIdx >= 0 ? myIdx + 1 : leaderboard.length + 1,
       referrals,
     })
   } catch (err) {
@@ -36,57 +36,9 @@ export async function GET(request) {
   }
 }
 
-// POST /api/referral/apply — called during signup to credit a referral
-// Body: { newUserEmail, refCode }
-export async function POST(request) {
-  try {
-    const { newUserEmail, refCode } = await request.json()
-    if (!newUserEmail || !refCode) return NextResponse.json({ ok: false })
-
-    // Decode the referral code back to the referrer's email
-    let referrerEmail
-    try {
-      referrerEmail = atob(refCode + '=='.slice(0, (4 - refCode.length % 4) % 4))
-    } catch {
-      return NextResponse.json({ ok: false })
-    }
-
-    if (!referrerEmail || referrerEmail === newUserEmail) {
-      return NextResponse.json({ ok: false })
-    }
-
-    const users = await getCollection('users')
-
-    // Mark the new user as referred
-    await users.updateOne(
-      { email: newUserEmail },
-      { $set: { referredBy: referrerEmail } }
-    )
-
-    // Extend the referrer's trial by 30 days (or add 30 days to trialEndsAt)
-    const referrer = await users.findOne({ email: referrerEmail })
-    if (referrer) {
-      const now = new Date()
-      const currentEnd = referrer.trialEndsAt ? new Date(referrer.trialEndsAt) : now
-      const baseDate = currentEnd > now ? currentEnd : now
-      const newEnd = new Date(baseDate)
-      newEnd.setDate(newEnd.getDate() + 30)
-
-      await users.updateOne(
-        { email: referrerEmail },
-        {
-          $set: {
-            trialEndsAt: newEnd,
-            plan: referrer.plan === 'free' ? 'starter' : referrer.plan,
-          },
-          $inc: { referralBonusMonths: 1 }
-        }
-      )
-    }
-
-    return NextResponse.json({ ok: true })
-  } catch (err) {
-    console.error('POST /api/referral error:', err)
-    return NextResponse.json({ ok: false })
-  }
+// Referrals are credited by sign-up itself (see src/lib/referral.js). This
+// endpoint used to credit any email on request, which let anyone extend a
+// trial as often as they liked, so it no longer does anything.
+export async function POST() {
+  return NextResponse.json({ ok: false, error: 'Referrals are applied automatically at sign-up.' }, { status: 410 })
 }

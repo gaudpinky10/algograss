@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { SCAN_HANDOFF_KEY } from '@/lib/scanHandoff'
+import { b64utf8 } from '@/lib/clientSession'
 
 // The signed-in user from the session cookie (same cookie the nav reads), or null if
 // there is none or it has expired
@@ -9,7 +10,7 @@ function getUser() {
   try {
     const c = document.cookie.split(';').map(x => x.trim()).find(x => x.startsWith('algograss_user='))
     if (!c) return null
-    const u = JSON.parse(atob(decodeURIComponent(c.slice(c.indexOf('=') + 1).trim())))
+    const u = JSON.parse(b64utf8(decodeURIComponent(c.slice(c.indexOf('=') + 1).trim())))
     if (!u?.email || (typeof u.exp === 'number' && Date.now() > u.exp)) return null
     return u
   } catch { return null }
