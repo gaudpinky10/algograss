@@ -1,14 +1,23 @@
 import { getCollection } from '@/lib/dbHelpers'
+import { priceFor } from '@/lib/billing'
+
+// Which plan a Stripe price ID belongs to (from the price IDs set in Vercel)
+function planForPrice(priceId) {
+  if (!priceId) return null
+  for (const plan of ['starter', 'growth', 'agency'])
+    for (const billing of ['monthly', 'annual'])
+      if (priceFor(plan, billing) === priceId) return plan
+  return null
+}
 
 // Verify Stripe webhook signature without the SDK
 // stripe-signature header format: t=<timestamp>,v1=<sig>,v1=<sig>,...
 async function verifyStripeSignature(rawBody, signatureHeader, secret) {
-  const parts = Object.fromEntries(
-    signatureHeader.split(',').map(p => { const [k,...v]=p.split('='); return [k, v.join('=')] })
-  )
-  const t  = parts.t
-  const v1 = parts.v1
-  if (!t || !v1) throw new Error('Invalid stripe-signature header')
+  // Stripe can send more than one v1 signature (e.g. while a secret is being rolled)
+  const pairs = signatureHeader.split(',').map(p => { const [k,...v]=p.trim().split('='); return [k, v.join('=')] })
+  const t   = (pairs.find(([k]) => k === 't') || [])[1]
+  const v1s = pairs.filter(([k]) => k === 'v1').map(([, v]) => v)
+  if (!t || !v1s.length) throw new Error('Invalid stripe-signature header')
 
   const payload = `${t}.${rawBody}`
   const enc     = new TextEncoder()
@@ -16,7 +25,8 @@ async function verifyStripeSignature(rawBody, signatureHeader, secret) {
   const sig     = await crypto.subtle.sign('HMAC', key, enc.encode(payload))
   const expected = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2,'0')).join('')
 
-  if (expected !== v1) throw new Error('Stripe signature mismatch')
+  const same = (a, b) => a.length === b.length && [...a].reduce((d, c, i) => d | (c.charCodeAt(0) ^ b.charCodeAt(i)), 0) === 0
+  if (!v1s.some(v => same(v, expected))) throw new Error('Stripe signature mismatch')
 
   // Reject events older than 5 minutes
   const age = Math.floor(Date.now() / 1000) - parseInt(t)
@@ -79,10 +89,13 @@ export async function POST(request) {
       case 'customer.subscription.created':
       case 'customer.subscription.updated': {
         const email = obj.metadata?.email || obj.customer_email || ''
-        const plan  = obj.items?.data?.[0]?.price?.metadata?.plan ||
-                      obj.metadata?.plan || 'starter'
+        // If the plan can't be worked out, the user's current plan is left as it is
+        // (it used to fall back to 'starter', downgrading Growth and Agency customers)
+        const plan  = obj.metadata?.plan ||
+                      obj.items?.data?.[0]?.price?.metadata?.plan ||
+                      planForPrice(obj.items?.data?.[0]?.price?.id) || null
         const updates = {
-          plan,
+          ...(plan ? { plan } : {}),
           subscriptionStatus: obj.status,
           stripeCustomerId:   obj.customer,
           stripeSubId:        obj.id,

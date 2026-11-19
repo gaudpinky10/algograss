@@ -37,7 +37,7 @@ export default function NotFound() {
           fontFamily: 'var(--font-jakarta, "Plus Jakarta Sans"), sans-serif',
           fontSize: 'clamp(20px, 3vw, 28px)',
           fontWeight: 700,
-          color: '#0F172A',
+          color: '#F1F5F9',
           marginBottom: 12,
         }}>
           Page not found
@@ -73,7 +73,7 @@ export default function NotFound() {
             borderRadius: 12,
             background: 'rgba(255,255,255,0.07)',
             border: '1px solid rgba(255,255,255,0.09)',
-            color: '#0F172A',
+            color: '#F1F5F9',
             fontWeight: 600,
             fontSize: 14,
             textDecoration: 'none',

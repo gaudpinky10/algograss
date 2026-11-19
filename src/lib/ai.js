@@ -6,8 +6,35 @@
 //   generateContent() — accepts the old request shape and returns the old
 //                       response shape, so existing routes keep their parsing
 
-const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages'
-const DEFAULT_MODEL = 'claude-sonnet-5'
+const API_BASE = (process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com').replace(/\/+$/, '')
+export const ANTHROPIC_URL = `${API_BASE}/v1/messages`
+export const DEFAULT_MODEL = process.env.AI_MODEL || 'claude-sonnet-5-5'
+// Used if the chosen model isn't available on this account
+const FALLBACK_MODEL = 'claude-sonnet-5'
+
+// Claude 5 models think before answering unless told not to, and that thinking
+// counts toward max_tokens. With the budgets these tools use, the thinking can
+// use up the whole budget and the answer comes back cut short or empty. Each
+// model has its own "off" setting (sending the wrong one is a 400 error).
+const THINKING_OFF = {
+  'claude-sonnet-5-5': { type: 'between_tools' },
+  'claude-sonnet-5': { type: 'disabled' },
+  'claude-haiku-5-5': { type: 'disabled' },
+}
+export const thinkingOff = model => THINKING_OFF[String(model)]
+
+// The body of a Messages API request, with thinking turned off where the model allows it
+export function messagesBody({ model, maxTokens, system, messages, stream, thinking = true }) {
+  const body = { model, max_tokens: maxTokens, messages }
+  if (system) body.system = system
+  if (stream) body.stream = true
+  const off = thinking ? thinkingOff(model) : undefined
+  if (off) body.thinking = off
+  return body
+}
+
+// A 400 that is about the thinking setting: try again without it
+export const thinkingRejected = (status, message) => status === 400 && /thinking|between_tools/i.test(message || '')
 
 // Anthropic requires messages to alternate and to start with a user turn.
 export function normaliseMessages(messages = []) {
@@ -61,6 +88,9 @@ export async function askClaude({
     throw e
   }
 
+  // Model and thinking setting in use; changed once if the API rejects them
+  let useModel = model
+  let useThinking = true
   // One retry when the API is busy or briefly unreachable, so a passing
   // hiccup doesn't become an error for the user
   const send = (msgs = finalMessages) => fetch(ANTHROPIC_URL, {
@@ -70,12 +100,7 @@ export async function askClaude({
       'x-api-key': apiKey,
       'anthropic-version': '2023-06-01',
     },
-    body: JSON.stringify({
-      model,
-      max_tokens: maxTokens,
-      system,
-      messages: msgs,
-    }),
+    body: JSON.stringify(messagesBody({ model: useModel, maxTokens, system, messages: msgs, thinking: useThinking })),
   })
   const busy = st => st === 429 || st === 529 || st >= 500
   // One call, with a single retry if the API is busy. Returns { text, stopReason }.
@@ -94,6 +119,10 @@ export async function askClaude({
         const j = await res.json()
         detail = j?.error?.message || ''
       } catch {}
+      // The model isn't available on this account: use the fallback model
+      if (res.status === 404 && useModel !== FALLBACK_MODEL) { useModel = FALLBACK_MODEL; return callOnce(msgs) }
+      // The thinking setting was refused: send without it
+      if (useThinking && thinkingRejected(res.status, detail)) { useThinking = false; return callOnce(msgs) }
       const e = new Error(detail || `AI request failed (${res.status})`)
       e.status = res.status
       throw e
@@ -177,18 +206,28 @@ export async function streamClaude({ system, messages, maxTokens = 900, model })
   const finalMessages = normaliseMessages(messages)
   if (!finalMessages.length) return { ok: false, status: 400, error: 'No message to send.' }
 
-  const call = (m) => fetch(ANTHROPIC_URL, {
+  const call = (m, thinking = true) => fetch(ANTHROPIC_URL, {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({ model: m, max_tokens: maxTokens, system, messages: finalMessages, stream: true }),
+    body: JSON.stringify(messagesBody({ model: m, maxTokens, system, messages: finalMessages, stream: true, thinking })),
   })
+  const errorOf = async r => { try { return (await r.json())?.error?.message || '' } catch { return '' } }
 
-  let res = await call(model || DEFAULT_MODEL)
+  let useModel = model || DEFAULT_MODEL
+  let res = await call(useModel)
   // If the fast model name is not available on this account, fall back once
-  if (res.status === 404 && model && model !== DEFAULT_MODEL) res = await call(DEFAULT_MODEL)
+  for (const fb of [DEFAULT_MODEL, FALLBACK_MODEL]) {
+    if (res.status !== 404 || useModel === fb) continue
+    useModel = fb
+    res = await call(useModel)
+  }
+  let detail = ''
+  if (!res.ok) {
+    detail = await errorOf(res)
+    // The thinking setting was refused: send without it
+    if (thinkingRejected(res.status, detail)) { res = await call(useModel, false); detail = res.ok ? '' : await errorOf(res) }
+  }
   if (!res.ok || !res.body) {
-    let detail = ''
-    try { detail = (await res.json())?.error?.message || '' } catch {}
     return { ok: false, status: res.status || 500, error: detail || `AI request failed (${res.status})` }
   }
 

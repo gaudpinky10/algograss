@@ -22,7 +22,9 @@ export async function GET(request) {
   const results = { updatesFound: 0, emailed: 0, errors: [] };
 
   try {
-    const kb = await getCollection('knowledgeBase');
+    // Same collection the AI assistant reads and scripts/seed-knowledge.mjs fills
+    // (this used to read 'knowledgeBase', which doesn't exist, so no digest was ever sent)
+    const kb = await getCollection('knowledge_base');
     const users = await getCollection('users');
     if (!kb || !users) return NextResponse.json({ error: 'DB unavailable' }, { status: 500 });
 
@@ -31,8 +33,8 @@ export async function GET(request) {
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
     const recentUpdates = await kb.find({
-      createdAt: { $gte: oneWeekAgo },
-    }).sort({ createdAt: -1 }).limit(10).toArray();
+      $or: [{ createdAt: { $gte: oneWeekAgo } }, { publishedAt: { $gte: oneWeekAgo } }],
+    }).sort({ publishedAt: -1, createdAt: -1 }).limit(10).toArray();
 
     results.updatesFound = recentUpdates.length;
 
@@ -51,16 +53,20 @@ export async function GET(request) {
 
     // Get all Pro users who haven't opted out of regulatory alerts
     // Paying customers and trial users, unless they turned the digest off in Settings
+    // Once per week per user, even if this job is run more than once
+    const weekKey = new Date().toISOString().slice(0, 10);
     const proUsers = await users.find({
       plan: { $in: ['pro', 'starter', 'growth', 'agency'] },
       regulatoryAlertsOptOut: { $ne: true },
       'notifications.regulatoryDigest': { $ne: false },
+      $or: [{ regulatoryDigestSentAt: { $exists: false } }, { regulatoryDigestSentAt: { $lt: new Date(Date.now() - 6 * 864e5) } }],
     }).toArray();
 
     for (const user of proUsers) {
       try {
         if (process.env.RESEND_API_KEY) {
           await sendRegulatoryAlertEmail(user.name || 'there', user.email, updates);
+          await users.updateOne({ _id: user._id }, { $set: { regulatoryDigestSentAt: new Date(), regulatoryDigestWeek: weekKey } });
           results.emailed++;
         }
         // Small delay to avoid hitting Resend rate limits

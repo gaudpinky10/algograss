@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { b64utf8 } from '@/lib/clientSession'
 
 const TYPES = ['Policy Review', 'DPIA Review', 'AI Register Review', 'Vendor Contract Review', 'Staff Training', 'Privacy Notice Update', 'Data Retention Review', 'Security Audit', 'ICO Registration Renewal', 'Custom']
 
@@ -22,7 +23,7 @@ function getUser() {
     const cookies = document.cookie.split(';').map(c => c.trim())
     const cookie = cookies.find(c => c.startsWith('algograss_user='))
     if (!cookie) return null
-    return JSON.parse(atob(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
+    return JSON.parse(b64utf8(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
   } catch { return null }
 }
 export default function RemindersPage() {

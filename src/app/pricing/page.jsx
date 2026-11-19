@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { b64utf8 } from '@/lib/clientSession'
 
 const PLANS = [
   { id:'starter', name:'Starter', mo:29,  yr:23,  desc:'Perfect for solo founders & small businesses',
@@ -29,6 +30,18 @@ export default function PricingPage() {
   const [emailFor,    setEmailFor]    = useState(null) // { planId, trial }
   const [error,       setError]       = useState('')
 
+  useEffect(() => {
+    // Logged in: no need to ask for the email again
+    try {
+      const c = document.cookie.split(';').map(x => x.trim()).find(x => x.startsWith('algograss_user='))
+      const u = c ? JSON.parse(b64utf8(decodeURIComponent(c.slice(c.indexOf('=') + 1)))) : null
+      if (u?.email) setEmail(u.email)
+    } catch {}
+    // Coming back from a checkout that couldn't be finished
+    if (new URLSearchParams(window.location.search).get('error') === 'activation_failed')
+      setError("We couldn't finish setting up your plan. If your card was charged, email hello@algograss.com and we'll sort it out straight away.")
+  }, [])
+
   async function startCheckout(plan, trial) {
     if (plan.href) { window.location.href = plan.href; return }
     if (!email) { setEmailFor({ planId: plan.id, trial }); return }
@@ -40,7 +53,7 @@ export default function PricingPage() {
       const res  = await fetch('/api/checkout', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ plan: plan.id, email, trial }),
+        body:    JSON.stringify({ plan: plan.id, email, trial, billing: annual ? 'annual' : 'monthly' }),
       })
       const data = await res.json()
       if (data.url) { window.location.href = data.url; return }

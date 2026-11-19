@@ -1,10 +1,11 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { b64utf8 } from '@/lib/clientSession'
 
 const S = {
   bg:'#06060F', surface:'#0D0D1E', border:'rgba(255,255,255,0.09)',
-  teal:'#9B7BFA', blue:'#C084FC', text:'#0F172A',
+  teal:'#9B7BFA', blue:'#C084FC', text:'#F1F5F9',
   muted:'#94A3B8', dim:'#475569',
 }
 
@@ -16,7 +17,7 @@ function getUser() {
     const cookies = document.cookie.split(';').map(c => c.trim())
     const cookie = cookies.find(c => c.startsWith('algograss_user='))
     if (!cookie) return null
-    return JSON.parse(atob(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
+    return JSON.parse(b64utf8(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
   } catch { return null }
 }
 export default function VisitorsDashboard() {

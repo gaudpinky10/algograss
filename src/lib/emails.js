@@ -5,6 +5,11 @@
 
 import { Resend } from 'resend';
 
+// Text typed in by users goes into HTML emails: escape it
+export function esc(v) {
+  return String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 export function getResend() {
   return new Resend(process.env.RESEND_API_KEY);
 }
@@ -69,7 +74,7 @@ export async function sendWelcomeEmail(name, email, plan = 'free') {
   const resend = getResend();
   const html = layout(`
     <div style="padding:36px 40px;background:#0D1525;border-bottom:1px solid #1e2d45">
-      <h1 style="color:#E8F0FE;font-size:24px;font-weight:700;margin:0 0 8px">Welcome to AlgoGrass, ${name.split(' ')[0]}! 🎉</h1>
+      <h1 style="color:#E8F0FE;font-size:24px;font-weight:700;margin:0 0 8px">Welcome to AlgoGrass, ${esc(String(name || '').split(' ')[0] || 'there')}! 🎉</h1>
       <p style="color:#94A3B8;font-size:14px;margin:0">Your GDPR compliance command centre is ready.</p>
     </div>
 
@@ -81,8 +86,8 @@ export async function sendWelcomeEmail(name, email, plan = 'free') {
       <div style="background:#0D1525;border:1px solid #1e2d45;border-radius:12px;overflow:hidden;margin-bottom:24px">
         ${[
           ['🔍', 'Scan your website', 'Get your real-time GDPR compliance score — instant results.', 'https://www.algograss.com/scan'],
-          ['📄', 'Generate documents', 'Auto-generate your Privacy Policy, Cookie Notice & DPA from your scan.', 'https://www.algograss.com/generate'],
-          ['🤖', 'Ask AlgoGrass AI', 'Get instant answers to any GDPR or UK data protection question.', 'https://www.algograss.com/ai-chat'],
+          ['📄', 'Generate documents', 'Auto-generate your Privacy Policy, Cookie Notice & DPA from your scan.', 'https://www.algograss.com/dashboard'],
+          ['🤖', 'Ask AlgoGrass AI', 'Get instant answers to any GDPR or UK data protection question.', 'https://www.algograss.com/ai'],
           ['📋', 'Set up your GRC', 'Build your GDPR compliance register and track your obligations.', 'https://www.algograss.com/grc'],
         ].map(([icon, title, desc, link]) => `
           <div style="padding:16px 20px;border-bottom:1px solid #1e2d45">
@@ -109,12 +114,12 @@ export async function sendWelcomeEmail(name, email, plan = 'free') {
         ${btn('Go to dashboard', 'https://www.algograss.com/dashboard')}
       </div>`}
     </div>
-  `, `Welcome to AlgoGrass, ${name.split(' ')[0]}!`);
+  `, `Welcome to AlgoGrass, ${esc(String(name || '').split(' ')[0])}!`);
 
   return resend.emails.send({
     from: FROM_ADDRESS,
     to: email,
-    subject: `Welcome to AlgoGrass, ${name.split(' ')[0]}! Your GDPR compliance centre is ready`,
+    subject: `Welcome to AlgoGrass, ${String(name || '').split(' ')[0] || 'there'}! Your GDPR compliance centre is ready`,
     html,
   });
 }
@@ -195,7 +200,7 @@ export async function sendTrialWarningEmail(name, email, daysLeft) {
     </div>
     <div style="padding:32px 40px;background:#060B14">
       <p style="color:#CBD5E1;font-size:14px;line-height:1.7;margin:0 0 24px">
-        Hi ${name.split(' ')[0]}, your 60-day AlgoGrass Pro trial ends in <strong style="color:#F59E0B">${daysLeft} day${daysLeft > 1 ? 's' : ''}</strong>.
+        Hi ${esc(String(name || '').split(' ')[0] || 'there')}, your 60-day AlgoGrass Pro trial ends in <strong style="color:#F59E0B">${daysLeft} day${daysLeft > 1 ? 's' : ''}</strong>.
         After that, you'll lose access to:
       </p>
       <div style="background:#0D1525;border:1px solid #1e2d45;border-radius:12px;padding:20px;margin-bottom:24px">
@@ -228,7 +233,7 @@ export async function sendTrialExpiredEmail(name, email) {
     </div>
     <div style="padding:32px 40px;background:#060B14">
       <p style="color:#CBD5E1;font-size:14px;line-height:1.7;margin:0 0 24px">
-        Hi ${name.split(' ')[0]}, your 60-day free trial has ended. Your account has been switched to the free plan.
+        Hi ${esc(String(name || '').split(' ')[0] || 'there')}, your 60-day free trial has ended. Your account has been switched to the free plan.
         You can still access basic features, but Pro tools are paused until you upgrade.
       </p>
       <div style="text-align:center">
@@ -258,7 +263,7 @@ export async function sendRegulatoryAlertEmail(name, email, updates) {
       <p style="color:#64748B;font-size:13px;margin:0">${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
     </div>
     <div style="padding:28px 40px;background:#060B14">
-      <p style="color:#94A3B8;font-size:13px;margin:0 0 20px">Hi ${name.split(' ')[0]}, here's what changed in UK/EU data protection this week:</p>
+      <p style="color:#94A3B8;font-size:13px;margin:0 0 20px">Hi ${esc(String(name || '').split(' ')[0] || 'there')}, here's what changed in UK/EU data protection this week:</p>
 
       <div style="background:#0D1525;border:1px solid #1e2d45;border-radius:12px;overflow:hidden;margin-bottom:24px">
         ${updates.map((u, i) => `
@@ -275,7 +280,7 @@ export async function sendRegulatoryAlertEmail(name, email, updates) {
       </div>
 
       <div style="text-align:center">
-        ${btn('View full regulatory monitor', 'https://www.algograss.com/regulatory')}
+        ${btn('View full regulatory monitor', 'https://www.algograss.com/regulatory-monitor')}
       </div>
     </div>
   `, `${updates.length} new GDPR updates this week`);

@@ -4,6 +4,9 @@ import { cookies } from 'next/headers'
 import { getCollection, parseUserCookie, trackActivity } from '@/lib/dbHelpers'
 import { allowAiUse } from '@/lib/toolGuard'
 
+// AI answers can take a while; without this the host may stop the request early
+export const maxDuration = 120
+
 const BASE_SYSTEM_PROMPT = `You are AlgoGrass AI, the GDPR, UK data protection and GRC compliance assistant of AlgoGrass (algograss.com).
 
 ## Your Identity
@@ -112,7 +115,7 @@ export async function POST(request) {
   const systemPrompt = BASE_SYSTEM_PROMPT + `\n\nToday's date is ${todayUK()}.` + ragContext + '\n\n## Reply length\nBe concise and direct: aim for under 180 words unless the user asks for detail. Lead with the answer.'
 
   // ── Save user message to DB ───────────────────────────────────
-  ;(async () => {
+  await (async () => {
     try {
       const col = await getCollection('ai_chats')
       if (col && sessionId) {
@@ -152,12 +155,13 @@ export async function POST(request) {
           }
         } catch {}
         // Tell the page the answer ran out of room, so it can offer to continue
-        if (up.stopReason?.() === 'max_tokens') controller.enqueue(encoder.encode(`data: ${JSON.stringify({ truncated: true })}\n\n`))
-        controller.enqueue(encoder.encode(`data: [DONE]\n\n`))
-        controller.close()
+        // (If the visitor has already closed the page, these writes fail; that's fine)
+        const send = chunk => { try { controller.enqueue(encoder.encode(chunk)) } catch {} }
+        if (up.stopReason?.() === 'max_tokens') send(`data: ${JSON.stringify({ truncated: true })}\n\n`)
+        send(`data: [DONE]\n\n`)
 
-        // ── Save AI response to DB ──────────────────────────────
-        ;(async () => {
+        // ── Save AI response to DB (before closing: after close the function may be stopped) ──
+        await (async () => {
           try {
             const col = await getCollection('ai_chats')
             if (col && sessionId && fullResponse) {
@@ -177,6 +181,7 @@ export async function POST(request) {
             })
           } catch {}
         })()
+        try { controller.close() } catch {}
       },
     })
 

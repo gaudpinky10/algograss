@@ -54,7 +54,7 @@ export async function POST(request) {
         </span>
       </td>
       <td style="padding:12px 16px;border-bottom:1px solid #1e2d45;vertical-align:top">
-        <div style="color:#0F172A;font-weight:600;font-size:13px;margin-bottom:4px">${esc(iss.title)}</div>
+        <div style="color:#F1F5F9;font-weight:600;font-size:13px;margin-bottom:4px">${esc(iss.title)}</div>
         <div style="color:#94A3B8;font-size:12px;line-height:1.5;margin-bottom:6px">${esc(iss.desc)}</div>
         ${showEvidence(iss) ? `<div style="color:#64748B;font-size:11px;line-height:1.5;margin-bottom:6px">What we found: ${esc(iss.evidence)}</div>` : ''}
         <span style="background:rgba(139,92,246,0.1);color:#9B7BFA;font-size:10px;padding:2px 8px;border-radius:4px">${esc(iss.reg)}</span>
@@ -81,7 +81,7 @@ export async function POST(request) {
         </div>
         <span style="color:#9B7BFA;font-weight:800;font-size:18px">AlgoGrass</span>
       </div>
-      <h1 style="color:#0F172A;font-size:22px;font-weight:700;margin:16px 0 6px">GDPR Compliance Report</h1>
+      <h1 style="color:#F1F5F9;font-size:22px;font-weight:700;margin:16px 0 6px">GDPR Compliance Report</h1>
       <p style="color:#64748B;font-size:13px;margin:0">${esc(result.url)} · Scanned ${new Date(result.scannedAt).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' })}</p>
     </div>
 
@@ -104,7 +104,7 @@ export async function POST(request) {
     <!-- Issues -->
     ${result.issues.length > 0 ? `
     <div style="padding:28px 40px 0;background:#060B14">
-      <h2 style="color:#0F172A;font-size:16px;font-weight:700;margin:0 0 16px">Compliance Issues</h2>
+      <h2 style="color:#F1F5F9;font-size:16px;font-weight:700;margin:0 0 16px">Compliance Issues</h2>
       <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #1e2d45;border-radius:12px;overflow:hidden;background:#0D1525">
         <tbody>
           ${highIssues.map(issueRow).join('')}
@@ -121,7 +121,7 @@ export async function POST(request) {
 
     <!-- Checks -->
     <div style="padding:28px 40px 0;background:#060B14">
-      <h2 style="color:#0F172A;font-size:16px;font-weight:700;margin:0 0 16px">What We Checked</h2>
+      <h2 style="color:#F1F5F9;font-size:16px;font-weight:700;margin:0 0 16px">What We Checked</h2>
       <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #1e2d45;border-radius:12px;overflow:hidden;background:#0D1525">
         <tbody>
           ${checkRow('HTTPS encryption',          result.checks.https)}
@@ -141,7 +141,7 @@ export async function POST(request) {
     <!-- CTA -->
     <div style="padding:32px 40px;background:#060B14;text-align:center">
       <div style="background:linear-gradient(135deg,rgba(139,92,246,0.1),rgba(124,158,255,0.1));border:1px solid rgba(139,92,246,0.2);border-radius:16px;padding:28px 32px">
-        <h3 style="color:#0F172A;font-size:18px;font-weight:700;margin:0 0 8px">Fix your compliance issues</h3>
+        <h3 style="color:#F1F5F9;font-size:18px;font-weight:700;margin:0 0 8px">Fix your compliance issues</h3>
         <p style="color:#94A3B8;font-size:13px;margin:0 0 20px;line-height:1.6">AlgoGrass generates your privacy policy, cookie notice, and data processing agreements automatically — based on your actual scan results.</p>
         <a href="https://www.algograss.com/signup" style="display:inline-block;background:linear-gradient(135deg,#9B7BFA,#7C3AED);color:#06060F;font-weight:700;font-size:14px;padding:12px 28px;border-radius:10px;text-decoration:none">Create free account →</a>
       </div>

@@ -3,6 +3,7 @@ import { useState, useRef, useEffect, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import Markdown from '@/components/Markdown'
 import { SCAN_HANDOFF_KEY } from '@/lib/scanHandoff'
+import { b64utf8 } from '@/lib/clientSession'
 
 const HISTORY_KEY = 'algograss_scan_history'
 const MAX_HISTORY = 10
@@ -12,7 +13,7 @@ function getUser() {
     const cookies = document.cookie.split(';').map(c => c.trim())
     const cookie = cookies.find(c => c.startsWith('algograss_user='))
     if (!cookie) return null
-    const u = JSON.parse(atob(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
+    const u = JSON.parse(b64utf8(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
     if (!u?.email || (typeof u.exp === 'number' && Date.now() > u.exp)) return null
     return u
   } catch { return null }

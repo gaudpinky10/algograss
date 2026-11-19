@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { b64utf8 } from '@/lib/clientSession'
 
 const DATA_CATEGORIES = ['Names','Contact details','Financial/payment','Health/medical','Children\'s data','Biometric','Criminal records','Location','Special category','Business data']
 const VENDOR_TYPES    = ['Cloud hosting','Email/marketing','CRM','Analytics','HR/payroll','Accounting','Customer support','Payment processing','Security','Legal','Other']
@@ -23,7 +24,7 @@ function getUser() {
     const cookies = document.cookie.split(';').map(c => c.trim())
     const cookie = cookies.find(c => c.startsWith('algograss_user='))
     if (!cookie) return null
-    return JSON.parse(atob(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
+    return JSON.parse(b64utf8(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
   } catch { return null }
 }
 export default function VendorRiskPage() {

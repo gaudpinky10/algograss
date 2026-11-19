@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { b64utf8 } from '@/lib/clientSession'
 
 const RISK_TIERS = {
   unacceptable: { label:'Unacceptable Risk — PROHIBITED', color:'#EF4444', bg:'rgba(239,68,68,0.1)', border:'rgba(239,68,68,0.3)', icon:'🚫', summary:'Your AI system falls under Article 5 prohibited practices. These are banned in the EU from 2 February 2025.', requirements:['This system CANNOT be placed on the EU market or used in the EU','No conformity assessment can make a prohibited system compliant','Prohibited: harmful manipulation, exploitation of vulnerabilities, social scoring, emotion recognition at work or in education, and (with narrow exceptions) real-time remote biometric identification in public for law enforcement','Review your system architecture — redesign or withdraw from EU market immediately'] },
@@ -46,7 +47,7 @@ function getUser() {
     const cookies = document.cookie.split(';').map(c => c.trim())
     const cookie = cookies.find(c => c.startsWith('algograss_user='))
     if (!cookie) return null
-    return JSON.parse(atob(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
+    return JSON.parse(b64utf8(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
   } catch { return null }
 }
 export default function AIGovernancePage() {

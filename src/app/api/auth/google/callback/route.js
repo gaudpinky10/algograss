@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { getCollection, trackActivity, createSessionValue, sessionCookieOptions, SESSION_COOKIE } from '@/lib/dbHelpers'
 import { timingSafeEqual } from 'crypto'
+import { creditReferral } from '@/lib/referral'
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
@@ -17,7 +18,9 @@ export async function GET(request) {
   // The state must match the one set when the login started
   const state = searchParams.get('state') || ''
   const expected = cookies().get('ag_oauth_state')?.value || ''
-  cookies().set('ag_oauth_state', '', { maxAge: 0, path: '/api/auth/google' })
+  const refCookie = cookies().get('ag_ref')?.value || '' // read before it is cleared below
+  cookies().set('ag_oauth_state', '', { maxAge: 0, path: '/' })
+  cookies().set('ag_ref', '', { maxAge: 0, path: '/' })
   if (!state || !expected || state.length !== expected.length || !timingSafeEqual(Buffer.from(state), Buffer.from(expected))) {
     return NextResponse.redirect(`${appUrl}/login?error=google_failed`)
   }
@@ -95,11 +98,12 @@ export async function GET(request) {
           })
           userData = { id: result.insertedId.toString(), name, email, plan: 'pro', isAdmin, avatar }
           await trackActivity({ userEmail: email, tool: 'auth', action: 'signup', detail: 'New signup via Google', meta: { method: 'google' } })
-          // Send welcome email (non-blocking)
+          // Awaited: work left running after the response can be stopped on Vercel
           if (process.env.RESEND_API_KEY) {
             const { sendWelcomeEmail } = await import('@/lib/emails')
-            sendWelcomeEmail(name, email, 'pro').catch(e => console.error('Welcome email failed:', e.message))
+            await sendWelcomeEmail(name, email, 'pro').catch(e => console.error('Welcome email failed:', e.message))
           }
+          if (refCookie) await creditReferral(email, refCookie).catch(e => console.error('Referral credit failed:', e.message))
         }
       }
     } catch (dbErr) {

@@ -3,6 +3,9 @@ import { toolSystem, addCalendarMonths, ukDay, formatUK, todayUK } from '@/lib/u
 import { getCollection, trackActivity } from '@/lib/dbHelpers'
 import { currentUser, allowAiUse, tooMany, aiFailed } from '@/lib/toolGuard'
 
+// AI answers can take a while; without this the host may stop the request early
+export const maxDuration = 120
+
 const TYPES = {
   SAR: 'Subject access request (right of access, Art. 15)',
   Erasure: 'Erasure request (Art. 17)',
@@ -63,7 +66,8 @@ Keep it practical and under 1,400 words.`
   }
 
   // Only kept for logged-in users, in their own account
-  if (user?.email) void (async () => {
+  // Saved before replying, so it is in their history straight away (and isn't cut off)
+  if (user?.email) await (async () => {
     try {
       const col = await getCollection('dsars')
       if (col) await col.insertOne({ userEmail: user.email, requesterName: requesterName || 'Unknown', requesterEmail: requesterEmail || '', requestType: type, requestDetails: requestText, aiGuide: responseText, receivedAt: received, deadline, extendedDeadline, createdAt: new Date() })

@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { b64utf8 } from '@/lib/clientSession'
 
 const S = {
   page: { minHeight: '100vh', background: '#06060F', padding: '40px 20px', fontFamily: "'Segoe UI', sans-serif" },
@@ -30,7 +31,7 @@ export default function SettingsPage() {
   useEffect(() => {
     try {
       const c = document.cookie.split(';').find(x => x.trim().startsWith('algograss_user='))
-      if (c) { const u = JSON.parse(atob(decodeURIComponent(c.slice(c.indexOf('=')+1).trim()))); setUser(u); setForm(f => ({ ...f, name: u.name || '', website: u.website || '' })) }
+      if (c) { const u = JSON.parse(b64utf8(decodeURIComponent(c.slice(c.indexOf('=')+1).trim()))); setUser(u); setForm(f => ({ ...f, name: u.name || '', website: u.website || '' })) }
     } catch {}
     fetch('/api/user/settings').then(r => r.json()).then(d => {
       if (d.settings) {

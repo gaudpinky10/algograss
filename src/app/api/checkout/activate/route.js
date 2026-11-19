@@ -1,4 +1,5 @@
 import { trackActivity, getCollection } from '@/lib/dbHelpers'
+import { priceFor } from '@/lib/billing'
 
 // Stripe helper — throws on API errors instead of silently returning them
 async function stripeReq(path, method = 'GET', body = null, key) {
@@ -19,12 +20,13 @@ async function stripeReq(path, method = 'GET', body = null, key) {
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
   const sessionId = searchParams.get('session_id')
-  const plan      = searchParams.get('plan')  || 'starter'
-  const trial     = searchParams.get('trial') === '1'
   const key       = process.env.STRIPE_SECRET_KEY
-  const base      = process.env.NEXT_PUBLIC_URL || 'https://www.algograss.com'
-
-  const successUrl = `${base}/dashboard?upgraded=true&plan=${plan}&trial=${trial?'1':'0'}&verified=true`
+  const base      = process.env.NEXT_PUBLIC_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://www.algograss.com'
+  // Set from the Stripe session below; the address bar values are only a fallback for older sessions
+  let plan  = searchParams.get('plan')  || 'starter'
+  let trial = searchParams.get('trial') === '1'
+  let billing = 'monthly'
+  const successUrl = () => `${base}/dashboard?upgraded=true&plan=${plan}&trial=${trial?'1':'0'}&verified=true`
   const failUrl    = `${base}/pricing?error=activation_failed`
 
   if (!sessionId || !key) {
@@ -33,13 +35,35 @@ export async function GET(request) {
   }
 
   let customerEmail = ''
+  let claims = null
 
   try {
     // ── Step 1: Retrieve checkout session with payment_intent expanded ──
+    if (!/^cs_[A-Za-z0-9_]+$/.test(sessionId)) return Response.redirect(failUrl, 302)
     const session = await stripeReq(
       `/checkout/sessions/${sessionId}?expand[]=payment_intent&expand[]=customer`,
       'GET', null, key
     )
+    // Only a completed, paid verification can start a plan
+    if (session.status !== 'complete' || session.payment_status !== 'paid') {
+      console.error('Activate: session not paid', sessionId, session.status, session.payment_status)
+      return Response.redirect(failUrl, 302)
+    }
+    if (priceFor(session.metadata?.plan, 'monthly')) plan = session.metadata.plan
+    if (session.metadata?.trial) trial = session.metadata.trial === '1'
+    if (session.metadata?.billing === 'annual') billing = 'annual'
+
+    // ── Each checkout is activated once. Reloading this page (or opening the
+    //    link again) must not refund again or create a second subscription ──
+    claims = await getCollection('checkout_activations').catch(() => null)
+    if (claims) {
+      try {
+        await claims.insertOne({ _id: sessionId, plan, trial, status: 'started', createdAt: new Date() })
+      } catch (e) {
+        if (e?.code === 11000) return Response.redirect(successUrl(), 302) // already activated
+        throw e
+      }
+    }
 
     const customerId    = typeof session.customer === 'object' ? session.customer.id : session.customer
     customerEmail       = session.customer_details?.email || session.customer_email || ''
@@ -93,21 +117,21 @@ export async function GET(request) {
     }, key)
 
     // ── Step 5: Create the subscription ──
-    const PRICES = {
-      starter: process.env.STRIPE_PRICE_STARTER,
-      growth:  process.env.STRIPE_PRICE_GROWTH,
-      agency:  process.env.STRIPE_PRICE_AGENCY,
-    }
-    const priceId = PRICES[plan]
+    const priceId = priceFor(plan, billing)
 
     if (!priceId) {
-      console.error(`No price ID for plan: ${plan}. Check STRIPE_PRICE_${plan.toUpperCase()} env var.`)
+      // Without a price there is no subscription, so the plan must not be switched on
+      throw new Error(`No ${billing} price ID for plan: ${plan}. Check STRIPE_PRICE_${String(plan).toUpperCase()}${billing === 'annual' ? '_ANNUAL' : ''} env var.`)
     } else {
       const subBody = {
         'customer':               customerId,
         'items[0][price]':        priceId,
         'default_payment_method': paymentMethodId,
         // Stripe will auto-charge this payment method when trial ends or immediately if no trial
+        // The webhook reads the plan from here when Stripe reports subscription changes
+        'metadata[plan]':         plan,
+        'metadata[billing]':      billing,
+        'metadata[email]':        customerEmail.toLowerCase(),
       }
       if (trial) subBody['trial_period_days'] = '30'
 
@@ -175,12 +199,15 @@ export async function GET(request) {
       meta:   { plan, trial, refundStatus, customerId },
     }).catch(() => {}) // never block redirect on tracking failure
 
-    return Response.redirect(successUrl, 302)
+    if (claims) await claims.updateOne({ _id: sessionId }, { $set: { status: 'done', email: customerEmail, doneAt: new Date() } }).catch(() => {})
+    return Response.redirect(successUrl(), 302)
 
   } catch (err) {
-    console.error('Activate critical error:', err.message)
-    // Still redirect to dashboard — user paid, don't strand them
-    // The subscription/refund issue can be fixed manually in Stripe dashboard
-    return Response.redirect(successUrl, 302)
+    console.error('Activate critical error:', sessionId, err.message)
+    // Let a retry of the same link try again
+    if (claims) await claims.deleteOne({ _id: sessionId, status: 'started' }).catch(() => {})
+    // Don't tell them the plan is active when it isn't: the pricing page explains
+    // what happened and how to reach us (the details are in the Vercel logs)
+    return Response.redirect(failUrl, 302)
   }
 }

@@ -2,11 +2,16 @@ import { NextResponse } from 'next/server'
 import { getCollection } from '@/lib/dbHelpers'
 import { randomBytes } from 'crypto'
 import { Resend } from 'resend'
+import { esc } from '@/lib/emails'
 
 export async function POST(request) {
   try {
-    const { email } = await request.json()
-    if (!email) return NextResponse.json({ error: 'Email required' }, { status: 400 })
+    const { email } = await request.json().catch(() => ({}))
+    if (!email || typeof email !== 'string') return NextResponse.json({ error: 'Email required' }, { status: 400 })
+    if (!process.env.RESEND_API_KEY) {
+      console.error('forgot-password: RESEND_API_KEY is not set') // visible in Vercel logs
+      return NextResponse.json({ error: "Password reset emails aren't available right now. Please contact hello@algograss.com and we'll help you get back in." }, { status: 503 })
+    }
 
     const users = await getCollection('users')
     if (!users) return NextResponse.json({ error: 'Database unavailable' }, { status: 503 })
@@ -25,23 +30,23 @@ export async function POST(request) {
     await resets.insertOne({ email: email.toLowerCase(), token, expires, createdAt: new Date() })
 
     // Send reset email via Resend
-    const base = process.env.NEXT_PUBLIC_URL || 'https://www.algograss.com'
+    const base = process.env.NEXT_PUBLIC_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://www.algograss.com'
     const resetLink = `${base}/reset-password?token=${token}`
 
     const resend = new Resend(process.env.RESEND_API_KEY)
     await resend.emails.send({
       from:    'AlgoGrass <noreply@algograss.com>',
-      to:      email,
+      to:      user.email,
       subject: 'Reset your AlgoGrass password',
       html: `
-        <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#060B14;color:#0F172A;padding:40px 32px;border-radius:16px">
+        <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#060B14;color:#E2E8F0;padding:40px 32px;border-radius:16px">
           <div style="text-align:center;margin-bottom:28px">
             <span style="font-size:32px">🔒</span>
             <h1 style="font-size:22px;font-weight:800;color:#9B7BFA;margin:12px 0 4px">Password Reset</h1>
             <p style="font-size:13px;color:#64748B;margin:0">AlgoGrass Compliance Platform</p>
           </div>
-          <p style="font-size:14px;color:#94A3B8;margin-bottom:8px">Hi ${user.name || email.split('@')[0]},</p>
-          <p style="font-size:14px;color:#94A3B8;margin-bottom:24px">We received a request to reset your password. Click the button below to set a new password. This link expires in <strong style="color:#0F172A">1 hour</strong>.</p>
+          <p style="font-size:14px;color:#94A3B8;margin-bottom:8px">Hi ${esc(user.name || email.split('@')[0])},</p>
+          <p style="font-size:14px;color:#94A3B8;margin-bottom:24px">We received a request to reset your password. Click the button below to set a new password. This link expires in <strong style="color:#FFFFFF">1 hour</strong>.</p>
           <div style="text-align:center;margin-bottom:24px">
             <a href="${resetLink}" style="display:inline-block;background:#9B7BFA;color:#060B14;font-weight:700;font-size:15px;padding:14px 36px;border-radius:10px;text-decoration:none">Reset my password →</a>
           </div>

@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Markdown from '@/components/Markdown'
 import { useRouter } from 'next/navigation'
+import { b64utf8 } from '@/lib/clientSession'
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -225,7 +226,7 @@ function getUser() {
   try {
     const c = document.cookie.split(';').map(x=>x.trim()).find(x=>x.startsWith('algograss_user='))
     if (!c) return null
-    return JSON.parse(atob(decodeURIComponent(c.slice(c.indexOf('=')+1).trim())))
+    return JSON.parse(b64utf8(decodeURIComponent(c.slice(c.indexOf('=')+1).trim())))
   } catch { return null }
 }
 

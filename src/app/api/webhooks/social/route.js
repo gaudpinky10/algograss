@@ -1,4 +1,7 @@
 import { generateContent } from '@/lib/ai'
+
+// AI answers can take a while; without this the host may stop the request early
+export const maxDuration = 60
 /**
  * Social media complaint webhook.
  *

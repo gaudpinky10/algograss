@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { b64utf8 } from '@/lib/clientSession'
 
 const A = '#9B7BFA'
 const P = '#818CF8'
@@ -11,7 +12,7 @@ function getUser() {
     const cookies = document.cookie.split(';').map(c => c.trim())
     const cookie = cookies.find(c => c.startsWith('algograss_user='))
     if (!cookie) return null
-    return JSON.parse(atob(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
+    return JSON.parse(b64utf8(decodeURIComponent(cookie.slice(cookie.indexOf('=')+1).trim())))
   } catch { return null }
 }
 export default function AdminDatabase() {
@@ -58,7 +59,7 @@ export default function AdminDatabase() {
   const connected  = health?.connected
 
   return (
-    <div style={{ minHeight: '100vh', background: '#06060F', color: '#0F172A', fontFamily: 'var(--font-space-grotesk,"Space Grotesk"),sans-serif', padding: '32px 24px' }}>
+    <div style={{ minHeight: '100vh', background: '#06060F', color: '#F1F5F9', fontFamily: 'var(--font-space-grotesk,"Space Grotesk"),sans-serif', padding: '32px 24px' }}>
 
       {/* Header */}
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
@@ -71,7 +72,7 @@ export default function AdminDatabase() {
             <p style={{ color: '#64748B', fontSize: 13, marginTop: 4 }}>MongoDB Atlas · algograss database</p>
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={loadHealth} style={{ padding: '10px 18px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: '#0F172A', fontSize: 13, cursor: 'pointer' }}>
+            <button onClick={loadHealth} style={{ padding: '10px 18px', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, color: '#F1F5F9', fontSize: 13, cursor: 'pointer' }}>
               ↻ Refresh
             </button>
             <button onClick={runInit} disabled={initing} style={{ padding: '10px 20px', background: initing ? 'rgba(139,92,246,0.3)' : A, border: 'none', borderRadius: 8, color: '#06060F', fontSize: 13, fontWeight: 700, cursor: initing ? 'wait' : 'pointer' }}>
@@ -121,7 +122,7 @@ export default function AdminDatabase() {
         {/* Collections table */}
         <div style={{ background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden' }}>
           <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h2 style={{ fontSize: 15, fontWeight: 700, color: '#0F172A' }}>All Collections</h2>
+            <h2 style={{ fontSize: 15, fontWeight: 700, color: '#F1F5F9' }}>All Collections</h2>
             <span style={{ fontSize: 12, color: '#94A3B8' }}>{health?.checkedAt ? `Checked ${new Date(health.checkedAt).toLocaleTimeString('en-GB')}` : ''}</span>
           </div>
 
@@ -141,7 +142,7 @@ export default function AdminDatabase() {
                   <tr key={col.name} style={{ borderBottom: '1px solid rgba(15,23,42,0.05)', background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)' }}>
                     <td style={{ padding: '14px 24px', fontWeight: 600, fontSize: 13, color: A, fontFamily: 'monospace' }}>{col.name}</td>
                     <td style={{ padding: '14px 24px', fontSize: 12, color: '#64748B', maxWidth: 280 }}>{col.description}</td>
-                    <td style={{ padding: '14px 24px', fontSize: 14, fontWeight: 700, color: col.documents > 0 ? '#0F172A' : '#94A3B8' }}>
+                    <td style={{ padding: '14px 24px', fontSize: 14, fontWeight: 700, color: col.documents > 0 ? '#F1F5F9' : '#94A3B8' }}>
                       {col.documents.toLocaleString()}
                     </td>
                     <td style={{ padding: '14px 24px', fontSize: 13 }}>
@@ -167,7 +168,7 @@ export default function AdminDatabase() {
 
         {/* Schema reference */}
         <div style={{ marginTop: 32, background: 'rgba(15,23,42,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '24px' }}>
-          <h2 style={{ fontSize: 15, fontWeight: 700, marginBottom: 20, color: '#0F172A' }}>Schema Reference</h2>
+          <h2 style={{ fontSize: 15, fontWeight: 700, marginBottom: 20, color: '#F1F5F9' }}>Schema Reference</h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(300px,1fr))', gap: 16 }}>
             {[
               { name: 'users', fields: ['email (unique)', 'name', 'password (sha256+salt)', 'plan', 'website', 'isAdmin', 'stripeCustomerId', 'createdAt'] },
